@@ -1,5 +1,3 @@
 *.csv
 node_modules/
 .venv/
-Dataset/
-python_ml/
