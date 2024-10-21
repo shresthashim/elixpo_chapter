@@ -1,5 +1,4 @@
 /* Global Styles */
-
     body,
     html {
         margin: 0;
@@ -73,14 +72,9 @@
     
     #lock-bar { 
         position: absolute;
-        left: 5%;
-        top: 5%;
+        left: 20px;
         display: flex;
         padding: 5px 5px;
-        z-index: 100;
-    
-        
-    
     }
     
     /* Tool Styles */
