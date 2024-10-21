@@ -38,8 +38,8 @@
     }
 
     #lock-bar {
-        top: 95%;
-        left: 462px;
+        top: 5%;
+        left: 5%;
         position: fixed;
         display: flex;
         flex-direction: row;
@@ -58,8 +58,13 @@
         height: 30px;
     }
 }
+<<<<<<< HEAD
 /* 
 @media (min-width: 300px) {
+=======
+
+@media (max-width: 600px) {
+>>>>>>> 66557913d7b84c1968b451ef22d5aab4f503c343
     .toolbar {
         display: flex;
         justify-content: center;
