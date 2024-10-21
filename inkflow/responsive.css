@@ -58,13 +58,8 @@
         height: 30px;
     }
 }
-<<<<<<< HEAD
-/* 
-@media (min-width: 300px) {
-=======
 
 @media (max-width: 600px) {
->>>>>>> 66557913d7b84c1968b451ef22d5aab4f503c343
     .toolbar {
         display: flex;
         justify-content: center;
@@ -123,4 +118,4 @@
         width: 25px;
         height: 25px;
     }
-} */
+} 
