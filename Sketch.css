@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 /* Global Styles */
+=======
+>>>>>>> 66557913d7b84c1968b451ef22d5aab4f503c343
     body,
     html {
         margin: 0;
@@ -72,7 +75,12 @@
     
     #lock-bar { 
         position: absolute;
+<<<<<<< HEAD
         left: 20px;
+=======
+        left: 3%;
+        top: 3%;
+>>>>>>> 66557913d7b84c1968b451ef22d5aab4f503c343
         display: flex;
         padding: 5px 5px;
     }
