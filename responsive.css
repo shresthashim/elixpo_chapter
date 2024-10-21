@@ -38,8 +38,8 @@
     }
 
     #lock-bar {
-        top: 95%;
-        left: 462px;
+        top: 5%;
+        left: 5%;
         position: fixed;
         display: flex;
         flex-direction: row;
@@ -59,7 +59,7 @@
     }
 }
 
-@media (min-width: 300px) {
+@media (max-width: 600px) {
     .toolbar {
         display: flex;
         justify-content: center;
