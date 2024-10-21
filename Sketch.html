@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InkFlow | Hand drawn Sketch look & feel</title>
     <!-- Added Ionicons for icons -->
-    <link rel="stylesheet" href="Sketch.css" defer>
     <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.js"></script>
     <!-- Added Font Awesome for icons -->
@@ -18,7 +17,8 @@
     <!-- Added favicon for the website -->
     <link rel="icon" href="Images/InkFlow.png" type="image/png">
     <!-- Added custom stylesheet -->
-    
+    <link rel="stylesheet" href="Sketch.css" defer>
+    <!-- Added responsivness stylesheet -->
     <link rel="stylesheet" href="responsive.css">
 </head>
 
@@ -55,10 +55,10 @@
         <button class="tool" id="zoom-in" title="Zoom In"><i class="bi bi-plus-lg"></i></button>
         <button class="tool" id="zoom-out" title="Zoom Out"><i class="bi bi-dash-lg"></i></button>
     </div>
+    <!-- lock icon -->
     <div id="lock-bar" class="toolbar">
-       
+        <button class="tool" id="lock" title="Lock/Unlock"><ion-icon name="lock-closed"></ion-icon></button>
     </div>
-    <button class="tool" id="lock" title="Lock/Unlock"><ion-icon name="lock-closed"></ion-icon></button>
     <div id="angleInfo"></div>
     <!-- Added Bootstrap JavaScript for functionality -->
     <script src="Icons/bootstrap/js/bootstrap.bundle.min.js"></script>
