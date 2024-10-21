@@ -1,275 +1,156 @@
 /* Global Styles */
-body,
-html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background-color: #121212;
 
-}
-
-
-/* Canvas Styles */
-#canvas {
-    background-color: #121212;
-    cursor: crosshair;
-}
-
-/* Toolbar Styles */
-.toolbar {
-    position: fixed;
-    top: 15px;
-    background-color: #232329;
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 5px 15px;
-    display: flex;
-    gap: 13px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease, transform 0.3s ease;
-    z-index: 1000;
-}
-
-/* Main Toolbar Positioning */
-#main-toolbar {
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* Secondary Toolbar Positioning */
-#sidebarmenu {
-    right: 20px;
-    padding: 5px 5px;
-}
-
-#undoredo {
-    left: 20px;
-    position: fixed;
-    top: 95%;
-    transform: translateY(-50%);
-    display: flex;
-}
-
-#delete {
-    position: fixed;
-    top: 95%;
-    left: 155px;
-    transform: translateY(-50%);
-    display: flex;
-}
-
-/* Zoom Toolbar Styles */
-#zoom-toolbar {
-    position: fixed;
-    top: 95%;
-    right: 20px;
-    transform: translateY(-50%);
-    display: flex;
-}
-
-#lock-bar {
-    left: 20px;
-    position: fixed;
-    display: flex;
-    padding: 5px 5px;
-
-}
-
-/* Tool Styles */
-.tool {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background-color: transparent;
-    color: #fff;
-    border-radius: 30%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 17px;
-    transition: all 0.3s ease, transform 0.3s ease;
-}
-
-/* Tool Hover Styles */
-.tool:hover {
-    background-color: #31303B;
-    transform: translateY(-5px) scale(1.1);
-}
-
-/* Tool Active Styles */
-.tool.active {
-    background-color: #403E6A;
-}
-
-/* Color Picker Styles */
-#colorPicker {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-/* Color Picker Hover Styles */
-#colorPicker:hover {
-    transform: scale(1.1);
-}
-
-/* Color Picker Webkit Styles */
-#colorPicker::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-#colorPicker::-webkit-color-swatch {
-    border: none;
-    border-radius: 50%;
-}
-
-/* Angle Info Styles */
-#angleInfo {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #232329;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 15px;
-    display: none;
-    transition: all 0.3s ease;
-}
-
-@media (max-width: 797px) {
+    body,
+    html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+    
+    }
+    
+    
+    /* Canvas Styles */
+    #canvas {
+        background-color: #121212;
+        cursor: crosshair;
+    }
+    
+    /* Toolbar Styles */
     .toolbar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        position: fixed;
+        top: 15px;
+        background-color: #232329;
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
         padding: 5px 15px;
-        gap: 14px;
+        display: flex;
+        gap: 13px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease, transform 0.3s ease;
+        z-index: 1000;
     }
-
+    
+    /* Main Toolbar Positioning */
+    #main-toolbar {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    /* Secondary Toolbar Positioning */
     #sidebarmenu {
-        position: fixed;
-        height: 40px;
-        width: 40px;
-        left: 166px;
-        top: 95%;
-        transform: translateY(-50%);
-        flex-direction: row;
-        display: flex;
+        right: 20px;
+        padding: 5px 5px;
     }
-
+    
     #undoredo {
+        left: 20px;
         position: fixed;
         top: 95%;
         transform: translateY(-50%);
         display: flex;
-        flex-direction: row;
-        padding: 5px 8px;
     }
-
+    
     #delete {
         position: fixed;
         top: 95%;
-        left: 115px;
+        left: 155px;
         transform: translateY(-50%);
         display: flex;
-        flex-direction: row;
-        padding: 5px 8px;
     }
-
-    #lock-bar {
-        top: 95%;
-        left: 462px;
+    
+    /* Zoom Toolbar Styles */
+    #zoom-toolbar {
         position: fixed;
-        display: flex;
-        flex-direction: row;
+        top: 95%;
+        right: 20px;
         transform: translateY(-50%);
-        padding: 5px 8px;
-    }
-
-    .tool {
-        width: 30px;
-        height: 30px;
-        font-size: 15px;
-    }
-
-    #colorPicker {
-        width: 30px;
-        height: 30px;
-    }
-}
-
-@media (max-width: 414px) {
-    .toolbar {
         display: flex;
-        justify-content: center;
+    }
+    
+    #lock-bar { 
+        position: absolute;
+        left: 5%;
+        top: 5%;
+        display: flex;
+        padding: 5px 5px;
+        z-index: 100;
+    
+        
+    
+    }
+    
+    /* Tool Styles */
+    .tool {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background-color: transparent;
+        color: #fff;
+        border-radius: 30%;
+        cursor: pointer;
+        display: flex;
         align-items: center;
-        padding: 5px 8px;
-        gap: 10px;
+        justify-content: center;
+        font-size: 17px;
+        transition: all 0.3s ease, transform 0.3s ease;
     }
-
-    #sidebarmenu {
-        position: fixed;
-        height: 40px;
-        width: 40px;
-        left: 166px;
-        top: 95%;
-        transform: translateY(-50%);
-        flex-direction: row;
-        display: flex;
+    
+    /* Tool Hover Styles */
+    .tool:hover {
+        background-color: #31303B;
+        transform: translateY(-5px) scale(1.1);
     }
-
-    #undoredo {
-        position: fixed;
-        top: 95%;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: row;
-        padding: 5px 8px;
+    
+    /* Tool Active Styles */
+    .tool.active {
+        background-color: #403E6A;
     }
-
-    #delete {
-        position: fixed;
-        top: 95%;
-        left: 113px;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: row;
-        padding: 5px 8px;
-    }
-
-    /* #lock-bar {
-        top: 95%;
-        left: 462px;
-        position: fixed;
-        display: flex;
-        flex-direction: row;
-        transform: translateY(-50%);
-        padding: 5px 8px;
-    } */
-
-    .tool {
-        width: 30px;
-        height: 30px;
-        font-size: 12.1px;
-    }
-
+    
+    /* Color Picker Styles */
     #colorPicker {
-        width: 25px;
-        height: 25px;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
-}
-
-
-
+    
+    /* Color Picker Hover Styles */
+    #colorPicker:hover {
+        transform: scale(1.1);
+    }
+    
+    /* Color Picker Webkit Styles */
+    #colorPicker::-webkit-color-swatch-wrapper {
+        padding: 0;
+    }
+    
+    #colorPicker::-webkit-color-swatch {
+        border: none;
+        border-radius: 50%;
+    }
+    
+    /* Angle Info Styles */
+    #angleInfo {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #232329;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 15px;
+        display: none;
+        transition: all 0.3s ease;
+    }
+        
 
 
