@@ -135,6 +135,30 @@
         border-radius: 50%;
     }
     
+    #textInput {
+        position: fixed;
+        display: none; /* Change this to 'block' or 'inline' when you want to show it */
+        padding: 5px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: none;
+        outline: none;
+        caret-color: white;
+        resize: none; /* Prevent manual resizing */
+        min-height: 20px; /* Set a minimum height */
+        min-width: 50px; /* Set a minimum width */
+        max-height: none; /* Remove max-height */
+        max-width: none; /* Remove max-width */
+        white-space: nowrap; /* Prevent line breaks */
+        overflow: hidden; /* Hide overflow */
+    }
+    
+    #textInput::placeholder
+    {
+        color: white;
+    }
+
+    
     /* Angle Info Styles */
     #angleInfo {
         position: fixed;
