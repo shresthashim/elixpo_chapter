@@ -16,6 +16,10 @@ const angleInfo = document.getElementById('angleInfo');
 const sidebar = document.getElementById('sidebar');
 const savedList = document.getElementById('saved-list');
 const textInput = document.getElementById('textInput');
+const zoomPercentage = document.getElementById('zoom-percentage');
+const zoomIn = document.getElementById('zoom-in');
+const zoomOut = document.getElementById('zoom-out');
+let currentZoom = 100;
 
 let isDrawing = false;
 let isWriting = false;
@@ -52,32 +56,46 @@ function resizeCanvas() {
 
 window.addEventListener('resize', handleResize);
 
-document.getElementById('zoom-in').addEventListener('click', (e) => {
+zoomIn.addEventListener('click', (e) => {
+    currentZoom += 10;
+    zoomPercentage.textContent = currentZoom + '%';
+    
     const zoom = 1 + scaleFactor;
     scale *= zoom;
-    const mouseX = canvas.width / 2 / scale;
-    const mouseY = canvas.height / 2 / scale;
+    
+    // Get center of canvas
+    const centerX = canvas.width / 4; // Divide by 4 because canvas is scaled 2x
+    const centerY = canvas.height / 4;
+    
     elements.forEach(element => {
-        element.x1 = mouseX + (element.x1 - mouseX) * zoom;
-        element.y1 = mouseY + (element.y1 - mouseY) * zoom;
-        if (element.x2 !== undefined) element.x2 = mouseX + (element.x2 - mouseX) * zoom;
-        if (element.y2 !== undefined) element.y2 = mouseY + (element.y2 - mouseY) * zoom;
+        element.x1 = centerX + (element.x1 - centerX) * zoom;
+        element.y1 = centerY + (element.y1 - centerY) * zoom;
+        if (element.x2 !== undefined) element.x2 = centerX + (element.x2 - centerX) * zoom;
+        if (element.y2 !== undefined) element.y2 = centerY + (element.y2 - centerY) * zoom;
     });
     redrawCanvas();
 });
 
-document.getElementById('zoom-out').addEventListener('click', (e) => {
-    const zoom = 1 - scaleFactor;
-    scale *= zoom;
-    const mouseX = canvas.width / 2 / scale;
-    const mouseY = canvas.height / 2 / scale;
-    elements.forEach(element => {
-        element.x1 = mouseX + (element.x1 - mouseX) * zoom;
-        element.y1 = mouseY + (element.y1 - mouseY) * zoom;
-        if (element.x2 !== undefined) element.x2 = mouseX + (element.x2 - mouseX) * zoom;
-        if (element.y2 !== undefined) element.y2 = mouseY + (element.y2 - mouseY) * zoom;
-    });
-    redrawCanvas();
+zoomOut.addEventListener('click', (e) => {
+    if (currentZoom > 10) {
+        currentZoom -= 10;
+        zoomPercentage.textContent = currentZoom + '%';
+        
+        const zoom = 1 - scaleFactor;
+        scale *= zoom;
+        
+        // Get center of canvas
+        const centerX = canvas.width / 4; // Divide by 4 because canvas is scaled 2x
+        const centerY = canvas.height / 4;
+        
+        elements.forEach(element => {
+            element.x1 = centerX + (element.x1 - centerX) * zoom;
+            element.y1 = centerY + (element.y1 - centerY) * zoom;
+            if (element.x2 !== undefined) element.x2 = centerX + (element.x2 - centerX) * zoom;
+            if (element.y2 !== undefined) element.y2 = centerY + (element.y2 - centerY) * zoom;
+        });
+        redrawCanvas();
+    }
 });
 
 canvas.addEventListener('wheel', (e) => {
