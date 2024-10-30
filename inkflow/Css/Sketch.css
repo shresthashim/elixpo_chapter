@@ -52,8 +52,11 @@
     }
 
     #lock-bar {
-        left: 20px;
-        padding: 5px 5px;
+        position: fixed;
+        right: 9.5%;
+        top: 95%;
+        transform: translateY(-50%);
+        display: flex;
     }
 
     #undoredo {
@@ -67,7 +70,7 @@
     #delete {
         position: fixed;
         top: 95%;
-        left: 155px;
+        left: 9.5%;
         transform: translateY(-50%);
         display: flex;
     }
