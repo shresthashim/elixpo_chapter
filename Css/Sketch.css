@@ -24,24 +24,24 @@
 
     /* Theme transition styles */
     body {
-        transition: background-color 0.8s ease;
+        transition: background-color 0.5s ease;
     }
 
     #canvas {
-        transition: background-color 0.8s ease;
+        transition: background-color 0.5s ease;
     }
 
     .toolbar {
-        transition: background-color 0.8s ease;
+        transition: background-color 0.5s ease;
     }
 
     .tool {
-        transition: color 0.8s ease, background-color 0.8s ease;
+        transition: color 0.5s ease, background-color 0.5s ease;
     }
 
     #instructions,
     #zoom-percentage {
-        transition: color 0.8s ease;
+        transition: color 0.5s ease;
     }
 
     /* Light theme styles */
@@ -80,6 +80,7 @@
         color: #000000;
         background-color: #F0F0F0;
     }
+    
     /* Canvas Styles */
     #canvas {
         background-color: #121212;

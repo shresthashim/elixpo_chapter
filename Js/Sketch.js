@@ -56,8 +56,8 @@ function resizeCanvas() {
 
 window.addEventListener('resize', handleResize);
 
-zoomIn.addEventListener('click', (e) => {
-    currentZoom += 10;
+zoomIn.addEventListener('click', () => {
+    currentZoom = Math.min(currentZoom + 10, 200); // Limit zoom to 200%
     zoomPercentage.textContent = currentZoom + '%';
     
     const zoom = 1 + scaleFactor;
@@ -76,7 +76,7 @@ zoomIn.addEventListener('click', (e) => {
     redrawCanvas();
 });
 
-zoomOut.addEventListener('click', (e) => {
+zoomOut.addEventListener('click', () => {
     if (currentZoom > 10) {
         currentZoom -= 10;
         zoomPercentage.textContent = currentZoom + '%';
@@ -151,7 +151,7 @@ canvas.addEventListener('mouseup', (e) => {
 });
 
 document.getElementById('strokeWidth').addEventListener('change', (e) => {
-    selectedStrokeWidth = parseInt(e.target.value);
+    selectedStrokeWidth = Math.max(1, parseInt(e.target.value)); // Ensure stroke width is at least 1
 });
 
 document.querySelectorAll('.tool').forEach(tool => {
@@ -163,8 +163,7 @@ document.querySelectorAll('.tool').forEach(tool => {
             saveWork();
         } else if (tool.id === 'open-sidebar') {
             sidebar.classList.toggle('open');
-        }
-        else if (tool.id === 'undo') {
+        } else if (tool.id === 'undo') {
             undo();
         } else if (tool.id === 'redo') {
             redo();
@@ -172,8 +171,7 @@ document.querySelectorAll('.tool').forEach(tool => {
             selectedTool = 'select';
             document.querySelector('.tool.active')?.classList.remove('active');
             tool.classList.add('active');
-        }
-        else {
+        } else {
             document.querySelector('.tool.active')?.classList.remove('active');
             tool.classList.add('active');
             selectedTool = tool.id;
@@ -377,7 +375,7 @@ function stopDrawing() {
     isDrawing = false;
     angleInfo.style.display = 'none';
 
-    if (selectedTool !== 'pencil' && selectedTool !== 'eraser' && selectedTool !== 'text') {
+    if (currentElement && selectedTool !== 'pencil' && selectedTool !== 'eraser' && selectedTool !== 'text') {
         elements.push(currentElement);
     }
     currentElement = null;
@@ -554,11 +552,9 @@ function handleResize() {
 function updateCursorStyle() {
     if (selectedTool === 'select') {
         canvas.style.cursor = 'grab';
-    }
-    else if (selectedTool === 'text') {
+    } else if (selectedTool === 'text') {
         canvas.style.cursor = 'text';
-    }
-    else {
+    } else {
         canvas.style.cursor = 'crosshair';
     }
 }
@@ -647,6 +643,9 @@ function pointToLineDistance(x1, y1, x2, y2, px, py) {
 }
 
 function saveState() {
+    if (undoStack.length >= maxHistorySize) {
+        undoStack.shift(); // Remove the oldest state if max size is reached
+    }
     undoStack.push([...elements]);
     redoStack = [];
 }
@@ -706,12 +705,9 @@ themeBtn.addEventListener('click', () => {
     }
     
     // Redraw canvas with new theme colors
-    if (typeof redrawCanvas === 'function') {
-        redrawCanvas();
-    }
+    redrawCanvas();
 });
 
-window.removeEventListener('resize', resizeCanvas);
 window.addEventListener('resize', handleResize);
 
 handleResize();
