@@ -182,3 +182,16 @@
         display: none;
         transition: all 0.3s ease;
     }
+
+    #zoom-percentage {
+        position: fixed;
+        top: 90%;
+        right:20px;
+        transform: translateY(-50%);
+        display: flex;
+        width:7.8%;
+        height: 3%;
+        justify-content: center;
+        align-items: center;
+        font-size: smaller;
+    }
