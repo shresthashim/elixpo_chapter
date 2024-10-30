@@ -397,14 +397,14 @@ function redrawCanvas() {
     // Handle tool-specific behavior
     if (selectedTool === 'eraser') {
         canvas.addEventListener('mousemove', showEraserRadius);
-        canvas.removeEventListener('mousemove', showPencilRadius);
+        // canvas.removeEventListener('mousemove', showPencilRadius);
     } else if (selectedTool === 'pencil') {
-        canvas.addEventListener('mousemove', showPencilRadius);
+        // canvas.addEventListener('mousemove', showPencilRadius);
         canvas.removeEventListener('mousemove', showEraserRadius);
     } else {
         // Remove radius display for other tools
         canvas.removeEventListener('mousemove', showEraserRadius);
-        canvas.removeEventListener('mousemove', showPencilRadius);
+        // canvas.removeEventListener('mousemove', showPencilRadius);
     }
 }
 
@@ -421,7 +421,7 @@ function showEraserRadius(e) {
     ctx.fill();
 }
 
-function showPencilRadius(e) {
+/* function showPencilRadius(e) {
     redrawCanvas(); // Clear the canvas and redraw all elements
     const eraserRadius = selectedStrokeWidth;
     ctx.beginPath();
@@ -443,7 +443,7 @@ function clearRadius(e) {
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.fill();
-}
+} */
 
 function drawElement(element) {
     switch (element.type) {
