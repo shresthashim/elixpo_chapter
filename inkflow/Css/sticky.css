@@ -38,12 +38,6 @@ html {
     max-width: 1200px;
     margin: 0 auto;
 }
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 2.5rem;
-}
 .color-picker{
     overflow: hidden;
     height: 35px;
