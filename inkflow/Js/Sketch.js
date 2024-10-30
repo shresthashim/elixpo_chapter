@@ -680,6 +680,37 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
+const themeBtn = document.getElementById('theme-btn');
+const themeIcon = themeBtn.querySelector('i');
+
+// Check for saved theme preference
+const currentTheme = localStorage.getItem('theme') || 'dark';
+if (currentTheme === 'light') {
+    document.body.classList.add('light-theme');
+    themeIcon.classList.remove('fa-moon');
+    themeIcon.classList.add('fa-sun');
+}
+
+// Theme toggle functionality
+themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('light-theme');
+    
+    if (document.body.classList.contains('light-theme')) {
+        localStorage.setItem('theme', 'light');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+    } else {
+        localStorage.setItem('theme', 'dark');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+    }
+    
+    // Redraw canvas with new theme colors
+    if (typeof redrawCanvas === 'function') {
+        redrawCanvas();
+    }
+});
+
 window.removeEventListener('resize', resizeCanvas);
 window.addEventListener('resize', handleResize);
 
