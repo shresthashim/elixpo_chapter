@@ -7,10 +7,79 @@
         overflow: hidden;
         font-family: Arial, sans-serif;
         background-color: #121212;
-
     }
 
+    #instructions {
+        color: white;
+    }
 
+    #theme-toggle {
+        position: fixed;
+        top: 95%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        padding: 5px 5px;
+    }
+
+    /* Theme transition styles */
+    body {
+        transition: background-color 0.8s ease;
+    }
+
+    #canvas {
+        transition: background-color 0.8s ease;
+    }
+
+    .toolbar {
+        transition: background-color 0.8s ease;
+    }
+
+    .tool {
+        transition: color 0.8s ease, background-color 0.8s ease;
+    }
+
+    #instructions,
+    #zoom-percentage {
+        transition: color 0.8s ease;
+    }
+
+    /* Light theme styles */
+    body.light-theme {
+        background-color: #ffffff;
+    }
+
+    body.light-theme #canvas {
+        background-color: #ffffff;
+    }
+
+    body.light-theme .toolbar {
+        background-color: #f0f0f0;
+    }
+
+    body.light-theme .tool {
+        color: #000000;
+    }
+
+    body.light-theme .tool:hover {
+        background-color: #e0e0e0;
+    }
+
+    body.light-theme .tool.active {
+        background-color: #d0d0d0;
+    }
+
+    body.light-theme #instructions {
+        color: #000000;
+    }
+
+    body.light-theme #zoom-percentage {
+        color: #000000;
+    }
+    body.light-theme #strokeWidth {
+        color: #000000;
+        background-color: #F0F0F0;
+    }
     /* Canvas Styles */
     #canvas {
         background-color: #121212;
@@ -39,9 +108,8 @@
 
     #strokeWidth {
         background-color: #232329;
-        color: white;
+        color:white;
         border: none;
-
     }
 
     /* Secondary Toolbar Positioning */
@@ -56,6 +124,7 @@
         top: 95%;
         transform: translateY(-50%);
         display: flex;
+        padding: 5px 5px;
     }
 
     #undoredo {
@@ -72,6 +141,7 @@
         left: 9.5%;
         transform: translateY(-50%);
         display: flex;
+        padding: 5px 5px;
     }
 
     /* Zoom Toolbar Styles */
@@ -185,11 +255,12 @@
 
     #zoom-percentage {
         position: fixed;
+        color: white;
         top: 90%;
-        right:20px;
+        right: 20px;
         transform: translateY(-50%);
         display: flex;
-        width:7.8%;
+        width: 7.8%;
         height: 3%;
         justify-content: center;
         align-items: center;
