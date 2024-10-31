@@ -76,11 +76,12 @@
     body.light-theme #zoom-percentage {
         color: #000000;
     }
+
     body.light-theme #strokeWidth {
         color: #000000;
         background-color: #F0F0F0;
     }
-    
+
     /* Canvas Styles */
     #canvas {
         background-color: #121212;
@@ -109,7 +110,7 @@
 
     #strokeWidth {
         background-color: #232329;
-        color:white;
+        color: white;
         border: none;
     }
 
@@ -267,3 +268,4 @@
         align-items: center;
         font-size: smaller;
     }
+    
