@@ -122,7 +122,7 @@
 
     #lock-bar {
         position: fixed;
-        right: 9.5%;
+        right: 10.9%;
         top: 95%;
         transform: translateY(-50%);
         display: flex;
@@ -258,8 +258,8 @@
     #zoom-percentage {
         position: fixed;
         color: white;
-        top: 90%;
-        right: 20px;
+        top: 50%;
+        right: 55px;
         transform: translateY(-50%);
         display: flex;
         width: 7.8%;
