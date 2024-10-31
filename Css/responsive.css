@@ -18,7 +18,7 @@
 
     #lock-bar {
         position: fixed;
-        right: 18.5%;
+        right: 21.3%;
         top: 95%;
         transform: translateY(-50%);
         flex-direction: row;
@@ -44,12 +44,6 @@
         width: 40px;
         height: 40px;
     }
-
-    #zoom-percentage {
-        width: 15.5%;
-        height: 3%;
-
-    }
 }
 
 
@@ -66,7 +60,7 @@
 
     #lock-bar {
         position: fixed;
-        right: 18.6%;
+        right: 23.5%;
         top: 95%;
         transform: translateY(-50%);
         flex-direction: row;
@@ -103,11 +97,12 @@
         width: 35px;
         height: 35px;
     }
-
-    #zoom-percentage {
-        width: 15%;
-        height: 3%;
-
+    #zoom-percentage{
+        right:55px;
+    }
+    #zoom-toolbar{
+        padding: 5px 8px;
+        gap:14px;
     }
 }
 
@@ -126,13 +121,13 @@
 
     #sidebarmenu {
         top:92.7%;
-        right:29.5%;
+        right:36.4%;
     }
 
 
     #lock-bar {
         position: fixed;
-        right: 20.9%;
+        right: 27.4%;
         top: 95%;
         transform: translateY(-50%);
         flex-direction: row;
@@ -171,12 +166,12 @@
     }
 
     #zoom-percentage {
-        top: 90.5%;
-        width: 16.5%;
-        height: 3%;
+        top: 50%;
+        right:50px;
 
     }
-    #zoom-toolbar {
+    #zoom-toolbar{
         padding: 5px 8px;
+        gap:14px;
     }
 }
