@@ -118,19 +118,13 @@ canvas.addEventListener('wheel', (e) => {
     }
 });
 
-canvas.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-});
+// Removed the context menu event listener to reset the function of canvas
+// canvas.addEventListener('contextmenu', (e) => {
+//     e.preventDefault();
+// });
 
 canvas.addEventListener('mousedown', (e) => {
-    if (e.button === 2) {
-        isPanning = true;
-        startPanX = e.clientX;
-        startPanY = e.clientY;
-        canvas.style.cursor = 'grabbing';
-    } else {
-        handleMouseDown(e);
-    }
+    handleMouseDown(e);
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -142,12 +136,7 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('mouseup', (e) => {
-    if (e.button === 2) {
-        isPanning = false;
-        canvas.style.cursor = 'crosshair';
-    } else {
-        handleMouseUp(e);
-    }
+    handleMouseUp(e);
 });
 
 document.getElementById('strokeWidth').addEventListener('change', (e) => {
