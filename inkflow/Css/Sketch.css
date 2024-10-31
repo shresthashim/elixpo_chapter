@@ -15,9 +15,8 @@
 
     #theme-toggle {
         position: fixed;
-        top: 95%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        right: 20px;
+        padding: 5px 5px;
         display: flex;
         padding: 5px 5px;
     }
@@ -112,12 +111,6 @@
         background-color: #232329;
         color: white;
         border: none;
-    }
-
-    /* Secondary Toolbar Positioning */
-    #sidebarmenu {
-        right: 20px;
-        padding: 5px 5px;
     }
 
     #lock-bar {

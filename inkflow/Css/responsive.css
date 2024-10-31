@@ -12,10 +12,6 @@
         left: 46%;
     }
 
-    #sidebarmenu {
-        right: 39px;
-    }
-
     #lock-bar {
         position: fixed;
         right: 21.3%;
@@ -119,12 +115,6 @@
         left: 50%;
     }
 
-    #sidebarmenu {
-        top:92.7%;
-        right:36.4%;
-    }
-
-
     #lock-bar {
         position: fixed;
         right: 27.4%;
@@ -173,5 +163,10 @@
     #zoom-toolbar{
         padding: 5px 8px;
         gap:14px;
+    }
+    #theme-toggle{
+        top: 95%;
+        right:36.2%;
+        transform: translateY(-50%);
     }
 }
