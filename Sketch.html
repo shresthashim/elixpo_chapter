@@ -5,16 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InkFlow Workspace</title>
-    <!-- Added Ionicons for icons -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="Icons/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="Icons/bootstrap/css/bootstrap.min.css" rel="stylesheet"> 
     <link href="Icons/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" href="Images/InkFlow.png" type="image/png">
-    <!-- Added custom stylesheet -->
     <link rel="stylesheet" href="Css/Sketch.css" defer>
-    <!-- Added responsivness stylesheet -->
     <link rel="stylesheet" href="Css/responsive.css">
     <!-- <link rel="stylesheet" href="Css/Sticky.css"> -->
 </head>
@@ -45,7 +42,6 @@
         </select>
         <button class="tool" id="sticky-notes" title="Sticky Notes" style="font-size: larger;"><i class="bi bi-sticky"></i></button>
     </div>
-    <!-- Theme toggle button -->
     <div id="theme-toggle" class="toolbar">
         <button class="tool" id="theme-btn" title="Toggle Theme"><i class="fas fa-moon"></i></button>
     </div>
@@ -61,17 +57,13 @@
         <span id="zoom-percentage" class="toolbar">100%</span>
         <button class="tool" id="zoom-out" title="Zoom Out"><i class="bi bi-dash-lg"></i></button>
     </div>
-    <!-- lock icon -->
     <div id="lock-bar" class="toolbar">
         <button class="tool" id="lock" title="Lock/Unlock"><ion-icon name="lock-closed"></ion-icon></button>
     </div>
     <textarea type="text" id="textInput" class="textInput" spellcheck="false" autocomplete="off" multiline></textarea>
     <div id="angleInfo"></div>
-    <!-- Added Bootstrap JavaScript for functionality -->
     <script src="Icons/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Added Rough.js for drawing -->
     <script src="https://unpkg.com/roughjs@latest/bundled/rough.js"></script>
-    <!-- Added custom JavaScript -->
     <script src="Js/Sketch.js"></script>
     <!-- <script src="Js/Sticky.js"></script> -->
 </body>
