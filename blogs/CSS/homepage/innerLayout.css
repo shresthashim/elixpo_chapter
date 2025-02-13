@@ -1,0 +1,427 @@
+.innerLayout 
+{
+    position: relative;
+    top: 60px;
+    width: 100%;
+    height: auto;
+    background-color: transparent;
+    overflow: hidden;
+}
+
+.firstSection 
+{
+    position: relative;
+    top: 0px;
+    height: 90px;
+    width: 100%;
+    background-color: transparent;
+    border-bottom: 5px solid #1D202A;
+    border-left: 1px solid #1D202A;
+    border-right: 1px solid #1D202A;
+    
+
+}
+
+
+.innerLayout .firstSection > .descText {
+    position: absolute; /* Change to absolute so it stays within .firstSection */
+    top: 80%; /* Move to the vertical center */
+    left: 4%;
+    transform: translateY(-50%); /* Perfectly centers it vertically */
+    font-family: "Kanit", serif;
+    font-size: 1.1em;
+    color: #c6c0c091;
+    z-index: 2;
+}
+
+.secondSection 
+{
+    position: relative;
+    top: 0px;
+    height: 250px;
+    width: 100%;
+    background-color: transparent;
+    border-bottom: 5px solid #1D202A;
+    border-left: 1px solid #1D202A;
+    border-right: 1px solid #1D202A;
+    overflow: hidden;
+    flex-wrap: wrap;
+    z-index: 2;
+}
+
+.secondSection .welcomeText 
+{
+    position: absolute;
+    top: 20%;
+    transform: translateY(-50%);
+    left: 4%;
+    width: 90%;
+    line-height: 1em;
+    font-family: "Kanit", serif;
+    font-size: 4.5em;
+    font-weight: 500;
+    color: #f4eaeae6;
+    z-index: 2;
+}
+
+.secondSection .backgroundImage 
+{
+    position: absolute;
+    left: 90%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    transform: scale(1.5);
+    overflow: hidden;
+    background: url(../IMAGES/mainframeDesign.png);
+    opacity: 0.5;
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 1;
+
+}
+.thirdSection 
+{
+    position: relative;
+    top: 0px;
+    height: 100px;
+    width: 100%;
+    background-color: transparent;
+    border-bottom: 1px solid #1D202A;
+    border-left: 1px solid #1D202A;
+    border-right: 1px solid #1D202A;
+    overflow: hidden;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
+  background-size: 30px 30px;
+  background-position: -5px -5px;
+    flex-wrap: wrap;
+}
+
+
+.readBlogsBtn {
+    position: absolute;
+    left: 35%;
+    top: 50%;
+    transform-origin: center;
+    transform: translateY(-50%) scale(1.2);
+    border: none;
+    outline: none;
+    background-color: #3a3a3a;
+    width: 120px;
+    height: 40px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .readBlogsBtn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    width: 106%;
+    height: 130%;
+    z-index: -1;
+    border-radius: inherit;
+    transition: all 0.3s;
+    
+  }
+  
+
+  .starGithub 
+  {
+    position: absolute;
+    left: 55%;
+    top: 50%;
+    transform-origin: center;
+    transform: translateY(-50%) scale(1.2);
+    border: none;
+    outline: none;
+    background-color: #3a3a3a;
+    width: 120px;
+    height: 40px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .starGithub::before 
+  {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    width: 106%;
+    height: 130%;
+    z-index: -1;
+    border-radius: inherit;
+    transition: all 0.3s;
+  }
+
+
+  .gradient-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 106%;
+    height: 115%;
+    overflow: hidden;
+    border-radius: 10px;
+    z-index: -2;
+    filter: blur(10px);
+    transition: all 0.3s;
+  }
+  
+  .gradient {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 105%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    transition: all 0.3s;
+    background-image: linear-gradient(
+      90deg,
+      hsl(226, 81%, 64%),
+      hsl(271, 81%, 64%),
+      hsl(316, 81%, 64%),
+      hsl(1, 81%, 64%),
+      hsl(46, 81%, 64%),
+      hsl(91, 81%, 64%),
+      hsl(136, 81%, 64%),
+      hsl(181, 81%, 64%)
+    );
+    animation: rotate 2s linear infinite;
+    filter: blur(10px);
+  }
+  
+  .label {
+    width: 156px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    background-color: rgba(43, 43, 43, 1);
+    background-image: linear-gradient(
+      180deg,
+      rgb(43, 43, 43) 0%,
+      rgb(68, 68, 68) 100%
+    );
+  }
+  
+  .readBlogsBtn:hover .gradient-container {
+    transform: translate(-50%, -50%) scale(0.98);
+    filter: blur(5px);
+  }
+  
+  
+  @keyframes rotate {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
+
+  .fourthSection
+  {
+    position: relative;
+    top: 0px;
+    height: 450px;
+    width: 100%;
+    background-color: transparent;
+    /* border-bottom: 5px solid #1D202A; */
+    border-left: 1px solid #1D202A;
+    border-right: 1px solid #1D202A;
+    overflow: hidden;
+  }
+
+  .fourthSectionBackdrop 
+  {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    height: 100%;
+    width: 94%;
+    background: #1D202A;
+  }
+
+  .fourthSectionBackdropv-2 
+  {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    border-radius: 25px;
+    height: 95%;
+    width: 98%;
+    background: #030712;
+    border: 1px solid #616678;
+    overflow: hidden;
+  }
+
+  .fourthSectionBackdropv-2 > .documentIcon 
+  {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    font-size: 5em;
+    color: #fff;
+    font-weight: 500;
+  }
+  .fourthSectionBackdropv-2 > .heading
+  {
+    position: absolute;
+    left: 12%;
+    top: 5%;
+    font-size: 1.8em;
+    color: #fff;
+    
+  }
+
+  .fourthSectionBackdropv-2 > .desc 
+  {
+     position: absolute;
+     top: 15%;
+     left: 12%;
+     color: #888;
+     width: 40%;
+     flex-wrap: wrap;
+  }
+
+  .fourthSectionBackdropv-2 > .documentContainer
+  {
+    position: absolute;
+    top: 30%;
+    width: 97%;
+    left: 1.5%;
+    height: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+    background-size: 10px 10px;
+    background-position: -5px -5px;
+    border: 1px solid #555;
+    border-radius: 15px;
+  }
+
+  .fifthSection
+  {
+    position: relative;
+    top: 0px;
+    height: 450px;
+    width: 100%;
+    background-color: transparent;
+    border-bottom: 5px solid #1D202A;
+    border-left: 1px solid #1D202A;
+    border-right: 1px solid #1D202A;
+    overflow: hidden;
+  }
+
+  .fifthSectionBackdrop 
+  {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    height: 100%;
+    width: 94%;
+    background: #1D202A;
+    display: flex;
+  }
+
+  .fifthSectionBackdropv-1
+  {
+    position: absolute;
+    top: 50%;
+    left: 1%;
+    transform: translateY(-50%);
+    border-radius: 25px;
+    height: 95%;
+    width: 48%;
+    background: #030712;
+    border: 1px solid #616678;
+    overflow: hidden;
+  }
+  .fifthSectionBackdropv-2
+  {
+    position: absolute;
+    top: 50%;
+    left: 51%;
+    transform: translateY(-50%);
+    border-radius: 25px;
+    height: 95%;
+    width: 48%;
+    background: #030712;
+    border: 1px solid #616678;
+    overflow: hidden;
+  }
+
+
+  .fifthSectionBackdropv-1 > .documentIcon, 
+  .fifthSectionBackdropv-2 > .documentIcon 
+  {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    font-size: 3em;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .fifthSectionBackdropv-1 > .heading, 
+  .fifthSectionBackdropv-2 > .heading 
+  {
+    position: absolute;
+    left: 12%;
+    top: 5%;
+    font-size: 1.3em;
+    color: #fff;
+  }
+
+  .fifthSectionBackdropv-1 > .desc, 
+  .fifthSectionBackdropv-2 > .desc 
+  {
+    position: absolute;
+    top: 12%;
+    left: 12%;
+    color: #888;
+    width: 80%;
+    flex-wrap: wrap;
+  }
+
+  .fifthSectionBackdropv-1 > .documentContainer, 
+  .fifthSectionBackdropv-2 > .documentContainer 
+  {
+    position: absolute;
+    top: 30%;
+    width: 97%;
+    left: 1.5%;
+    height: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+    background-size: 10px 10px;
+    background-position: -5px -5px;
+    border: 1px solid #555;
+    border-radius: 15px;
+  }
