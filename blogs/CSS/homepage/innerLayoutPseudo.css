@@ -2,7 +2,8 @@
 .secondSection::before,
 .thirdSection::before,
 .fourthSection::before,
-.fifthSection::before
+.fifthSection::before,
+.sixthSection::before
 {
     content: "";
     position: absolute;
@@ -21,7 +22,8 @@
 .secondSection::after,
 .thirdSection::after,
 .fourthSection::after,
-.fifthSection::after
+.fifthSection::after,
+.sixthSection::after
 {
     content: "";
     position: absolute;

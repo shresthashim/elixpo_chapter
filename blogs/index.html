@@ -6,10 +6,12 @@
     <title>LixBlogs</title>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  
     <link rel="icon" type="image/x-icon" href="CSS/IMAGES/logo.png">
     <link rel="stylesheet" href="CSS/homepage/header.css">
     <link rel="stylesheet" href="CSS/homepage/innerLayout.css">
     <link rel="stylesheet" href="CSS/homepage/innerLayoutPseudo.css">
+    <link href="Icons/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <div class="appHeader">
@@ -65,7 +67,7 @@
         <div class="fifthSection">
             <div class="fifthSectionBackdrop">
                 <div class="fifthSectionBackdropv-1">
-                    <ion-icon name="document-outline" class="documentIcon"></ion-icon>
+                    <i class="bi bi-chat-dots documentIcon"></i>
                     <div class="heading">Quick Elixpo AI Co-pilot </div>
                     <div class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel sint tempore cum, architecto voluptatem ad doloribus.</div>
 
@@ -74,7 +76,7 @@
                 </div>
                 <div class="fifthSectionBackdropv-2">
 
-                    <ion-icon name="document-outline" class="documentIcon"></ion-icon>
+                    <ion-icon name="aperture" class="documentIcon"></ion-icon>
                     <div class="heading">Augmented Text to Image Integration</div>
                     <div class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel sint tempore cum, architecto voluptatem ad doloribus.</div>
 
@@ -83,10 +85,54 @@
                 </div>
             </div>
         </div>
+
+        <div class="sixthSection">
+            <div class="sixthSectionBackdrop">
+                <div class="sixthSectionBackdropv1" id="sixthSectionBackdropv1">
+                    <div class="documentIcon"></div>
+                    <div class="blob1"></div>
+                    <div class="blob2"></div>
+                    <div class="heading">Inkflow - Collaborative Workspace for Creative Ones</div>
+                    <div class="desc">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Corrupti dolores vero totam voluptatem tenetur </div>4
+                    <div class="iconsControl">
+                        <ion-icon name="triangle-outline" class="triangle"></ion-icon>
+                        <ion-icon name="triangle-outline" class="triangle shadow"></ion-icon>
+                        <ion-icon name="ellipse-outline" class="circle"></ion-icon>
+                        <ion-icon name="ellipse-outline" class="circle shadow"></ion-icon>
+                        <ion-icon name="square-outline" class="square"></ion-icon>
+                        <ion-icon name="square-outline" class="square shadow"></ion-icon>
+                    </div>
+                    <div class="documentContainer" id="documentContainer">
+                        <div class="imageContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="sixthSectionBackdropv2">
+                    <div class="heading">Create ASCII Art Visuals directly from text</div>
+                    <div class="desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates neque nisi numquam veritatis sit error </div>
+                    <div class="documentIcon"></div>
+                      
+                    <div class="documentContainer">
+                        <div class="promptTextBox" id="promptTextBox">A Car Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime fuga vero esse earum quaerat provident asperiores soluta quae at eum dignissimos excepturi aliquam dolorum cumque facere, dolores unde fugiat neque?</div>
+                        <pre class="asciiArtZone" id="asciiArtZone">
+
+                            ______
+                            /|_||_\`.__
+                           (   _    _ _\
+                           =`-(_)--(_)-'
+                    
+                        </pre>
+                    </div>
+                </div>
+        </div>
+
     </div>
     
 </div>
-    
-
+    <script src="Icons/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="JS/particles.min.js"></script>
+    <script src="JS/homepage/asciiArt.js"></script>
+    <script src="JS/homepage/homepageParticle.js"></script>  
 </body>
 </html>

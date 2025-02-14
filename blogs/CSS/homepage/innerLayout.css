@@ -394,7 +394,7 @@
   .fifthSectionBackdropv-2 > .heading 
   {
     position: absolute;
-    left: 12%;
+    left: 15%;
     top: 5%;
     font-size: 1.3em;
     color: #fff;
@@ -405,7 +405,7 @@
   {
     position: absolute;
     top: 12%;
-    left: 12%;
+    left: 15%;
     color: #888;
     width: 80%;
     flex-wrap: wrap;
@@ -424,4 +424,308 @@
     background-position: -5px -5px;
     border: 1px solid #555;
     border-radius: 15px;
+  }
+
+  .sixthSection 
+  {
+    position: relative;
+    top: 0;
+    height: 500px;
+    width: 100%;
+    background: transparent;
+    border-bottom: 5px solid #1D202A;
+    border-left: 1px solid #1D202A;
+    border-right: 1px solid #1D202A;
+  }
+
+
+  .sixthSectionBackdrop 
+  {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    height: 100%;
+    width: 94%;
+    background: #1D202A;
+    display: flex;
+  }
+
+  .sixthSectionBackdropv1
+  {
+    position: absolute;
+    top: 50%;
+    left: 1%;
+    transform: translateY(-50%);
+    border-radius: 25px;
+    height: 95%;
+    width: 60%;
+    background: #030712;
+    border: 1px solid #616678;
+    overflow: hidden;
+  }
+
+  .sixthSectionBackdropv1 > .documentContainer {
+    position: absolute;
+    top: 40%;
+    width: 97%;
+    left: 1.5%;
+    height: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+    background-size: 10px 10px;
+    backdrop-filter: blur(10px);
+    background-position: -5px -5px;
+    transform: perspective(800px) rotateX(35deg) skewX(5deg) rotateY(0deg);
+    transform-style: preserve-3d;
+    border: 1px solid #555;
+    border-radius: 15px;
+    z-index: 10;
+    box-shadow: inset 0 20px 40px #030712, 
+    inset -20px 10px 50px  #030712;
+}
+.sixthSectionBackdropv1 .blob1 
+{
+    position: absolute;
+    top: 30%;
+    left: 5%;
+    width: 200px;
+    height: 200px;
+    filter: blur(40px);
+    opacity: 0.4;
+    z-index: -1;
+    /* clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%); */
+    background: #401bc6;
+    border-radius: 50%;
+    transform: rotate(45deg) scale(2);
+    z-index: 1;
+}
+
+.sixthSectionBackdropv1 .blob2 
+{
+    position: absolute;
+    top: 60%;
+    left: 80%;
+    width: 200px;
+    height: 200px;
+    filter: blur(40px);
+    opacity: 0.4;
+    z-index: -1;
+    /* clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%); */
+    background: #14a634;
+    border-radius: 50%;
+    transform: rotate(45deg) scale(2);
+    z-index: 1;
+}
+
+
+.sixthSectionBackdropv1 > .documentContainer > .imageContainer 
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    
+    height: 90%;
+    opacity: 0.7;
+    background: url(../IMAGES/inkflow_preview.png);
+    background-size: cover;
+    border-radius: 20px;
+}
+.sixthSectionBackdropv1 > .documentIcon
+{
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    left: 5%;
+    top: 5%;
+    filter: invert(1);
+    background: url(../IMAGES/InkFlow.png);
+    background-size: cover;
+}
+
+.sixthSectionBackdropv1 > .heading
+{
+    position: absolute;
+    left: 15%;
+    top: 5%;
+    font-size: 1.3em;
+    color: #fff;
+}
+
+.sixthSectionBackdropv1 > .desc
+{
+    position: absolute;
+    top: 12%;
+    left: 15%;
+    color: #888;
+    width: 80%;
+    flex-wrap: wrap;
+}
+
+.sixthSectionBackdropv1 .iconsControl
+{
+  position: absolute;
+  height: 110px;
+  width: 60%;
+  left: 50%;
+  top: 35%;
+  transform: translateX(-50%) scale(1.2); 
+  background: transparent;
+  text-align: center;
+
+}
+
+
+.sixthSectionBackdropv1 .iconsControl > .square 
+{
+  font-size: 6em;
+  color: #401bc6;
+  margin-right: 20px;
+}
+
+.sixthSectionBackdropv1 .iconsControl > .circle 
+{
+  font-size: 6em;
+  color: #14a634;
+  margin-right: 20px;
+}
+
+.sixthSectionBackdropv1 .iconsControl > .triangle 
+{
+  font-size: 6em;
+  color: #f15603;
+  margin-right: 20px;
+}
+.sixthSectionBackdropv1 .iconsControl > .triangle.shadow
+{
+  position: absolute;
+  left: 15.5%;
+  filter: blur(10px);
+  font-size: 6em;
+  color: #f15603;
+  margin-right: 20px;
+  text-shadow: 0 0 10px #f15603;
+}
+
+.sixthSectionBackdropv1 .iconsControl > .circle.shadow
+{
+  position: absolute;
+  left: 39%;
+  filter: blur(10px);
+  font-size: 6em;
+  color: #14a634;
+  margin-right: 20px;
+  text-shadow: 0 0 10px #f15603;
+}
+
+.sixthSectionBackdropv1 .iconsControl > .square.shadow
+{
+  position: absolute;
+  left: 62%;
+  filter: blur(10px);
+  font-size: 6em;
+  color: #401bc6;
+  margin-right: 20px;
+  text-shadow: 0 0 10px #f15603;
+}
+
+
+  .sixthSectionBackdropv2
+  {
+    position: absolute;
+    top: 50%;
+    left: 62%;
+    transform: translateY(-50%);
+    border-radius: 25px;
+    height: 95%;
+    width: 34%;
+    background: #030712;
+    border: 1px solid #616678;
+    overflow: hidden;
+  }
+
+  .sixthSectionBackdropv2 > .documentContainer 
+  {
+    position: absolute;
+    top: 30%;
+    width: 97%;
+    left: 1.5%;
+    height: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+    background-size: 10px 10px;
+    background-position: -5px -5px;
+    border: 1px solid #555;
+    border-radius: 15px;
+  }
+
+  .sixthSectionBackdropv2 > .documentIcon
+  {
+    position: absolute;
+    height: 50px;
+    width: 60px;
+    left: 3%;
+    top: 5%;
+    filter: invert(0);
+    background: url(../IMAGES/dotted_icon.png);
+    background-size: cover;
+  }
+
+  .sixthSectionBackdropv2 > .heading 
+  {
+    position: absolute;
+    left: 18%;
+    top: 5%;
+    font-size: 1.2em;
+    color: #fff;
+  }
+
+  .sixthSectionBackdropv2 > .desc 
+  {
+    position: absolute;
+    top: 10%;
+    left: 18%;
+    color: #888;
+    width: 80%;
+    flex-wrap: wrap;
+  }
+
+  .sixthSectionBackdropv2 > .documentContainer > .asciiArtZone {
+    position: absolute;
+    color: #e2bcf4;
+    top: 70%;
+    left: 0%;
+    height: 100%;
+    width: 100%;
+    font-size: 15px;
+    line-height: 1.2;
+    transform: translateY(-50%); /* Center the element */
+    text-align: center;  /* Ensure text is centered within the element */
+    background: transparent;
+  }
+
+  .sixthSectionBackdropv2 > .documentContainer > .promptTextBox {
+    position: absolute;
+    top: 5%;
+    left: 10%;
+    width: 80%;
+    height: 80px;
+    background: #1D202A;
+    border: 1px solid #616678;
+    border-radius: 15px;
+    overflow: hidden;
+    padding-left: 10px;
+    padding-right: 5px;
+    color: #ffc;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .sixthSectionBackdropv2 > .documentContainer > .promptTextBox::-webkit-scrollbar
+  {
+    display: none;
   }
