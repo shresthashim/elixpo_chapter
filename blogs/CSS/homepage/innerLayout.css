@@ -1,206 +1,201 @@
-.innerLayout 
-{
-    position: relative;
-    top: 60px;
-    width: 100%;
-    height: auto;
-    background-color: transparent;
-    overflow: hidden;
+.innerLayout {
+  position: relative;
+  top: 60px;
+  width: 100%;
+  height: auto;
+  background-color: transparent;
+  overflow: hidden;
 }
 
-.firstSection 
-{
-    position: relative;
-    top: 0px;
-    height: 90px;
-    width: 100%;
-    background-color: transparent;
-    border-bottom: 5px solid #1D202A;
-    border-left: 1px solid #1D202A;
-    border-right: 1px solid #1D202A;
-    
+.firstSection {
+  position: relative;
+  top: 0px;
+  height: 90px;
+  width: 100%;
+  background-color: transparent;
+  border-bottom: 5px solid #1D202A;
+  border-left: 1px solid #1D202A;
+  border-right: 1px solid #1D202A;
+
 
 }
 
 
-.innerLayout .firstSection > .descText {
-    position: absolute; /* Change to absolute so it stays within .firstSection */
-    top: 80%; /* Move to the vertical center */
-    left: 4%;
-    transform: translateY(-50%); /* Perfectly centers it vertically */
-    font-family: "Kanit", serif;
-    font-size: 1.1em;
-    color: #c6c0c091;
-    z-index: 2;
+.innerLayout .firstSection>.descText {
+  position: absolute;
+  /* Change to absolute so it stays within .firstSection */
+  top: 80%;
+  /* Move to the vertical center */
+  left: 4%;
+  transform: translateY(-50%);
+  /* Perfectly centers it vertically */
+  font-family: "Kanit", serif;
+  font-size: 1.1em;
+  color: #c6c0c091;
+  z-index: 2;
 }
 
-.secondSection 
-{
-    position: relative;
-    top: 0px;
-    height: 250px;
-    width: 100%;
-    background-color: transparent;
-    border-bottom: 5px solid #1D202A;
-    border-left: 1px solid #1D202A;
-    border-right: 1px solid #1D202A;
-    overflow: hidden;
-    flex-wrap: wrap;
-    z-index: 2;
+.secondSection {
+  position: relative;
+  top: 0px;
+  height: 250px;
+  width: 100%;
+  background-color: transparent;
+  border-bottom: 5px solid #1D202A;
+  border-left: 1px solid #1D202A;
+  border-right: 1px solid #1D202A;
+  overflow: hidden;
+  flex-wrap: wrap;
+  z-index: 2;
 }
 
-.secondSection .welcomeText 
-{
-    position: absolute;
-    top: 20%;
-    transform: translateY(-50%);
-    left: 4%;
-    width: 90%;
-    line-height: 1em;
-    font-family: "Kanit", serif;
-    font-size: 4.5em;
-    font-weight: 500;
-    color: #f4eaeae6;
-    z-index: 2;
+.secondSection .welcomeText {
+  position: absolute;
+  top: 20%;
+  transform: translateY(-50%);
+  left: 4%;
+  width: 90%;
+  line-height: 1em;
+  font-family: "Kanit", serif;
+  font-size: 4.5em;
+  font-weight: 500;
+  color: #f4eaeae6;
+  z-index: 2;
 }
 
-.secondSection .backgroundImage 
-{
-    position: absolute;
-    left: 90%;
-    height: 100%;
-    aspect-ratio: 1 / 1;
-    transform: scale(1.5);
-    overflow: hidden;
-    background: url(../IMAGES/mainframeDesign.png);
-    opacity: 0.5;
-    background-size: contain;
-    background-repeat: no-repeat;
-    z-index: 1;
+.secondSection .backgroundImage {
+  position: absolute;
+  left: 90%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  transform: scale(1.5);
+  overflow: hidden;
+  background: url(../IMAGES/mainframeDesign.png);
+  opacity: 0.5;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 1;
 
 }
-.thirdSection 
-{
-    position: relative;
-    top: 0px;
-    height: 100px;
-    width: 100%;
-    background-color: transparent;
-    border-bottom: 1px solid #1D202A;
-    border-left: 1px solid #1D202A;
-    border-right: 1px solid #1D202A;
-    overflow: hidden;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
+
+.thirdSection {
+  position: relative;
+  top: 0px;
+  height: 100px;
+  width: 100%;
+  background-color: transparent;
+  border-bottom: 1px solid #1D202A;
+  border-left: 1px solid #1D202A;
+  border-right: 1px solid #1D202A;
+  overflow: hidden;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
   background-size: 30px 30px;
   background-position: -5px -5px;
-    flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 
 
 .readBlogsBtn {
-    position: absolute;
-    left: 35%;
-    top: 50%;
-    transform-origin: center;
-    transform: translateY(-50%) scale(1.2);
-    border: none;
-    outline: none;
-    background-color: #3a3a3a;
-    width: 120px;
-    height: 40px;
-    font-size: 18px;
-    color: #fff;
-    font-weight: 600;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  
-  .readBlogsBtn::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    width: 106%;
-    height: 130%;
-    z-index: -1;
-    border-radius: inherit;
-    transition: all 0.3s;
-    
-  }
-  
+  position: absolute;
+  left: 35%;
+  top: 50%;
+  transform-origin: center;
+  transform: translateY(-50%) scale(1.2);
+  border: none;
+  outline: none;
+  background-color: #3a3a3a;
+  width: 120px;
+  height: 40px;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
 
-  .starGithub 
-  {
-    position: absolute;
-    left: 55%;
-    top: 50%;
-    transform-origin: center;
-    transform: translateY(-50%) scale(1.2);
-    border: none;
-    outline: none;
-    background-color: #3a3a3a;
-    width: 120px;
-    height: 40px;
-    font-size: 18px;
-    color: #fff;
-    font-weight: 600;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
+.readBlogsBtn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  width: 106%;
+  height: 130%;
+  z-index: -1;
+  border-radius: inherit;
+  transition: all 0.3s;
 
-  .starGithub::before 
-  {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    width: 106%;
-    height: 130%;
-    z-index: -1;
-    border-radius: inherit;
-    transition: all 0.3s;
-  }
+}
 
 
-  .gradient-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 106%;
-    height: 115%;
-    overflow: hidden;
-    border-radius: 10px;
-    z-index: -2;
-    filter: blur(10px);
-    transition: all 0.3s;
-  }
-  
-  .gradient {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 105%;
-    aspect-ratio: 1;
-    border-radius: 12px;
-    transition: all 0.3s;
-    background-image: linear-gradient(
-      90deg,
+.starGithub {
+  position: absolute;
+  left: 55%;
+  top: 50%;
+  transform-origin: center;
+  transform: translateY(-50%) scale(1.2);
+  border: none;
+  outline: none;
+  background-color: #3a3a3a;
+  width: 120px;
+  height: 40px;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.starGithub::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  width: 106%;
+  height: 130%;
+  z-index: -1;
+  border-radius: inherit;
+  transition: all 0.3s;
+}
+
+
+.gradient-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 106%;
+  height: 115%;
+  overflow: hidden;
+  border-radius: 10px;
+  z-index: -2;
+  filter: blur(10px);
+  transition: all 0.3s;
+}
+
+.gradient {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 105%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  transition: all 0.3s;
+  background-image: linear-gradient(90deg,
       hsl(226, 81%, 64%),
       hsl(271, 81%, 64%),
       hsl(316, 81%, 64%),
@@ -208,397 +203,371 @@
       hsl(46, 81%, 64%),
       hsl(91, 81%, 64%),
       hsl(136, 81%, 64%),
-      hsl(181, 81%, 64%)
-    );
-    animation: rotate 2s linear infinite;
-    filter: blur(10px);
-  }
-  
-  .label {
-    width: 156px;
-    height: 45px;
-    text-align: center;
-    line-height: 45px;
-    border-radius: 12px;
-    font-size: 0.9em;
-    background-color: rgba(43, 43, 43, 1);
-    background-image: linear-gradient(
-      180deg,
+      hsl(181, 81%, 64%));
+  animation: rotate 2s linear infinite;
+  filter: blur(10px);
+}
+
+.label {
+  width: 156px;
+  height: 45px;
+  text-align: center;
+  line-height: 45px;
+  border-radius: 12px;
+  font-size: 0.9em;
+  background-color: rgba(43, 43, 43, 1);
+  background-image: linear-gradient(180deg,
       rgb(43, 43, 43) 0%,
-      rgb(68, 68, 68) 100%
-    );
-  }
-  
-  .readBlogsBtn:hover .gradient-container {
-    transform: translate(-50%, -50%) scale(0.98);
-    filter: blur(5px);
-  }
-  
-  
-  @keyframes rotate {
-    0% {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    100% {
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
-  }
-
-
-  .fourthSection
-  {
-    position: relative;
-    top: 0px;
-    height: 450px;
-    width: 100%;
-    background-color: transparent;
-    /* border-bottom: 5px solid #1D202A; */
-    border-left: 1px solid #1D202A;
-    border-right: 1px solid #1D202A;
-    overflow: hidden;
-  }
-
-  .fourthSectionBackdrop 
-  {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    height: 100%;
-    width: 94%;
-    background: #1D202A;
-  }
-
-  .fourthSectionBackdropv-2 
-  {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    border-radius: 25px;
-    height: 95%;
-    width: 98%;
-    background: #030712;
-    border: 1px solid #616678;
-    overflow: hidden;
-  }
-
-  .fourthSectionBackdropv-2 > .documentIcon 
-  {
-    position: absolute;
-    top: 5%;
-    left: 5%;
-    font-size: 5em;
-    color: #fff;
-    font-weight: 500;
-  }
-  .fourthSectionBackdropv-2 > .heading
-  {
-    position: absolute;
-    left: 12%;
-    top: 5%;
-    font-size: 1.8em;
-    color: #fff;
-    
-  }
-
-  .fourthSectionBackdropv-2 > .desc 
-  {
-     position: absolute;
-     top: 15%;
-     left: 12%;
-     color: #888;
-     width: 40%;
-     flex-wrap: wrap;
-  }
-
-  .fourthSectionBackdropv-2 > .documentContainer
-  {
-    position: absolute;
-    top: 30%;
-    width: 97%;
-    left: 1.5%;
-    height: 100%;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
-    background-size: 10px 10px;
-    background-position: -5px -5px;
-    border: 1px solid #555;
-    border-radius: 15px;
-  }
-
-  .fifthSection
-  {
-    position: relative;
-    top: 0px;
-    height: 450px;
-    width: 100%;
-    background-color: transparent;
-    border-bottom: 5px solid #1D202A;
-    border-left: 1px solid #1D202A;
-    border-right: 1px solid #1D202A;
-    overflow: hidden;
-  }
-
-  .fifthSectionBackdrop 
-  {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    height: 100%;
-    width: 94%;
-    background: #1D202A;
-    display: flex;
-  }
-
-  .fifthSectionBackdropv-1
-  {
-    position: absolute;
-    top: 50%;
-    left: 1%;
-    transform: translateY(-50%);
-    border-radius: 25px;
-    height: 95%;
-    width: 48%;
-    background: #030712;
-    border: 1px solid #616678;
-    overflow: hidden;
-  }
-  .fifthSectionBackdropv-2
-  {
-    position: absolute;
-    top: 50%;
-    left: 51%;
-    transform: translateY(-50%);
-    border-radius: 25px;
-    height: 95%;
-    width: 48%;
-    background: #030712;
-    border: 1px solid #616678;
-    overflow: hidden;
-  }
-
-
-  .fifthSectionBackdropv-1 > .documentIcon, 
-  .fifthSectionBackdropv-2 > .documentIcon 
-  {
-    position: absolute;
-    top: 5%;
-    left: 5%;
-    font-size: 3em;
-    color: #fff;
-    font-weight: 500;
-  }
-
-  .fifthSectionBackdropv-1 > .heading, 
-  .fifthSectionBackdropv-2 > .heading 
-  {
-    position: absolute;
-    left: 15%;
-    top: 5%;
-    font-size: 1.3em;
-    color: #fff;
-  }
-
-  .fifthSectionBackdropv-1 > .desc, 
-  .fifthSectionBackdropv-2 > .desc 
-  {
-    position: absolute;
-    top: 12%;
-    left: 15%;
-    color: #888;
-    width: 80%;
-    flex-wrap: wrap;
-  }
-
-  .fifthSectionBackdropv-1 > .documentContainer, 
-  .fifthSectionBackdropv-2 > .documentContainer 
-  {
-    position: absolute;
-    top: 30%;
-    width: 97%;
-    left: 1.5%;
-    height: 100%;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
-    background-size: 10px 10px;
-    background-position: -5px -5px;
-    border: 1px solid #555;
-    border-radius: 15px;
-  }
-
-  .sixthSection 
-  {
-    position: relative;
-    top: 0;
-    height: 500px;
-    width: 100%;
-    background: transparent;
-    border-bottom: 5px solid #1D202A;
-    border-left: 1px solid #1D202A;
-    border-right: 1px solid #1D202A;
-  }
-
-
-  .sixthSectionBackdrop 
-  {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    height: 100%;
-    width: 94%;
-    background: #1D202A;
-    display: flex;
-  }
-
-  .sixthSectionBackdropv1
-  {
-    position: absolute;
-    top: 50%;
-    left: 1%;
-    transform: translateY(-50%);
-    border-radius: 25px;
-    height: 95%;
-    width: 60%;
-    background: #030712;
-    border: 1px solid #616678;
-    overflow: hidden;
-  }
-
-  .sixthSectionBackdropv1 > .documentContainer {
-    position: absolute;
-    top: 40%;
-    width: 97%;
-    left: 1.5%;
-    height: 100%;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
-    background-size: 10px 10px;
-    backdrop-filter: blur(10px);
-    background-position: -5px -5px;
-    transform: perspective(800px) rotateX(35deg) skewX(5deg) rotateY(0deg);
-    transform-style: preserve-3d;
-    border: 1px solid #555;
-    border-radius: 15px;
-    z-index: 10;
-    box-shadow: inset 0 20px 40px #030712, 
-    inset -20px 10px 50px  #030712;
-}
-.sixthSectionBackdropv1 .blob1 
-{
-    position: absolute;
-    top: 30%;
-    left: 5%;
-    width: 200px;
-    height: 200px;
-    filter: blur(40px);
-    opacity: 0.4;
-    z-index: -1;
-    /* clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%); */
-    background: #401bc6;
-    border-radius: 50%;
-    transform: rotate(45deg) scale(2);
-    z-index: 1;
+      rgb(68, 68, 68) 100%);
 }
 
-.sixthSectionBackdropv1 .blob2 
-{
-    position: absolute;
-    top: 60%;
-    left: 80%;
-    width: 200px;
-    height: 200px;
-    filter: blur(40px);
-    opacity: 0.4;
-    z-index: -1;
-    /* clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%); */
-    background: #14a634;
-    border-radius: 50%;
-    transform: rotate(45deg) scale(2);
-    z-index: 1;
+.readBlogsBtn:hover .gradient-container {
+  transform: translate(-50%, -50%) scale(0.98);
+  filter: blur(5px);
 }
 
 
-.sixthSectionBackdropv1 > .documentContainer > .imageContainer 
-{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    
-    height: 90%;
-    opacity: 0.7;
-    background: url(../IMAGES/inkflow_preview.png);
-    background-size: cover;
-    border-radius: 20px;
-}
-.sixthSectionBackdropv1 > .documentIcon
-{
-    position: absolute;
-    height: 40px;
-    width: 40px;
-    left: 5%;
-    top: 5%;
-    filter: invert(1);
-    background: url(../IMAGES/InkFlow.png);
-    background-size: cover;
+@keyframes rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
-.sixthSectionBackdropv1 > .heading
-{
-    position: absolute;
-    left: 15%;
-    top: 5%;
-    font-size: 1.3em;
-    color: #fff;
+
+.fourthSection {
+  position: relative;
+  top: 0px;
+  height: 450px;
+  width: 100%;
+  background-color: transparent;
+  /* border-bottom: 5px solid #1D202A; */
+  border-left: 1px solid #1D202A;
+  border-right: 1px solid #1D202A;
+  overflow: hidden;
 }
 
-.sixthSectionBackdropv1 > .desc
-{
-    position: absolute;
-    top: 12%;
-    left: 15%;
-    color: #888;
-    width: 80%;
-    flex-wrap: wrap;
+.fourthSectionBackdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  height: 100%;
+  width: 94%;
+  background: #1D202A;
 }
 
-.sixthSectionBackdropv1 .iconsControl
-{
+.fourthSectionBackdropv-2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  border-radius: 25px;
+  height: 95%;
+  width: 98%;
+  background: #030712;
+  border: 1px solid #616678;
+  overflow: hidden;
+}
+
+.fourthSectionBackdropv-2>.documentIcon {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  font-size: 5em;
+  color: #fff;
+  font-weight: 500;
+}
+
+.fourthSectionBackdropv-2>.heading {
+  position: absolute;
+  left: 12%;
+  top: 5%;
+  font-size: 1.8em;
+  color: #fff;
+
+}
+
+.fourthSectionBackdropv-2>.desc {
+  position: absolute;
+  top: 15%;
+  left: 12%;
+  color: #888;
+  width: 40%;
+  flex-wrap: wrap;
+}
+
+.fourthSectionBackdropv-2>.documentContainer {
+  position: absolute;
+  top: 30%;
+  width: 97%;
+  left: 1.5%;
+  height: 100%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+  background-size: 10px 10px;
+  background-position: -5px -5px;
+  border: 1px solid #555;
+  border-radius: 15px;
+}
+
+.fifthSection {
+  position: relative;
+  top: 0px;
+  height: 450px;
+  width: 100%;
+  background-color: transparent;
+  border-bottom: 5px solid #1D202A;
+  border-left: 1px solid #1D202A;
+  border-right: 1px solid #1D202A;
+  overflow: hidden;
+}
+
+.fifthSectionBackdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  height: 100%;
+  width: 94%;
+  background: #1D202A;
+  display: flex;
+}
+
+.fifthSectionBackdropv-1 {
+  position: absolute;
+  top: 50%;
+  left: 1%;
+  transform: translateY(-50%);
+  border-radius: 25px;
+  height: 95%;
+  width: 48%;
+  background: #030712;
+  border: 1px solid #616678;
+  overflow: hidden;
+}
+
+.fifthSectionBackdropv-2 {
+  position: absolute;
+  top: 50%;
+  left: 51%;
+  transform: translateY(-50%);
+  border-radius: 25px;
+  height: 95%;
+  width: 48%;
+  background: #030712;
+  border: 1px solid #616678;
+  overflow: hidden;
+}
+
+
+.fifthSectionBackdropv-1>.documentIcon,
+.fifthSectionBackdropv-2>.documentIcon {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  font-size: 3em;
+  color: #fff;
+  font-weight: 500;
+}
+
+.fifthSectionBackdropv-1>.heading,
+.fifthSectionBackdropv-2>.heading {
+  position: absolute;
+  left: 15%;
+  top: 5%;
+  font-size: 1.3em;
+  color: #fff;
+}
+
+.fifthSectionBackdropv-1>.desc,
+.fifthSectionBackdropv-2>.desc {
+  position: absolute;
+  top: 12%;
+  left: 15%;
+  color: #888;
+  width: 80%;
+  flex-wrap: wrap;
+}
+
+.fifthSectionBackdropv-1>.documentContainer,
+.fifthSectionBackdropv-2>.documentContainer {
+  position: absolute;
+  top: 30%;
+  width: 97%;
+  left: 1.5%;
+  height: 100%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+  background-size: 10px 10px;
+  background-position: -5px -5px;
+  border: 1px solid #555;
+  border-radius: 15px;
+}
+
+.sixthSection {
+  position: relative;
+  top: 0;
+  height: 500px;
+  width: 100%;
+  background: transparent;
+  border-bottom: 5px solid #1D202A;
+  border-left: 1px solid #1D202A;
+  border-right: 1px solid #1D202A;
+}
+
+
+.sixthSectionBackdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  height: 100%;
+  width: 94%;
+  background: #1D202A;
+  display: flex;
+}
+
+.sixthSectionBackdropv1 {
+  position: absolute;
+  top: 50%;
+  left: 1%;
+  transform: translateY(-50%);
+  border-radius: 25px;
+  height: 95%;
+  width: 60%;
+  background: #030712;
+  border: 1px solid #616678;
+  overflow: hidden;
+}
+
+.sixthSectionBackdropv1>.documentContainer {
+  position: absolute;
+  top: 40%;
+  width: 97%;
+  left: 1.5%;
+  height: 100%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+  background-size: 10px 10px;
+  backdrop-filter: blur(10px);
+  background-position: -5px -5px;
+  transform: perspective(800px) rotateX(35deg) skewX(5deg) rotateY(0deg);
+  transform-style: preserve-3d;
+  border: 1px solid #555;
+  border-radius: 15px;
+  z-index: 10;
+  box-shadow: inset 0 20px 40px #030712,
+    inset -20px 10px 50px #030712;
+}
+
+.sixthSectionBackdropv1 .blob1 {
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  width: 200px;
+  height: 200px;
+  filter: blur(40px);
+  opacity: 0.4;
+  z-index: -1;
+  /* clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%); */
+  background: #401bc6;
+  border-radius: 50%;
+  transform: rotate(45deg) scale(2);
+  z-index: 1;
+}
+
+.sixthSectionBackdropv1 .blob2 {
+  position: absolute;
+  top: 60%;
+  left: 80%;
+  width: 200px;
+  height: 200px;
+  filter: blur(40px);
+  opacity: 0.4;
+  z-index: -1;
+  /* clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%); */
+  background: #14a634;
+  border-radius: 50%;
+  transform: rotate(45deg) scale(2);
+  z-index: 1;
+}
+
+
+.sixthSectionBackdropv1>.documentContainer>.imageContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+
+  height: 90%;
+  opacity: 0.7;
+  background: url(../IMAGES/inkflow_preview.png);
+  background-size: cover;
+  border-radius: 20px;
+}
+
+.sixthSectionBackdropv1>.documentIcon {
+  position: absolute;
+  height: 40px;
+  width: 40px;
+  left: 5%;
+  top: 5%;
+  filter: invert(1);
+  background: url(../IMAGES/InkFlow.png);
+  background-size: cover;
+}
+
+.sixthSectionBackdropv1>.heading {
+  position: absolute;
+  left: 15%;
+  top: 5%;
+  font-size: 1.3em;
+  color: #fff;
+}
+
+.sixthSectionBackdropv1>.desc {
+  position: absolute;
+  top: 12%;
+  left: 15%;
+  color: #888;
+  width: 80%;
+  flex-wrap: wrap;
+}
+
+.sixthSectionBackdropv1 .iconsControl {
   position: absolute;
   height: 110px;
   width: 60%;
   left: 50%;
   top: 35%;
-  transform: translateX(-50%) scale(1.2); 
+  transform: translateX(-50%) scale(1.2);
   background: transparent;
   text-align: center;
 
 }
 
 
-.sixthSectionBackdropv1 .iconsControl > .square 
-{
+.sixthSectionBackdropv1 .iconsControl>.square {
   font-size: 6em;
   color: #401bc6;
   margin-right: 20px;
 }
 
-.sixthSectionBackdropv1 .iconsControl > .circle 
-{
+.sixthSectionBackdropv1 .iconsControl>.circle {
   font-size: 6em;
   color: #14a634;
   margin-right: 20px;
 }
 
-.sixthSectionBackdropv1 .iconsControl > .triangle 
-{
+.sixthSectionBackdropv1 .iconsControl>.triangle {
   font-size: 6em;
   color: #f15603;
   margin-right: 20px;
 }
-.sixthSectionBackdropv1 .iconsControl > .triangle.shadow
-{
+
+.sixthSectionBackdropv1 .iconsControl>.triangle.shadow {
   position: absolute;
   left: 15.5%;
   filter: blur(10px);
@@ -608,8 +577,7 @@
   text-shadow: 0 0 10px #f15603;
 }
 
-.sixthSectionBackdropv1 .iconsControl > .circle.shadow
-{
+.sixthSectionBackdropv1 .iconsControl>.circle.shadow {
   position: absolute;
   left: 39%;
   filter: blur(10px);
@@ -619,8 +587,7 @@
   text-shadow: 0 0 10px #f15603;
 }
 
-.sixthSectionBackdropv1 .iconsControl > .square.shadow
-{
+.sixthSectionBackdropv1 .iconsControl>.square.shadow {
   position: absolute;
   left: 62%;
   filter: blur(10px);
@@ -631,101 +598,377 @@
 }
 
 
-  .sixthSectionBackdropv2
-  {
-    position: absolute;
-    top: 50%;
-    left: 62%;
-    transform: translateY(-50%);
-    border-radius: 25px;
-    height: 95%;
-    width: 34%;
-    background: #030712;
-    border: 1px solid #616678;
-    overflow: hidden;
+.sixthSectionBackdropv2 {
+  position: absolute;
+  top: 50%;
+  left: 62%;
+  transform: translateY(-50%);
+  border-radius: 25px;
+  height: 95%;
+  width: 34%;
+  background: #030712;
+  border: 1px solid #616678;
+  overflow: hidden;
+}
+
+.sixthSectionBackdropv2>.documentContainer {
+  position: absolute;
+  top: 30%;
+  width: 97%;
+  left: 1.5%;
+  height: 100%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
+  background-size: 10px 10px;
+  background-position: -5px -5px;
+  border: 1px solid #555;
+  border-radius: 15px;
+}
+
+.sixthSectionBackdropv2>.documentIcon {
+  position: absolute;
+  height: 50px;
+  width: 60px;
+  left: 3%;
+  top: 5%;
+  filter: invert(0);
+  background: url(../IMAGES/dotted_icon.png);
+  background-size: cover;
+}
+
+.sixthSectionBackdropv2>.heading {
+  position: absolute;
+  left: 18%;
+  top: 5%;
+  font-size: 1.2em;
+  color: #fff;
+}
+
+.sixthSectionBackdropv2>.desc {
+  position: absolute;
+  top: 10%;
+  left: 18%;
+  color: #888;
+  width: 80%;
+  flex-wrap: wrap;
+}
+
+.sixthSectionBackdropv2>.documentContainer>.asciiArtZone {
+  position: absolute;
+  color: #e2bcf4;
+  top: 70%;
+  left: 0%;
+  height: 100%;
+  width: 100%;
+  font-size: 15px;
+  line-height: 1.2;
+  transform: translateY(-50%);
+  /* Center the element */
+  text-align: center;
+  /* Ensure text is centered within the element */
+  background: transparent;
+}
+
+.sixthSectionBackdropv2>.documentContainer>.promptTextBox {
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  width: 80%;
+  height: 80px;
+  background: #1D202A;
+  border: 1px solid #616678;
+  border-radius: 15px;
+  overflow: hidden;
+  padding-left: 10px;
+  padding-right: 5px;
+  color: #ffc;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.sixthSectionBackdropv2>.documentContainer>.promptTextBox::-webkit-scrollbar {
+  display: none;
+}
+
+.search-container {
+  top: 30px;
+  position: relative;
+  width: 70%;
+  /* Decrease the width */
+  margin: 20px auto;
+  /* Center the search bar */
+}
+
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 8px 16px rgba(134, 232, 232, 0.734),
+  0 4px 8px rgba(134, 232, 196, 0.734),
+  0 2px 4px rgba(212, 232, 134, 0.734);
+}
+
+.search-bar {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 20px;
+}
+
+.icon-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  cursor: pointer;
+}
+
+.history-panel {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  display: none;
+  /* Ensure it is hidden by default */
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.history-title {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.close-icon {
+  cursor: pointer;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-list li {
+  padding: 10px;
+  border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 9px;
+  margin-top: 45px;
+  margin-left: 50px;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 20px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.quick-action:hover {
+  background: #f0f0f0;
+}
+
+.result-box {
+  margin-top: 20px;
+}
+
+.generating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dots {
+  display: flex;
+  gap: 5px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #000;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
   }
 
-  .sixthSectionBackdropv2 > .documentContainer 
-  {
-    position: absolute;
-    top: 30%;
-    width: 97%;
-    left: 1.5%;
-    height: 100%;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1px, transparent 0);
-    background-size: 10px 10px;
-    background-position: -5px -5px;
-    border: 1px solid #555;
-    border-radius: 15px;
+  50% {
+    opacity: 0.5;
   }
+}
 
-  .sixthSectionBackdropv2 > .documentIcon
-  {
-    position: absolute;
-    height: 50px;
-    width: 60px;
-    left: 3%;
-    top: 5%;
-    filter: invert(0);
-    background: url(../IMAGES/dotted_icon.png);
-    background-size: cover;
-  }
+.result-container {
+  position: relative;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+}
 
-  .sixthSectionBackdropv2 > .heading 
-  {
-    position: absolute;
-    left: 18%;
-    top: 5%;
-    font-size: 1.2em;
-    color: #fff;
-  }
+.copy-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
 
-  .sixthSectionBackdropv2 > .desc 
-  {
-    position: absolute;
-    top: 10%;
-    left: 18%;
-    color: #888;
-    width: 80%;
-    flex-wrap: wrap;
-  }
 
-  .sixthSectionBackdropv2 > .documentContainer > .asciiArtZone {
-    position: absolute;
-    color: #e2bcf4;
-    top: 70%;
-    left: 0%;
-    height: 100%;
-    width: 100%;
-    font-size: 15px;
-    line-height: 1.2;
-    transform: translateY(-50%); /* Center the element */
-    text-align: center;  /* Ensure text is centered within the element */
-    background: transparent;
-  }
+/* From Uiverse.io by Spacious74 */
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 
-  .sixthSectionBackdropv2 > .documentContainer > .promptTextBox {
-    position: absolute;
-    top: 5%;
-    left: 10%;
-    width: 80%;
-    height: 80px;
-    background: #1D202A;
-    border: 1px solid #616678;
-    border-radius: 15px;
-    overflow: hidden;
-    padding-left: 10px;
-    padding-right: 5px;
-    color: #ffc;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
+.outer-cont {
+  padding: 12px 20px;
+  width: 90px;
+  height: 28px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  position: relative;
+  background: linear-gradient(90deg, #5bfcc4, #f593e4, #71a4f0);
+  border-radius: 12px;
+  color: #fff;
+  transition: all 0.3s ease;
+  box-shadow:
+    inset 0px 0px 5px #ffffffa9,
+    inset 0px 35px 30px #000,
+    0px 5px 10px #000000cc;
+  text-shadow: 1px 1px 1px #000;
+  top: 32.3%;
+  left: 63%;
+}
 
-  .sixthSectionBackdropv2 > .documentContainer > .promptTextBox::-webkit-scrollbar
-  {
-    display: none;
-  }
+.outer-cont::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 12px;
+  filter: blur(0);
+  z-index: -1;
+  box-shadow: none;
+  background: conic-gradient(#00000000 80deg,
+      #40baf7,
+      #f34ad7,
+      #5bfcc4,
+      #00000000 280deg);
+  transition: all 0.3s ease;
+}
+
+.outer-cont:hover::before {
+  filter: blur(15px);
+}
+
+.outer-cont:active::before {
+  filter: blur(5px);
+  transform: translateY(1px);
+}
+
+.outer-cont:active {
+  box-shadow:
+    inset 0px 0px 5px #ffffffa9,
+    inset 0px 35px 30px #000;
+  margin-top: 3px;
+}
+
+
+/* From Uiverse.io by EddyBel */
+.input__container {
+  position: relative;
+  top: 45%;
+  left: 15%;
+  background: rgba(255, 255, 255, 0.664);
+  padding: 10px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  border-radius: 22px;
+  max-width: 300px;
+  transition: transform 400ms;
+
+}
+
+.shadow__input {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  filter: blur(30px);
+  border-radius: 20px;
+  background-color: #999cff;
+  background-image: radial-gradient(at 85% 51%, hsla(60, 60%, 61%, 1) 0px, transparent 50%),
+    radial-gradient(at 74% 68%, hsla(235, 69%, 77%, 1) 0px, transparent 50%),
+    radial-gradient(at 64% 79%, hsla(284, 72%, 73%, 1) 0px, transparent 50%),
+    radial-gradient(at 75% 16%, hsla(283, 60%, 72%, 1) 0px, transparent 50%),
+    radial-gradient(at 90% 65%, hsla(153, 70%, 64%, 1) 0px, transparent 50%),
+    radial-gradient(at 91% 83%, hsla(283, 74%, 69%, 1) 0px, transparent 50%),
+    radial-gradient(at 72% 91%, hsla(213, 75%, 75%, 1) 0px, transparent 50%);
+}
+
+.input__button__shadow {
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: transform 400ms, background 400ms;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  padding: 5px;
+}
+
+.input__button__shadow:hover {
+  background: rgba(255, 255, 255, 0.411);
+}
+
+.input__search {
+  width: 100%;
+  border-radius: 20px;
+  outline: none;
+  border: none;
+  padding: 8px;
+  position: relative;
+}
