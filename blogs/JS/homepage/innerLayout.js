@@ -14,3 +14,10 @@ tabs.forEach(tab => {
     document.getElementById(target).style.display = 'block';
   });
 });
+
+
+// document.getElementById("container").addEventListener("scroll", () => {
+//   console.log(document.getElementById("container").scrollTop);
+// })
+
+document.getElementById("container").scroll(0, 1318);

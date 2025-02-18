@@ -91,7 +91,7 @@ async function generateAsciiArt() {
 
 
     const prompt = weightedRandomChoice(weightedPrompts);
-    console.log(`Generating ASCII Art for: ${prompt}`);
+    // console.log(`Generating ASCII Art for: ${prompt}`);
     displayAsciiArt(fallbacks)
 
         const formatInstructions = `
