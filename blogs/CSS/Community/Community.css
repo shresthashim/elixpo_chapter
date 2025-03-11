@@ -381,9 +381,9 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border-radius: 30%;
     background: #fff;
     border: 1px solid #eaeaea;
     cursor: pointer;
@@ -392,7 +392,6 @@ body {
     justify-content: center;
     z-index: 2;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .scroll-button:hover {
@@ -425,7 +424,7 @@ body {
 }
 
 .nav-tabs button:hover {
-    background-color: rgba(250, 235, 215, 0.76);
+    background-color: rgb(237, 237, 237);
     transition: all 0.3s ease;
 }
 
@@ -909,4 +908,278 @@ body {
 .scroll-to-top:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.recommendations-card {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    max-width: 90vw;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    font-family: "Open Sans", sans-serif;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Add overlay style */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+}
+
+.recommendations-card h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.recommendations-card p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+}
+
+.rec-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.rec-tab {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #666;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    /* Prevent tab text from breaking */
+}
+
+.rec-tab:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.rec-tab.active {
+    background: #000;
+    color: #fff;
+}
+
+.rec-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.writers-section h3 {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.writer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.writer-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+
+}
+
+.writer-avatar {
+    width: 40px;
+    height: 40px;
+    background: #000;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}
+
+.writer-info {
+    flex: 1;
+}
+
+.writer-info h4 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.writer-info p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.follow-btn {
+    padding: 6px 16px;
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.follow-btn:hover {
+    background: #000;
+    color: #fff;
+}
+
+.follow-btn.following {
+    background: #000;
+    color: #fff;
+}
+
+.following-section {
+    display: none;
+    /* Hidden by default */
+    margin-top: 20px;
+}
+
+.following-section h3 {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+/* Add these new avatar color classes */
+.writer-avatar.color-1 {
+    background-color: #FF6B6B;
+}
+
+.writer-avatar.color-2 {
+    background-color: #4ECDC4;
+}
+
+.writer-avatar.color-3 {
+    background-color: #45B7D1;
+}
+
+.writer-avatar.color-4 {
+    background-color: #96CEB4;
+}
+
+.writer-avatar.color-5 {
+    background-color: #FFEEAD;
+    color: #333;
+}
+
+.writer-avatar.color-6 {
+    background-color: #D4A5A5;
+}
+
+.writer-avatar.color-7 {
+    background-color: #9B59B6;
+}
+
+.writer-avatar.color-8 {
+    background-color: #3498DB;
+}
+
+.writer-avatar.color-9 {
+    background-color: #1ABC9C;
+}
+
+.writer-avatar.color-10 {
+    background-color: #F1C40F;
+    color: #333;
+}
+
+.reading-section {
+    display: none;
+    margin-top: 20px;
+}
+
+.reading-section h3 {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.topic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.topic-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.topic-item:hover {
+    background-color: #f5f5f5;
+}
+
+.topic-banner {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.topic-content {
+    flex: 1;
+}
+
+.topic-content h4 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.topic-content p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0;
 }

@@ -192,4 +192,139 @@ document.addEventListener('DOMContentLoaded', function () {
             behavior: 'smooth'
         });
     });
+
+    // Add this to your existing DOMContentLoaded listener
+    const plusIcon = document.querySelector('.icon-btn');
+    const recommendationsCard = document.querySelector('.recommendations-card');
+
+    plusIcon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        recommendationsCard.style.display = recommendationsCard.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!recommendationsCard.contains(e.target) && !plusIcon.contains(e.target)) {
+            recommendationsCard.style.display = 'none';
+        }
+    });
+
+    // Handle tab switching
+    const recTabs = document.querySelectorAll('.rec-tab');
+    recTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            recTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Handle follow buttons
+    const followButtons = document.querySelectorAll('.follow-btn');
+    followButtons.forEach(button => {
+        // Set initial text to "Following" for buttons in following-section
+        if (button.closest('#following-section')) {
+            button.textContent = 'Following';
+            button.classList.add('following');
+        }
+
+        button.addEventListener('click', function() {
+            this.classList.toggle('following');
+            this.textContent = this.classList.contains('following') ? 'Following' : 'Follow';
+        });
+    });
+
+    // Create and append overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
+    // Plus icon click handling
+    plusIcon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        overlay.style.display = 'block';
+        recommendationsCard.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        assignRandomColors(); // Add this line
+    });
+
+    // Close on overlay click
+    overlay.addEventListener('click', function() {
+        closeRecommendations();
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeRecommendations();
+        }
+    });
+
+    function closeRecommendations() {
+        overlay.style.display = 'none';
+        recommendationsCard.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+
+    // Prevent closing when clicking inside the card
+    recommendationsCard.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Handle tab switching and section toggling
+    recTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            recTabs.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Get the sections
+            const suggestionsSection = document.getElementById('suggestion-section');
+            const followingSection = document.getElementById('following-section');
+            
+            // Toggle sections based on clicked tab
+            if (this.textContent === 'Following') {
+                suggestionsSection.style.display = 'none';
+                followingSection.style.display = 'block';
+            } else {
+                suggestionsSection.style.display = 'block';
+                followingSection.style.display = 'none';
+            }
+        });
+    });
+
+    // Add this after the DOMContentLoaded event starts
+    function assignRandomColors() {
+        const avatars = document.querySelectorAll('.writer-avatar');
+        avatars.forEach((avatar, index) => {
+            const colorIndex = (index % 10) + 1; // Cycle through 10 colors
+            avatar.classList.add(`color-${colorIndex}`);
+        });
+    }
+
+    // Update the tab switching logic
+    recTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            recTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Get all sections
+            const suggestionsSection = document.getElementById('suggestion-section');
+            const followingSection = document.getElementById('following-section');
+            const readingSection = document.getElementById('reading-section');
+            
+            // Hide all sections first
+            [suggestionsSection, followingSection, readingSection].forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show the selected section
+            if (this.textContent === 'Following') {
+                followingSection.style.display = 'block';
+            } else if (this.textContent === 'Reading History') {
+                readingSection.style.display = 'block';
+            } else {
+                suggestionsSection.style.display = 'block';
+            }
+        });
+    });
 });
