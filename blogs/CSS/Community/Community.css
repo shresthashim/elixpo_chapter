@@ -26,6 +26,10 @@ body {
     border-radius: 5px;
 }
 
+.bi-chat {
+    cursor: pointer;
+}
+
 .navbar {
     display: flex;
     align-items: center;
@@ -926,6 +930,30 @@ body {
     z-index: 1000;
     font-family: "Open Sans", sans-serif;
     animation: fadeIn 0.3s ease;
+}
+
+.recommendations-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.recommendations-card-header .content {
+    flex: 1;
+}
+
+.close-icon {
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-icon:hover {
+    color: #eaacac;
 }
 
 @keyframes fadeIn {

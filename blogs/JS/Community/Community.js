@@ -381,4 +381,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    // Add close icon click handler
+    const closeIcon = document.querySelector('.recommendations-card .close-icon');
+    if (closeIcon) {
+        closeIcon.addEventListener('click', closeRecommendations);
+    }
 });
