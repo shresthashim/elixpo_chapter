@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.querySelector('.search-input');
 
     // Handle search input focus
-    searchInput.addEventListener('focus', function() {
+    searchInput.addEventListener('focus', function () {
         searchContainer.classList.add('expanded');
     });
 
     // Close search suggestions when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!searchContainer.contains(e.target)) {
             searchContainer.classList.remove('expanded');
         }
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle trending item clicks
     document.querySelectorAll('.trending-item').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             searchInput.value = this.querySelector('span').textContent;
         });
     });
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const profileDropdown = document.getElementById('profileDropdown');
 
     // Toggle profile dropdown when profile icon is clicked
-    profileIcon.addEventListener('click', function(e) {
+    profileIcon.addEventListener('click', function (e) {
         e.stopPropagation();
         if (profileDropdown.style.display === 'block') {
             profileDropdown.style.display = 'none';
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Close profile dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (profileDropdown.style.display === 'block' &&
             !profileDropdown.contains(e.target) &&
             e.target !== profileIcon) {
@@ -100,10 +100,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle three-dots dropdown
     document.querySelectorAll('.bi-three-dots').forEach(icon => {
-        icon.addEventListener('click', function(e) {
+        icon.addEventListener('click', function (e) {
             e.stopPropagation();
             const dropdown = this.closest('.article-actions').querySelector('.article-options-dropdown');
-            
+
             // Close all other dropdowns first
             document.querySelectorAll('.article-options-dropdown').forEach(d => {
                 if (d !== dropdown) d.style.display = 'none';
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Close dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.article-actions')) {
             document.querySelectorAll('.article-options-dropdown').forEach(d => {
                 d.style.display = 'none';
@@ -147,13 +147,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     leftButton.addEventListener('click', () => scrollTabs('left'));
     rightButton.addEventListener('click', () => scrollTabs('right'));
-    
+
     // Update buttons on scroll
     tabsContainer.addEventListener('scroll', updateScrollButtons);
-    
+
     // Update buttons on resize
     window.addEventListener('resize', updateScrollButtons);
-    
+
     // Initial check
     updateScrollButtons();
 
