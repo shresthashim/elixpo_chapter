@@ -197,12 +197,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const plusIcon = document.querySelector('.icon-btn');
     const recommendationsCard = document.querySelector('.recommendations-card');
 
-    plusIcon.addEventListener('click', function(e) {
+    plusIcon.addEventListener('click', function (e) {
         e.stopPropagation();
         recommendationsCard.style.display = recommendationsCard.style.display === 'block' ? 'none' : 'block';
     });
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!recommendationsCard.contains(e.target) && !plusIcon.contains(e.target)) {
             recommendationsCard.style.display = 'none';
         }
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle tab switching
     const recTabs = document.querySelectorAll('.rec-tab');
     recTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             recTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
         });
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
             button.classList.add('following');
         }
 
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             this.classList.toggle('following');
             this.textContent = this.classList.contains('following') ? 'Following' : 'Follow';
         });
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.appendChild(overlay);
 
     // Plus icon click handling
-    plusIcon.addEventListener('click', function(e) {
+    plusIcon.addEventListener('click', function (e) {
         e.stopPropagation();
         overlay.style.display = 'block';
         recommendationsCard.style.display = 'block';
@@ -247,12 +247,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Close on overlay click
-    overlay.addEventListener('click', function() {
+    overlay.addEventListener('click', function () {
         closeRecommendations();
     });
 
     // Close on ESC key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeRecommendations();
         }
@@ -265,22 +265,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Prevent closing when clicking inside the card
-    recommendationsCard.addEventListener('click', function(e) {
+    recommendationsCard.addEventListener('click', function (e) {
         e.stopPropagation();
     });
 
     // Handle tab switching and section toggling
     recTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             // Remove active class from all tabs
             recTabs.forEach(t => t.classList.remove('active'));
             // Add active class to clicked tab
             this.classList.add('active');
-            
+
             // Get the sections
             const suggestionsSection = document.getElementById('suggestion-section');
             const followingSection = document.getElementById('following-section');
-            
+
             // Toggle sections based on clicked tab
             if (this.textContent === 'Following') {
                 suggestionsSection.style.display = 'none';
@@ -303,20 +303,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Update the tab switching logic
     recTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             recTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Get all sections
             const suggestionsSection = document.getElementById('suggestion-section');
             const followingSection = document.getElementById('following-section');
             const readingSection = document.getElementById('reading-section');
-            
+
             // Hide all sections first
             [suggestionsSection, followingSection, readingSection].forEach(section => {
                 section.style.display = 'none';
             });
-            
+
             // Show the selected section
             if (this.textContent === 'Following') {
                 followingSection.style.display = 'block';
@@ -325,6 +325,60 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 suggestionsSection.style.display = 'block';
             }
+        });
+    });
+
+    recTabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            // Remove active class from all tabs
+            recTabs.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tab
+            this.classList.add('active');
+
+            // Get all sections
+            const suggestionsSection = document.getElementById('suggestion-section');
+            const followingSection = document.getElementById('following-section');
+            const readingSection = document.getElementById('reading-section');
+
+            // First hide all sections
+            [suggestionsSection, followingSection, readingSection].forEach(section => {
+                if (section) section.style.display = 'none';
+            });
+
+            // Show the selected section
+            switch (this.textContent.trim()) {
+                case 'Following':
+                    followingSection.style.display = 'block';
+                    break;
+                case 'Reading History':
+                    readingSection.style.display = 'block';
+                    break;
+                case 'Suggestions':
+                    suggestionsSection.style.display = 'block';
+                    break;
+                default:
+                    suggestionsSection.style.display = 'block';
+            }
+        });
+    });
+
+    // Initialize the scroll animations for topic items
+    const topicItems = document.querySelectorAll('.topic-item');
+    topicItems.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            gsap.to(item, {
+                y: -5,
+                duration: 0.2,
+                ease: 'power2.out'
+            });
+        });
+
+        item.addEventListener('mouseleave', () => {
+            gsap.to(item, {
+                y: 0,
+                duration: 0.2,
+                ease: 'power2.out'
+            });
         });
     });
 });
