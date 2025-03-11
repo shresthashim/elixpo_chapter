@@ -122,4 +122,56 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
+
+    // Navigation tabs scrolling functionality
+    const tabsContainer = document.querySelector('.nav-tabs');
+    const leftButton = document.querySelector('.scroll-button.left');
+    const rightButton = document.querySelector('.scroll-button.right');
+
+    function updateScrollButtons() {
+        const isScrollable = tabsContainer.scrollWidth > tabsContainer.clientWidth;
+        const isAtStart = tabsContainer.scrollLeft <= 0;
+        const isAtEnd = tabsContainer.scrollLeft >= (tabsContainer.scrollWidth - tabsContainer.clientWidth);
+
+        leftButton.classList.toggle('hidden', isAtStart || !isScrollable);
+        rightButton.classList.toggle('hidden', isAtEnd || !isScrollable);
+    }
+
+    function scrollTabs(direction) {
+        const scrollAmount = tabsContainer.clientWidth / 2;
+        tabsContainer.scrollBy({
+            left: direction === 'left' ? -scrollAmount : scrollAmount,
+            behavior: 'smooth'
+        });
+    }
+
+    leftButton.addEventListener('click', () => scrollTabs('left'));
+    rightButton.addEventListener('click', () => scrollTabs('right'));
+    
+    // Update buttons on scroll
+    tabsContainer.addEventListener('scroll', updateScrollButtons);
+    
+    // Update buttons on resize
+    window.addEventListener('resize', updateScrollButtons);
+    
+    // Initial check
+    updateScrollButtons();
+
+    // Make tabs clickable
+    const navButtons = tabsContainer.querySelectorAll('button:not(.icon-btn)');
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+
+    // Author card follow button functionality
+    document.querySelectorAll('.author-card-follow').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            button.classList.toggle('following');
+            button.textContent = button.classList.contains('following') ? 'Following' : 'Follow';
+        });
+    });
 });
