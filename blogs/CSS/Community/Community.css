@@ -1287,3 +1287,159 @@ body {
     color: #666;
     margin-bottom: 0;
 }
+
+.floating-editor {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 700px;
+    height: 500px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.editor-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    background: #f5f5f5;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.action-btn {
+    padding: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #666;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #f5f5f5;
+}
+
+.publish-btn {
+    padding: 8px 16px;
+    border: none;
+    background: #000;
+    color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.editor-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.title-input,
+.content-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-family: 'Noe Display';
+}
+
+.title-input {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    min-height: 36px;
+}
+
+.content-input {
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 200px;
+}
+
+[contenteditable=true]:empty:before {
+    content: attr(data-placeholder);
+    color: #999;
+}
+
+.formatting-toolbar {
+    padding: 12px 16px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.format-btn {
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #666;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.format-btn:hover {
+    background: #f5f5f5;
+}
+
+.format-btn.active {
+    background: #eee;
+    color: #000;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 20px;
+    background: #eee;
+    margin: 0 4px;
+}
+
+.floating-editor.minimized {
+    height: 60px;
+    overflow: hidden;
+}
+
+.floating-editor.expanded {
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+}

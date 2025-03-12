@@ -388,3 +388,89 @@ document.addEventListener('DOMContentLoaded', function () {
         closeIcon.addEventListener('click', closeRecommendations);
     }
 });
+
+// Editor functionality
+document.addEventListener('DOMContentLoaded', function () {
+    const writeButton = document.querySelector('.bi-box-arrow-in-down-left').parentElement;
+    const editor = document.querySelector('.floating-editor');
+
+    writeButton.addEventListener('click', () => {
+        editor.style.display = 'flex';
+    });
+
+    // Editor controls
+    const minimizeBtn = editor.querySelector('.minimize');
+    const expandBtn = editor.querySelector('.expand');
+    const closeBtn = editor.querySelector('.close');
+
+    minimizeBtn.addEventListener('click', () => {
+        editor.classList.toggle('minimized');
+    });
+
+    expandBtn.addEventListener('click', () => {
+        editor.classList.toggle('expanded');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        editor.style.display = 'none';
+    });
+
+    // Formatting buttons
+    const formatButtons = editor.querySelectorAll('.format-btn');
+    formatButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const format = btn.dataset.format;
+            document.execCommand(format, false, null);
+            btn.classList.toggle('active');
+        });
+    });
+
+    // Handle drag functionality
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    const editorHeader = editor.querySelector('.editor-header');
+
+    editorHeader.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    function dragStart(e) {
+        if (!editor.classList.contains('expanded')) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (e.target === editorHeader) {
+                isDragging = true;
+            }
+        }
+    }
+
+    function drag(e) {
+        if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+
+            xOffset = currentX;
+            yOffset = currentY;
+
+            setTranslate(currentX, currentY, editor);
+        }
+    }
+
+    function setTranslate(xPos, yPos, el) {
+        el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+    }
+
+    function dragEnd() {
+        initialX = currentX;
+        initialY = currentY;
+        isDragging = false;
+    }
+});

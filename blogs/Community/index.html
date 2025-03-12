@@ -811,6 +811,65 @@
         <i class="bi bi-arrow-up"></i>
     </button>
 
+    <div class="floating-editor">
+        <div class="editor-header">
+            <div class="editor-controls">
+                <button class="control-btn minimize">
+                    <i class="bi bi-dash"></i>
+                </button>
+                <button class="control-btn expand">
+                    <i class="bi bi-arrows-angle-expand"></i>
+                </button>
+                <button class="control-btn close">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="editor-actions">
+                <button class="action-btn">
+                    <i class="bi bi-image"></i>
+                </button>
+                <button class="action-btn">
+                    <i class="bi bi-link-45deg"></i>
+                </button>
+                <button class="publish-btn">Publish</button>
+            </div>
+        </div>
+        <div class="editor-content">
+            <div class="title-input" contenteditable="true" data-placeholder="Title"></div>
+            <div class="content-input" contenteditable="true" data-placeholder="Tell your story..."></div>
+        </div>
+        <div class="formatting-toolbar">
+            <button class="format-btn" data-format="bold">
+                <i class="bi bi-type-bold"></i>
+            </button>
+            <button class="format-btn" data-format="italic">
+                <i class="bi bi-type-italic"></i>
+            </button>
+            <button class="format-btn" data-format="underline">
+                <i class="bi bi-type-underline"></i>
+            </button>
+            <button class="format-btn" data-format="strikethrough">
+                <i class="bi bi-type-strikethrough"></i>
+            </button>
+            <div class="toolbar-divider"></div>
+            <button class="format-btn" data-format="h1">H1</button>
+            <button class="format-btn" data-format="h2">H2</button>
+            <div class="toolbar-divider"></div>
+            <button class="format-btn" data-format="quote">
+                <i class="bi bi-quote"></i>
+            </button>
+            <button class="format-btn" data-format="code">
+                <i class="bi bi-code-slash"></i>
+            </button>
+            <button class="format-btn" data-format="list-ul">
+                <i class="bi bi-list-ul"></i>
+            </button>
+            <button class="format-btn" data-format="list-ol">
+                <i class="bi bi-list-ol"></i>
+            </button>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <script src="../JS/Community/Community.js"></script>
 </body>
