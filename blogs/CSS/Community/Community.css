@@ -122,6 +122,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    height: 220px;
+    overflow-y: auto;
 }
 
 .trending-item {
@@ -912,6 +914,7 @@ body {
 .scroll-to-top:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 30%;
 }
 
 .recommendations-card {
@@ -1429,11 +1432,6 @@ body {
     height: 20px;
     background: #eee;
     margin: 0 4px;
-}
-
-.floating-editor.minimized {
-    height: 60px;
-    overflow: hidden;
 }
 
 .floating-editor.expanded {

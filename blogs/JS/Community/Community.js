@@ -399,13 +399,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Editor controls
-    const minimizeBtn = editor.querySelector('.minimize');
     const expandBtn = editor.querySelector('.expand');
     const closeBtn = editor.querySelector('.close');
-
-    minimizeBtn.addEventListener('click', () => {
-        editor.classList.toggle('minimized');
-    });
 
     expandBtn.addEventListener('click', () => {
         editor.classList.toggle('expanded');
