@@ -12,8 +12,8 @@ import urllib.parse
 base_path = "./synthetic_data"
 os.makedirs(base_path, exist_ok=True)
 
-output_csv_path = os.path.join(base_path, "synthetic_emoji_data2.csv")
-resume_file = os.path.join(base_path, "progress_tracker2.txt")
+output_csv_path = os.path.join(base_path, "synthetic_emoji_data.csv")
+resume_file = os.path.join(base_path, "progress_tracker.txt")
 base_url = "https://text.pollinations.ai/"
 total_rows = 5000
 model = "openai"
