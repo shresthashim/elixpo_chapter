@@ -15,7 +15,7 @@ os.makedirs(base_path, exist_ok=True)
 output_csv_path = os.path.join(base_path, "synthetic_emoji_data.csv")
 resume_file = os.path.join(base_path, "progress_tracker.txt")
 base_url = "https://text.pollinations.ai/"
-total_rows = 5000
+total_rows =  10000
 model = "openai"
 
 
