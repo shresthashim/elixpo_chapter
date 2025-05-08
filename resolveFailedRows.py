@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 
 # Constants
-DATASET_PATH = "Training/re-train/failed_rows.csv"
+DATASET_PATH = "Training/re_train/failed_rows.csv"
 PROGRESS_PATH = "Training/re_train/progressTrackerv3.json"
 OUTPUT_PATH = "Training/re_train/emoji_context_enhanced_dataset2.csv"
 FAILED_PATH = "Training/re_train/failed_rows2.csv"
