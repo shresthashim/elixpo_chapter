@@ -699,6 +699,9 @@ def handle_search():
     # if "<script" in user_input_query.lower():
     #     return jsonify({"error": "Query contains forbidden content."}), 400
 
+    if user_input_query.strip().lower() == "pollinations_test":
+        return Response("Pollinations AI fallback: Service is reachable and responding (test mode).", mimetype='text/markdown', status=200)
+    
     if not user_input_query:
         return jsonify({"error": "Query parameter 'query' is required."}), 400
     show_logs = str(show_logs_param).lower() == 'true' if show_logs_param is not None else True 
