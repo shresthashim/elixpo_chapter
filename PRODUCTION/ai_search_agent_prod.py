@@ -718,9 +718,3 @@ def handle_search():
     future = executor.submit(process_request)
     markdown_output, status_code = future.result()
     return Response(markdown_output, mimetype='text/markdown', status=status_code)
-
-
-if __name__ == '__main__':
-    print("Starting Flask app on http://127.0.0.1:5000/search")
-    print("Use GET or POST with 'query' parameter. Add 'show_logs=false' to suppress console output.")
-    app.run(host="127.0.0.1", port=5000, debug=False) 
