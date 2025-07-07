@@ -185,3 +185,13 @@
 {
   font-family: "Pathway Gothic One", sans-serif; 
 }
+.featuredTileSpecialText 
+{
+  font-family: "Canopee";
+  position: relative;
+  padding-bottom: 10px;
+}
+.featuredTileSpecialDesc 
+{
+  font-family: "Pathway Gothic One", sans-serif; 
+}

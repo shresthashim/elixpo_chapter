@@ -16,40 +16,54 @@ spotlightNews = [
 ]
 
 
-function appendNews(spotlightNews) 
-{
-    spotlightNews.forEach(news => {
-    // Calculate if the news is less than or equal to 7 days old
-    const newsDate = new Date(news.date);
+
+
+function appendNews(spotlightNews) {
+    const spotlightContainer = document.getElementById('spotlight');
+    if (!spotlightContainer) return;
+  
+    let html = '';
     const now = new Date();
-    const diffTime = Math.abs(now - newsDate);
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-
-    const isNew = diffDays <= 7;
-
-    const spotlightNode = ` 
-        <div class="featuredTile relative h-[350px] w-[450px] flex-shrink-0 flex flex-col items-center mt-[10px] border-r-2 border-[#888]">
-            <div class="featuredImage h-[150px] w-[90%] bg-red-500 bg-[url(${news.image})] bg-cover bg-center rounded-[12px]"></div>
-            <span class="featuredName relative w-full flex flex-row px-[20px] items-center justify-between box-border">
-                <p class="featureName text-left text-[1.5em]"> ${news.title} </p> 
-                ${isNew ? `
-                <span class="newTag relative flex h-[30px] text-[1.8em] text-[#ffc] bg-[#B63B12] items-center justify-center px-[2px] rounded-[5px] mt-[10px]"> 
-                    <p> NEW </p> 
-                </span>
-                ` : ''}
-            </span>
-            <p class="featuredDescription relative text-[1.35em] text-left px-[20px] whitespace-normal break-words w-full text-ellipsis overflow-hidden">
-              ${news.description.slice(0, 150)}...
-            </p>
+    const midIndex = Math.floor(spotlightNews.length / 2);
+  
+    spotlightNews.forEach((news, index) => {
+      const newsDate = new Date(news.date);
+      const diffDays = Math.abs(now - newsDate) / (1000 * 60 * 60 * 24);
+      const isNew = diffDays <= 7;
+  
+      const newsTile = `
+        <div class="featuredTile relative h-[350px] w-[400px] flex-shrink-0 flex flex-col items-center mt-[10px]">
+          <div class="featuredImage h-[150px] w-[90%] bg-[url(${news.image})] bg-cover bg-center rounded-[12px]"></div>
+          <span class="featuredName relative w-full flex flex-row px-[20px] items-center justify-between box-border">
+            <p class="featureName text-left text-[1.5em]"> ${news.title} </p> 
+            ${isNew ? `
+              <span class="newTag relative flex h-[30px] text-[1.8em] text-[#ffc] bg-[#B63B12] items-center justify-center px-[2px] rounded-[5px] mt-[10px]"> 
+                <p> NEW </p> 
+              </span>` : ''}
+          </span>
+          <p class="featuredDescription relative text-[1.35em] text-left px-[20px] whitespace-normal break-words w-full text-ellipsis overflow-hidden">
+            ${news.description.slice(0, 150)}...
+          </p>
         </div>
-    `    
-        const spotlightContainer = document.getElementById('spotlight');
-            if (spotlightContainer ) {
-                // spotlightContainer.innerHTML += spotlightNode;
-            }
-    })
-}
-
+      `;
+  
+      // Insert special tile in the middle
+      if (index === midIndex) {
+        html += `
+          <div class="featuredTileSpecial relative h-[350px] w-[450px] flex-shrink-0 flex flex-col items-center mt-[10px] border-r-2 border-l-2 border-[#888] px-5">
+            <p class="featuredTileSpecialText text-[4em] font-extrabold tracking-wide relative"> SPOTLIGHT!</p>
+            <p class="featuredTileSpecialDesc text-[1.8em] font-thin relative text-center"> Welcome to the latest catches -- in my career and let's find the craziest!!</p>
+            <p class="featuredTileSpecialTip relative text-[1.5em] font-extrabold text-center top-[70px]">  &lt&lt Watch! More to Come &gt&gt </p>
+          </div>
+        `;
+      }
+  
+      html += newsTile;
+    });
+  
+    spotlightContainer.innerHTML = html;
+  }
+  
 window.onload = function() {
     appendNews(spotlightNews);
     // const appContainer = document.getElementById('appContainer');
