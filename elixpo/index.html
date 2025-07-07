@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+<link rel="stylesheet" href="CSS/homePage.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Elixpo</title>
+</head>
+<body class="relative min-h-screen bg-white overflow-hidden">
+  <div class="absolute top-0 left-0 w-screen h-screen opacity-55 bg-[url('CSS/paperTexture.jpg')] bg-contain bg-repeat bg-center brightness-[75%] sepia-[65%]"></div>
+   <div class="navBar static h-[80px] flex items-center justify-between border-b-2 border-[#888] px-[50px] box-border mb-[5px]">
+        <p class="location text-[1.5em]">WB,IN</p>
+        <p class="name font-['Bitcount Grid Double', system-ui] text-[3em]"> Elixpo </p>
+        <ion-icon name="list"></ion-icon>
+      </div>
+
+  <div id="appContainer" class="appContainer relative top-0 left-1/2 w-full max-w-[1440px] h-[calc(100vh-100px)] max-h-[calc(100vh-100px)]  overflow-y-auto overflow-x-hidden p-10" >
+      <section id="spotlight" class="spotlight relative h-[350px] mb-[20px] pl-[40px] pr-[40px] box-border py-[40px] gap-[20px] overflow-x-auto overflow-y-hidden flex-nowrap flex flex-row">
+      </section>
+
+      <section class="introSection relative mt-[10px] w-full flex flex-col border-b-2 border-[#111] p-5 ">
+
+        <div class="nameContainer text-[20em] w-full h-[350px] flex justify-center items-center bg-[#1B1B19] text-center opacity-90 select-none rounded-[15px] tracking-[5px]">
+          <p class="text-[#E2D9C8]">AYUSHMAN</p>
+        </div>
+        
+        <div id="punchlineSection" class="punchlineSection w-full flex flex-row p-10 gap-10 mt-5">
+
+          <div class="column1 flex flex-col w-1/2 h-full p-10 border-r-2 border-[#888]">
+            <div  class="text1">
+              <p class="text-[#1B1B19] text-[8em] font-extrabold">Full Stack</p>
+              <p class="text-[#1B1B19] text-[8em]">DEVELOPER!</p>
+            </div>
+            <div  class="image1 bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-[700px] w-full rounded-[15px] mt-5"></div>
+            <div class="description1">
+              <p class=" relative mt-10 [#1B1B19] text-[2em] tracking-[1px]">Discover the ancient wisdom of Ayurveda, delve into the practices of Yoga, and explore natural remedies for a healthier lifestyle.</p>
+            </div>
+            </div>
+            
+            <div class="column1 flex flex-col w-1/2 h-full">
+              <div class="image2 bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-[750px] w-full rounded-[15px] mt-5"></div>
+              <div class="col2text relative text2 mt-5 text-[4.8em]"> Developed Elixpo Art</div>
+              <div class="col2text relative text3 mt-5 text-[4.8em] "> 3x SOF NCO</div>
+              <div class="col2text relative text4 mt-5 text-[4em]"> DevOps - pollinations</div>
+              <div class="col2text relative text5 mt-5 text-[4em]"> GDG Web Dev Associate</div>
+              <div class="col2text relative text5 mt-5 text-[4em]"> 4x Hackathon Win</div>
+              </div>
+          </div>
+      </section>
+
+
+      <section id="websiteSection" class="websiteSection relative mt-[10px] w-full flex flex-col border-b-2 border-[#111] p-5 ">
+        <div class="websiteContainer flex flex-row items-center h-[250px] w-full mt-10 justify-between">
+          <div  class=" relative websiteTextContainer text-[16em] w-[70%] flex justify-center items-center h-[250px]  bg-[#1B1B19] text-center opacity-90 select-none rounded-[15px]">
+            <p class="text-[#E2D9C8] tracking-wide">WEBSITE</p>
+          </div>
+          <div class="stampImage bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-full w-[250px]"></div>
+      </div>
+
+      <div class="websiteInfoSection relative w-full flex flex-row p-5 mt-10">
+
+        <div  class="webCol1 w-[70%] flex flex-col gap-20 justify-around border-r-2 border-[#888] p-5">
+          <div class="webCol1Row1 flex flex-row w-full">
+
+                <div class="slide1 items-center flex flex-col p-5 border-r-2 border-[#888] mr-5">
+                  <div class="slide1Img bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-[200px] w-[400px]"></div>
+                  <p class="webCol1Row1Text1 text-[#1B1B19] text-left w-full text-[1.8em] mt-4">Designed By</p>
+                  <p class="webDescription1 relative flex text-[1.3em] text-left w-[400px] whitespace-normal break-words h-auto min-h-[30px]">
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui aliquid ex eum optio id earum, autem placeat culpa a nobis quo beatae et delectus non error iure ad dolores! Atque.
+                  </p>
+                </div>
+
+                <div class="slide2 items-center flex-col p-5 ml-5">
+                  <div class="slide2text1 text-[5em]">Future Plans</div>
+                  <div class="slide2description">
+                    <p class="webDescription2 relative flex text-[1.6em] text-left w-[350px] whitespace-normal break-words h-auto min-h-[30px]">
+                      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nostrum quasi magni atque accusantium veniam nemo commodi repellat, enim voluptates exercitationem asperiores incidunt quam neque. Exercitationem, quibusdam! Doloremque laborum qui asperiores?
+                    </p>
+                  </div>
+                </div>
+          </div>
+          <div class="webCol1Row2 flex bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-[800px] w-full p-10"></div>
+        </div>
+
+        <div class="webCol2 w-[30%] flex flex-col items-center gap-10 p-5">
+            <div class="webCol2text1 text-left w-full">
+              <div class="relative text-[#1B1B19] text-[4em] font-extrabold line-through">Wasting Time</div>
+              <div class="relative text-[#1B1B19] leading-[100px] text-[10em] font-extrabold">CODE</div>
+            </div>
+
+            <div class="webCol2Desc1">
+              <p class="webDescription3 relative flex text-[1.8em] text-left w-[350px] whitespace-normal break-words h-auto min-h-[30px]">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum architecto magni in eaque, eos quae, accusantium autem fugiat consequatur nisi, consectetur voluptates tenetur facere nemo sit tempore est unde optio.
+                <br>
+                <br>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Necessitatibus delectus natus rerum, earum expedita accusamus. Tempora perferendis voluptas dolorem officia incidunt at harum quia nulla, placeat necessitatibus vitae deserunt similique?
+                <br>
+                <br> 
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Necessitatibus delectus natus rerum, earum expedita accusamus.  
+              </p>
+            </div>
+        </div>
+      </div>
+      </section>
+
+
+      <section id="scrollZone" class="tectTracks">
+        
+      </section>
+
+
+      <section class="recommendationSection relative h-[450px] mb-[20px] pl-[40px] pr-[40px] box-border py-[40px] gap-[20px] overflow-x-auto overflow-y-hidden flex-nowrap flex flex-row">
+
+        <div class="recommendationCard shrink-0 relative h-[400px] w-[650px] border-4 border-[#222] rounded-[25px] bg-[#E2D9C8] p-5 justify-center items-center mr-5 cursor-pointer hover:brightness-[85%] transition-all duration-300 ease-in-out">
+          <div class="dottedContainer relative h-full w-full border-2 border-dashed border-[#222] rounded-[30px] flex flex-col gap-10 p-10">
+            <p class="quote text-[#333] text-[1.55em] whitespace-normal break-words underline decoration-1 decoration-[0.05rem] decoration-[#888] underline-offset-[6px]"> "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta adipisci culpa quas magnam aliquid exercitationem voluptates odio porro dolorum minima laborum, deleniti harum voluptatibus laudantium velit tenetur dolore blanditiis ipsam."</p>
+
+            <div class="attribution flex flex-row items-left gap-5 mt-5">
+              <div class="userLogo relative bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-[65px] w-[65px] border-2 border-[#222] rounded-[50%] grayscale sepia-[50%]"></div>
+              <div class="userInfo flex flex-col gap-1 leading-[30px]">
+                <div class="userName font-extrabold text-[2.5em] relative tracking-wide"> Ayush </div>
+                <div class="userDesig font-thin text-[2em] relative"> CEO, CTO - Elixpo </div>
+              </div>
+            </div>
+          </div> 
+        </div>
+
+        <div class="recommendationCard shrink-0 relative h-[400px] w-[650px] border-4 border-[#222] rounded-[25px] bg-[#E2D9C8] p-5 justify-center items-center mr-5 cursor-pointer hover:brightness-[85%] transition-all duration-300 ease-in-out">
+          <div class="dottedContainer relative h-full w-full border-2 border-dashed border-[#222] rounded-[30px] flex flex-col gap-10 p-10">
+            <p class="quote text-[#333] text-[1.55em] whitespace-normal break-words underline decoration-1 decoration-[0.05rem] decoration-[#888] underline-offset-[6px]"> "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta adipisci culpa quas magnam aliquid exercitationem voluptates odio porro dolorum minima laborum, deleniti harum voluptatibus laudantium velit tenetur dolore blanditiis ipsam."</p>
+            <div class="attribution flex flex-row items-left gap-5 mt-5">
+              <div class="userLogo relative bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-[65px] w-[65px] border-2 border-[#222] rounded-[50%] grayscale sepia-[50%]"></div>
+              <div class="userInfo flex flex-col gap-1 leading-[30px]">
+                <div class="userName font-extrabold text-[2.5em] relative tracking-wide"> Ayush </div>
+                <div class="userDesig font-thin text-[2em] relative"> CEO, CTO - Elixpo </div>
+              </div>
+            </div>
+          </div> 
+        </div>
+
+        <div class="recommendationCard shrink-0 relative h-[400px] w-[650px] border-4 border-[#222] rounded-[25px] bg-[#E2D9C8] p-5 justify-center items-center mr-5 cursor-pointer hover:brightness-[85%] transition-all duration-300 ease-in-out">
+          <div class="dottedContainer relative h-full w-full border-2 border-dashed border-[#222] rounded-[30px] flex flex-col gap-10 p-10">
+            <p class="quote text-[#333] text-[1.55em] whitespace-normal break-words underline decoration-1 decoration-[0.05rem] decoration-[#888] underline-offset-[6px]"> "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta adipisci culpa quas magnam aliquid exercitationem voluptates odio porro dolorum minima laborum, deleniti harum voluptatibus laudantium velit tenetur dolore blanditiis ipsam."</p>
+            <div class="attribution flex flex-row items-left gap-5 mt-5">
+              <div class="userLogo relative bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center h-[65px] w-[65px] border-2 border-[#222] rounded-[50%] grayscale sepia-[50%]"></div>
+              <div class="userInfo flex flex-col gap-1 leading-[30px]">
+                <div class="userName font-extrabold text-[2.5em] relative tracking-wide"> Ayush </div>
+                <div class="userDesig font-thin text-[2em] relative"> CEO, CTO - Elixpo </div>
+              </div>
+            </div>
+          </div> 
+        </div>
+
+      </section>
+
+      <section id="spotlight2" class="spotlight relative h-[350px] mb-[20px] pl-[40px] pr-[40px] box-border py-[40px] gap-[20px] overflow-x-auto overflow-y-hidden flex-nowrap flex flex-row">
+      </section>
+
+      <section class="contactMeWrapper overflow-hidden w-full border-y-2 border-[#111] mt-10 pt-5 pb-5 justify-center select-none overflow-y-hidden">
+        <div class="contactMe animate-scroll whitespace-nowrap flex flex-row gap-[10px] w-max">
+          <p class="contactMeText font-bold text-left text-[5em] text-[#1B1B19]"> Let's Collaborate Together!</p>
+          <div class="contactMeBox text-[5em] flex items-center justify-center p-2 bg-[#1B1B19] text-center opacity-90 select-none rounded-[8px] cursor-pointer">
+            <p class="text-[#E2D9C8] tracking-wide  leading-[100px] font-bold whitespace-nowrap">CONNECT WITH ME</p>
+          </div>
+          <p class="contactMeText font-bold text-left text-[5em] text-[#1B1B19]"> Let's Collaborate Together!</p>
+          <div class="contactMeBox text-[5em] flex items-center justify-center p-2 bg-[#1B1B19] text-center opacity-90 select-none rounded-[8px] cursor-pointer">
+            <p class="text-[#E2D9C8] tracking-wide  leading-[100px] font-bold whitespace-nowrap">CONNECT WITH ME</p>
+          </div>
+          <p class="contactMeText font-bold text-left text-[5em] text-[#1B1B19]"> Let's Collaborate Together!</p>
+        </div>
+      </section>
+      
+      <footer class="w-screen left-1/2 -translate-x-1/2 relative">
+        <div class="footerContent flex flex-row justify-around mt-5 h-[40px] w-full items-left">
+          <p class="footerName select-none text-[#111] text-[3em]"> ELIXPO </p>
+          <div class="socials flex flex-row gap-5 mt-5 h-full items-center">
+            <ion-icon name="logo-github" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+            <div class="spacer h-[10px] w-[10px] rounded-[50%] bg-[#111]"></div>
+            <ion-icon name="logo-linkedin" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+            <div class="spacer h-[10px] w-[10px] rounded-[50%] bg-[#111]"></div>
+            <ion-icon name="logo-instagram" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+            <div class="spacer h-[10px] w-[10px] rounded-[50%] bg-[#111]"></div>
+            <ion-icon name="logo-youtube" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+          </div>
+        </div>
+      </footer>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+  <script src="JS/scaleContainer.js" defer></script>
+  <script src="JS/spotlight.js" defer></script>
+  <script src="JS/scroll.js" defer></script>
+</body>
+
+
+</html>
