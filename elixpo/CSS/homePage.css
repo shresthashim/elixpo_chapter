@@ -164,7 +164,7 @@
 }
 
 .animate-scroll {
-  animation: scroll-horizontal 5s linear infinite;
+  animation: scroll-horizontal 10s linear infinite;
 }
 
 .footerName 
@@ -173,4 +173,15 @@
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+}
+.text1row1col1techTracks 
+{
+  font-family: "Canopee";
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 10px;
+}
+.descriptionRow2 
+{
+  font-family: "Pathway Gothic One", sans-serif; 
 }

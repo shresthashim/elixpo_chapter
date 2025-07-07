@@ -22,6 +22,20 @@
 
   <div id="appContainer" class="appContainer relative top-0 left-1/2 w-full max-w-[1440px] h-[calc(100vh-100px)] max-h-[calc(100vh-100px)]  overflow-y-auto overflow-x-hidden p-10" >
       <section id="spotlight" class="spotlight relative h-[350px] mb-[20px] pl-[40px] pr-[40px] box-border py-[40px] gap-[20px] overflow-x-auto overflow-y-hidden flex-nowrap flex flex-row">
+        <div class="featuredTile relative h-[350px] w-[450px] flex-shrink-0 flex flex-col items-center mt-[10px] border-r-2 border-[#888]">
+          <div class="featuredImage h-[150px] w-[90%] bg-red-500 bg-[url(https://assets.devfolio.co/hackathons/ee8d75f60f0a4acf85238eabdea1bad3/projects/1e1a3ed29b604714b3c85d14a16e6e2d/7417c82d-02e8-4110-9dcb-91f0aaeccd91.png)] bg-cover bg-center rounded-[12px]"></div>
+          <span class="featuredName relative w-full flex flex-row px-[20px] items-center justify-between box-border">
+              <p class="featureName text-left text-[1.5em]"> Elixpo Art  </p> 
+              
+              <span class="newTag relative flex h-[30px] text-[1.8em] text-[#ffc] bg-[#B63B12] items-center justify-center px-[2px] rounded-[5px] mt-[10px]"> 
+                  <p> NEW </p> 
+              </span>
+              
+          </span>
+          <p class="featuredDescription relative text-[1.35em] text-left px-[20px] whitespace-normal break-words w-full text-ellipsis overflow-hidden">
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illum quod velit aspernatur, praesentium illo molestiae recusandae doloremque non at, corpor...
+          </p>
+      </div>
       </section>
 
       <section class="introSection relative mt-[10px] w-full flex flex-col border-b-2 border-[#111] p-5 ">
@@ -109,13 +123,7 @@
       </div>
       </section>
 
-
-      <section id="scrollZone" class="tectTracks">
-        
-      </section>
-
-
-      <section class="recommendationSection relative h-[450px] mb-[20px] pl-[40px] pr-[40px] box-border py-[40px] gap-[20px] overflow-x-auto overflow-y-hidden flex-nowrap flex flex-row">
+      <section class="recommendationSection relative h-[450px] mb-[20px] pl-[40px] pr-[40px] box-border py-[40px] gap-[20px] overflow-x-auto overflow-y-hidden flex-nowrap flex flex-row mt-20">
 
         <div class="recommendationCard shrink-0 relative h-[400px] w-[650px] border-4 border-[#222] rounded-[25px] bg-[#E2D9C8] p-5 justify-center items-center mr-5 cursor-pointer hover:brightness-[85%] transition-all duration-300 ease-in-out">
           <div class="dottedContainer relative h-full w-full border-2 border-dashed border-[#222] rounded-[30px] flex flex-col gap-10 p-10">
@@ -159,8 +167,34 @@
 
       </section>
 
-      <section id="spotlight2" class="spotlight relative h-[350px] mb-[20px] pl-[40px] pr-[40px] box-border py-[40px] gap-[20px] overflow-x-auto overflow-y-hidden flex-nowrap flex flex-row">
+      <section id="scrollZone" class="tectTracks overflow-hidden w-full flex flex-col mt-10 pt-5 pb-5 justify-center select-none overflow-y-hidden">
+        <div class="row1 relative w-full flex flex-row gap-5">
+          <div class="row1col1 relative w-full flex flex-row gap-10 items-start h-[500px]">
+            <div class="image1row1col1techTracks w-1/2 h-full bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center"></div>
+            <p class="text1row1col1techTracks h-full flex items-center text-[#1B1B19] text-[13em] font-extrabold leading-[160px]">
+              THE <br> TECHY <br> SYNAPSE
+            </p>
+          </div>
+      
+          <div class="row1col2 relative w-full h-[500px] bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center"></div>
+        </div>
+        <div class="row2 flex flex-col w-full mt-10">
+          <div class="row2row1 flex flex-row w-full gap-10">
+            <div class="row1col2 relative w-[850px] h-[400px] border-2 border-[#222] bg-[url(https://4.img-dpreview.com/files/p/E~C667x0S5333x4000T1200x900~articles/3925134721/0266554465.jpeg)] bg-cover bg-center"></div>
+            <p class="text1row1col1techTracks h-full flex items-center text-[#1B1B19] text-[4em] leading-[75px] font-extrabold leading-[160px] text-left w-[95%]">
+             NEXT.js, BACKEND, POSTGRESS + MONGO, NODE -- TENSORFLOW + TORCH, NLP, ML-OPS -- DEV-OPS, CNCF, CI/CD, GIT-OPS , SYSTEM DESIGN -- IOT + AI
+            </p>
+          </div>
+          <div class="row2row2 flex flex-row w-full gap-10 mt-10">
+            <div  class=" relative websiteTextContainer text-[25em] w-[70%] flex justify-center items-center h-[450px]  bg-[#1B1B19] text-center opacity-90 select-none rounded-[15px]">
+              <p class="text-[#E2D9C8] tracking-wide font-extrabold">DEV-S</p>
+            </div>
+            <p class="descriptionRow2 w-[20%] text-[1.4em] opacity-90 text-[#333]"> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem voluptates molestiae provident? Iste delectus suscipit perferendis consectetur sit quos quia iure totam mollitia quo, repellat illum repellendus placeat natus nam. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit recusandae praesentium eveniet sapiente laboriosam magnam illum at animi ad eligendi assumenda quaerat, provident hic ea deserunt adipisci quasi tempora repellat?</p>
+          </div>
+        </div>
       </section>
+      
+      
 
       <section class="contactMeWrapper overflow-hidden w-full border-y-2 border-[#111] mt-10 pt-5 pb-5 justify-center select-none overflow-y-hidden">
         <div class="contactMe animate-scroll whitespace-nowrap flex flex-row gap-[10px] w-max">
