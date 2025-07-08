@@ -19,13 +19,15 @@
     font-style: normal;
 
 }
-
 .featuredImage {
-  background-size: 400px;
-  transition: background-size 0.8s;
+  background-size: 400px !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease;
 }
+
 .featuredImage:hover {
-  background-size: 450px;
+  background-size: 450px !important;
 }
 .featuredDescription
 {

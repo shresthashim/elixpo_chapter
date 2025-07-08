@@ -5,13 +5,13 @@ spotlightNews = [
         "title": "Elixpo Art ",
         "date": "2025-07-06",
         "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illum quod velit aspernatur, praesentium illo molestiae recusandae doloremque non at, corporis accusamus magni.",
-        "image": "https://assets.devfolio.co/hackathons/ee8d75f60f0a4acf85238eabdea1bad3/projects/1e1a3ed29b604714b3c85d14a16e6e2d/7417c82d-02e8-4110-9dcb-91f0aaeccd91.png"
+        "image": "../CSS/ASSESTS/spotlight/elixpo-art.png"
     },
     {
         "title": "Elixpo Hackathon",
         "date": "2025-02-06",
         "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illum quod velit aspernatur, praesentium illo molestiae recusandae doloremque non at, corporis accusamus magni laborum earum voluptatem perferendis id quia iste saepe.",
-        "image" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxQODlQzQbNgLm2nwDJhfW92kSWuohZF7CvQBJaG4mC2CyZax9gexKa2wAU7jJOP5-SQk&usqp=CAU"
+        "image": "../CSS/ASSESTS/spotlight/elixpo-hackathon.png"
     },
 ]
 
