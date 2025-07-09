@@ -19,14 +19,15 @@
     font-style: normal;
 
 }
-.featuredImage {
+
+.hoverScale {
   background-size: 400px !important;
   background-position: center;
   background-repeat: no-repeat;
   transition: background-size 0.25s ease;
 }
 
-.featuredImage:hover {
+.hoverScale:hover {
   background-size: 450px !important;
 }
 .featuredDescription

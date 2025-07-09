@@ -33,7 +33,7 @@ function appendNews(spotlightNews) {
   
       const newsTile = `
         <div class="featuredTile relative h-[350px] w-[400px] flex-shrink-0 flex flex-col items-center mt-[10px]">
-          <div class="featuredImage h-[150px] w-[90%] bg-[url(${news.image})] bg-cover bg-center rounded-[12px]"></div>
+          <div class="featuredImage hoverScale h-[150px] w-[90%] bg-[url(${news.image})] bg-cover bg-center rounded-[12px]"></div>
           <span class="featuredName relative w-full flex flex-row px-[20px] items-center justify-between box-border">
             <p class="featureName text-left text-[1.5em]"> ${news.title} </p> 
             ${isNew ? `
