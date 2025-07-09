@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+<link rel="stylesheet" href="../CSS/general.css" />
+<link rel="stylesheet" href="../CSS/projects.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Elixpo</title>
+</head>
+<body class="relative min-h-screen bg-white overflow-hidden">
+  <div class="absolute top-0 left-0 w-screen h-screen opacity-55 bg-[url('../CSS/paperTexture.jpg')] bg-contain bg-repeat bg-center brightness-[55%] sepia-[65%] "></div>
+   <div class="navBar static h-[80px] flex items-center justify-between border-b-2 border-[#888] px-[50px] box-border mb-[5px]">
+        <p class="location text-[1.5em]">WB,IN</p>
+        <p class="name text-[3em]"> Elixpo </p>
+        <ion-icon name="list"></ion-icon>
+      </div>
+
+    <div id="appContainer" class="appContainer relative top-0 mx-auto max-w-[1440px] h-[calc(100vh-100px)] max-h-[calc(100vh-100px)]  overflow-y-auto overflow-x-hidden p-10" >
+
+        <div class="headerTextContainer w-full p-2 flex h-[200px] flex-row justify-left gap-10">
+        <div class="projectsHeaderText text-[10em] w-1/2 flex justify-center items-center bg-[#1B1B19] text-center opacity-90 select-none rounded-[15px] tracking-[5px]">
+            <p class="text-[#E2D9C8]">PROJECTS</p>
+          </div>
+          <p class="w-1/2 relative flex-wrap break-words text-[#111] font-bold text-[1.5em]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa iusto eos illo assumenda enim est impedit corrupti delectus, exercitationem praesentium recusandae perferendis ipsum? Nobis repellat labore tempora aliquid eaque sequi.</p>
+        </div>
+        <div class="stampImageHolder absolute top-[150px] left-[42%] bg-[url(../CSS/ASSESTS/projects/stamp-2.png)] bg-center bg-cover h-[150px] w-[150px]"></div>
+
+        <section class="projectsContainer w-full mt-5 border-t-2 border-[#555] flex flex-col gap-10">
+
+            <div class="project w-full flex flex-col items-center justify-center gap-1">
+                <div class="nameStateStar px-5 flex flex-row justify-between items-center w-full">
+                    <p class="projectName font-extrabold text-[2.3em] text-[#222] underline cursor-pointer underline-offset-[6px] decoration-[#555] transition-[0.25s] hover:text-[#66460c] transition-[0.25s]">Elixpo AI Pollinations</p>
+
+                    <span class="newTag flex items-center gap-2 px-4 py-1 rounded-lg bg-[#66460c] shadow-lg">
+                        <p class="font-bold text-[1.1em] text-[#fff] tracking-wide drop-shadow">NEW</p>
+                        <ion-icon name="star" class="text-yellow-500 text-[1.5em] drop-shadow"></ion-icon>
+                        <p class="font-semibold text-[1.1em] text-[#fff]">5</p>
+                    </span>
+                </div>
+                <div class="projectOwner w-full px-5">
+                    <p class="text-[1em] text-[#555] font-semibold">from elixpo!</p>
+                </div>
+                <div class="projectDescription w-full px-5 flex flex-row justify-between">
+                    <p class="text-[1.2em] text-[#333] font-semibold w-[70%]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa iusto eos illo assumenda enim est impedit corrupti delectus, exercitationem praesentium recusandae perferendis ipsum? Nobis repellat labore tempora aliquid eaque sequi.</p>
+                    <div class="flex flex-col items-end justify-center w-[30%]">
+                        <svg width="180" height="60" viewBox="0 0 180 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline 
+                                fill="none" 
+                                stroke="#66460c" 
+                                stroke-width="3" 
+                                points="0,50 20,40 40,45 60,30 80,20 100,25 120,10 140,15 160,5 180,10" 
+                            />
+                            <circle cx="0" cy="50" r="3" fill="#2ea043"/>
+                            <circle cx="20" cy="40" r="3" fill="#2ea043"/>
+                            <circle cx="40" cy="45" r="3" fill="#2ea043"/>
+                            <circle cx="60" cy="30" r="3" fill="#2ea043"/>
+                            <circle cx="80" cy="20" r="3" fill="#2ea043"/>
+                            <circle cx="100" cy="25" r="3" fill="#2ea043"/>
+                            <circle cx="120" cy="10" r="3" fill="#2ea043"/>
+                            <circle cx="140" cy="15" r="3" fill="#2ea043"/>
+                            <circle cx="160" cy="5" r="3" fill="#2ea043"/>
+                            <circle cx="180" cy="10" r="3" fill="#2ea043"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="projectTags w-full px-5 mt-2 flex flex-row items-left justify-left gap-5">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="logo-css3" class="mr-1 text-[#ffd700]"></ion-icon>
+                        CSS
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="logo-react" class="mr-1 text-[#ffd700]"></ion-icon>
+                        REACT
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="star-outline" class="mr-1 text-[#ffd700]"></ion-icon>
+                        Open Source
+                    </span>
+                </div>
+            </div>
+            <div class="project w-full flex flex-col items-center justify-center gap-1">
+                <div class="nameStateStar px-5 flex flex-row justify-between items-center w-full">
+                    <p class="projectName font-extrabold text-[2.3em] text-[#222] underline cursor-pointer underline-offset-[6px] decoration-[#555] transition-[0.25s] hover:text-[#66460c] transition-[0.25s]">Elixpo AI Pollinations</p>
+
+                    <span class="newTag flex items-center gap-2 px-4 py-1 rounded-lg bg-[#66460c] shadow-lg">
+                        <p class="font-bold text-[1.1em] text-[#fff] tracking-wide drop-shadow">NEW</p>
+                        <ion-icon name="star" class="text-yellow-500 text-[1.5em] drop-shadow"></ion-icon>
+                        <p class="font-semibold text-[1.1em] text-[#fff]">5</p>
+                    </span>
+                </div>
+                <div class="projectOwner w-full px-5">
+                    <p class="text-[1em] text-[#555] font-semibold">from elixpo!</p>
+                </div>
+                <div class="projectDescription w-full px-5 flex flex-row justify-between">
+                    <p class="text-[1.2em] text-[#333] font-semibold w-[70%]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa iusto eos illo assumenda enim est impedit corrupti delectus, exercitationem praesentium recusandae perferendis ipsum? Nobis repellat labore tempora aliquid eaque sequi.</p>
+                    <div class="flex flex-col items-end justify-center w-[30%]">
+                        <svg width="180" height="60" viewBox="0 0 180 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline 
+                                fill="none" 
+                                stroke="#66460c" 
+                                stroke-width="3" 
+                                points="0,50 20,40 40,45 60,30 80,20 100,25 120,10 140,15 160,5 180,10" 
+                            />
+                            <circle cx="0" cy="50" r="3" fill="#2ea043"/>
+                            <circle cx="20" cy="40" r="3" fill="#2ea043"/>
+                            <circle cx="40" cy="45" r="3" fill="#2ea043"/>
+                            <circle cx="60" cy="30" r="3" fill="#2ea043"/>
+                            <circle cx="80" cy="20" r="3" fill="#2ea043"/>
+                            <circle cx="100" cy="25" r="3" fill="#2ea043"/>
+                            <circle cx="120" cy="10" r="3" fill="#2ea043"/>
+                            <circle cx="140" cy="15" r="3" fill="#2ea043"/>
+                            <circle cx="160" cy="5" r="3" fill="#2ea043"/>
+                            <circle cx="180" cy="10" r="3" fill="#2ea043"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="projectTags w-full px-5 mt-2 flex flex-row items-left justify-left gap-5">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="logo-css3" class="mr-1 text-[#ffd700]"></ion-icon>
+                        CSS
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="logo-react" class="mr-1 text-[#ffd700]"></ion-icon>
+                        REACT
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="star-outline" class="mr-1 text-[#ffd700]"></ion-icon>
+                        Open Source
+                    </span>
+                </div>
+            </div>
+            <div class="project w-full flex flex-col items-center justify-center gap-1">
+                <div class="nameStateStar px-5 flex flex-row justify-between items-center w-full">
+                    <p class="projectName font-extrabold text-[2.3em] text-[#222] underline cursor-pointer underline-offset-[6px] decoration-[#555] transition-[0.25s] hover:text-[#66460c] transition-[0.25s]">Elixpo AI Pollinations</p>
+
+                    <span class="newTag flex items-center gap-2 px-4 py-1 rounded-lg bg-[#66460c] shadow-lg">
+                        <p class="font-bold text-[1.1em] text-[#fff] tracking-wide drop-shadow">NEW</p>
+                        <ion-icon name="star" class="text-yellow-500 text-[1.5em] drop-shadow"></ion-icon>
+                        <p class="font-semibold text-[1.1em] text-[#fff]">5</p>
+                    </span>
+                </div>
+                <div class="projectOwner w-full px-5">
+                    <p class="text-[1em] text-[#555] font-semibold">from elixpo!</p>
+                </div>
+                <div class="projectDescription w-full px-5 flex flex-row justify-between">
+                    <p class="text-[1.2em] text-[#333] font-semibold w-[70%]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa iusto eos illo assumenda enim est impedit corrupti delectus, exercitationem praesentium recusandae perferendis ipsum? Nobis repellat labore tempora aliquid eaque sequi.</p>
+                    <div class="flex flex-col items-end justify-center w-[30%]">
+                        <svg width="180" height="60" viewBox="0 0 180 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline 
+                                fill="none" 
+                                stroke="#66460c" 
+                                stroke-width="3" 
+                                points="0,50 20,40 40,45 60,30 80,20 100,25 120,10 140,15 160,5 180,10" 
+                            />
+                            <circle cx="0" cy="50" r="3" fill="#2ea043"/>
+                            <circle cx="20" cy="40" r="3" fill="#2ea043"/>
+                            <circle cx="40" cy="45" r="3" fill="#2ea043"/>
+                            <circle cx="60" cy="30" r="3" fill="#2ea043"/>
+                            <circle cx="80" cy="20" r="3" fill="#2ea043"/>
+                            <circle cx="100" cy="25" r="3" fill="#2ea043"/>
+                            <circle cx="120" cy="10" r="3" fill="#2ea043"/>
+                            <circle cx="140" cy="15" r="3" fill="#2ea043"/>
+                            <circle cx="160" cy="5" r="3" fill="#2ea043"/>
+                            <circle cx="180" cy="10" r="3" fill="#2ea043"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="projectTags w-full px-5 mt-2 flex flex-row items-left justify-left gap-5">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="logo-css3" class="mr-1 text-[#ffd700]"></ion-icon>
+                        CSS
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="logo-react" class="mr-1 text-[#ffd700]"></ion-icon>
+                        REACT
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#66460c] text-[#fff] text-[0.95em] font-medium border border-[#e2d9c8]">
+                        <ion-icon name="star-outline" class="mr-1 text-[#ffd700]"></ion-icon>
+                        Open Source
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="contactMeWrapper overflow-hidden w-full border-y-2 border-[#111] mt-10 pt-5 pb-5 justify-center select-none overflow-y-hidden">
+            <div class="contactMe animate-scroll whitespace-nowrap flex flex-row gap-[10px] w-max">
+              <p class="contactMeText font-bold text-left text-[5em] text-[#1B1B19]"> Let's Collaborate Together!</p>
+              <div class="contactMeBox text-[5em] flex items-center justify-center p-2 bg-[#1B1B19] text-center opacity-90 select-none rounded-[8px] cursor-pointer">
+                <p class="text-[#E2D9C8] tracking-wide  leading-[100px] font-bold whitespace-nowrap">CONNECT WITH ME</p>
+              </div>
+              <p class="contactMeText font-bold text-left text-[5em] text-[#1B1B19]"> Let's Collaborate Together!</p>
+              <div class="contactMeBox text-[5em] flex items-center justify-center p-2 bg-[#1B1B19] text-center opacity-90 select-none rounded-[8px] cursor-pointer">
+                <p class="text-[#E2D9C8] tracking-wide  leading-[100px] font-bold whitespace-nowrap">CONNECT WITH ME</p>
+              </div>
+              <p class="contactMeText font-bold text-left text-[5em] text-[#1B1B19]"> Let's Collaborate Together!</p>
+            </div>
+          </section>
+
+          <footer class="w-screen left-1/2 -translate-x-1/2 relative">
+            <div class="footerContent flex flex-row justify-around mt-5 h-[40px] w-full items-left">
+              <p class="footerName select-none text-[#111] text-[3em]"> ELIXPO </p>
+              <div class="socials flex flex-row gap-5 mt-5 h-full items-center">
+                <ion-icon name="logo-github" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+                <div class="spacer h-[10px] w-[10px] rounded-[50%] bg-[#111]"></div>
+                <ion-icon name="logo-linkedin" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+                <div class="spacer h-[10px] w-[10px] rounded-[50%] bg-[#111]"></div>
+                <ion-icon name="logo-instagram" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+                <div class="spacer h-[10px] w-[10px] rounded-[50%] bg-[#111]"></div>
+                <ion-icon name="logo-youtube" class="socialIcon text-[2em] cursor-pointer hover:rotate-[10deg] transition-[0.25s]"></ion-icon>
+              </div>
+            </div>
+          </footer>
+    </div>
+    </body>
+    </html>

@@ -198,3 +198,10 @@
 {
   font-family: "Pathway Gothic One", sans-serif; 
 }
+.visitCircle 
+{
+  font-family: "Bitcount Grid Double", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
