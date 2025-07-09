@@ -57,3 +57,33 @@
 .animate-scroll {
   animation: scroll-horizontal 10s linear infinite;
 }
+
+#above-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.5s ease-in-out;
+}
+
+
+.menuItem 
+{
+  text-align: center;
+  letter-spacing: -.05em;
+  text-transform: uppercase;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: Canopee, sans-serif;
+  font-size: 5em;
+  font-weight: 400;
+
+}
+.menuItem.selected 
+{
+  color: #96B59F;
+  text-decoration: underline;
+}

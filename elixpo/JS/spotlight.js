@@ -1,6 +1,6 @@
 
 
-spotlightNews = [
+let spotlightNews = [
     {
         "title": "Elixpo Art ",
         "date": "2025-07-06",
@@ -78,4 +78,8 @@ window.onload = function() {
     // if (appContainer) {
     //     appContainer.scrollTop = appContainer.scrollHeight;
     // }
+    
 }
+
+
+

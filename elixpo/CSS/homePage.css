@@ -205,3 +205,24 @@
   font-weight: 400;
   font-style: normal;
 }
+.hidden
+{
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+
+/* canvas {
+  height: 100% !important;
+  width: 100% !important;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  right: 0%;
+  left: 0%;
+  pointer-events: none; 
+  opacity: 0; 
+  z-index: 10; 
+} */
