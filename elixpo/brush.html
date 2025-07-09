@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Brush Reveals Torn Paper Effect</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: #1d3557; /* Initial background color */
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    /* Canvas starts transparent and will be faded in/out by GSAP */
+    canvas {
+      height: 100% !important;
+      width: 100% !important;
+      position: absolute;
+      top: 0%;
+      bottom: 0%;
+      right: 0%;
+      left: 0%;
+      pointer-events: none; /* Initially no pointer events, canvas is just a visual layer */
+      opacity: 1; /* Canvas itself is always opaque in terms of CSS */
+      z-index: 10; /* Make sure canvas is above revealed-section but below initial-content */
+    }
+
+    #initial-content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 11; /* Above canvas (z-index 10) and revealed-section (z-index 5) */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      background: #1d3557; /* Matches body background */
+      transition: opacity 0.5s ease-in-out;
+      pointer-events: auto; /* Allow initial-content to receive pointer events */
+    }
+
+    button {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background: #f2ce74;
+      border: none;
+      border-radius: 8px;
+      margin-top: 2rem;
+      color: #1d3557;
+      font-weight: bold;
+      position: relative;
+      z-index: 12; /* HIGHER than initial-content to ensure clickability if it overlaps */
+      pointer-events: auto;
+    }
+
+    #revealed-section {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 5; /* Behind canvas (z-index 10) but above anything that might be below initial-content */
+      color: #f1faee;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 2rem;
+      opacity: 0; /* Starts hidden, will be faded in by GSAP */
+      transition: opacity 1.2s ease-out; /* Keeping a CSS transition for consistency for now */
+      background: #457b9d; /* Changed from rgba(0,0,0,0.3) to match shader revealed background */
+      pointer-events: none; /* Initially no pointer events */
+    }
+
+    #revealed-section button { /* Style for button on revealed section */
+        background: #f1faee;
+        color: #457b9d;
+        margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="above-canvas"></canvas> 
+
+  <!-- Initial content and trigger -->
+  <div id="initial-content">
+    <h1>Brush reveals torn paper!</h1>
+    <p>Click below to see the effect.</p>
+    <button id="triggerBtn">Start Transition</button>
+  </div>
+
+  <!-- Content that appears AFTER the brush stroke reveals it -->
+  <div id="revealed-section">
+    <h2>📜 Revealed Paper! 🖌️</h2>
+    <p>This text is overlaid on the torn paper effect.</p>
+    <p>The canvas makes the tear and the paint!</p>
+    <button id="revertBtn">Revert</button>
+  </div>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Paper Curtain Effect (now brush effect) -->
+  <script type="module">
+    import LiquidPaintEffect from "./curtain2.js"; // Point to your updated JS file
+
+    const canvas = document.querySelector("#above-canvas");
+    const triggerBtn = document.querySelector("#triggerBtn");
+    const revertBtn = document.querySelector("#revertBtn"); // Get the new revert button
+    const initialContent = document.querySelector("#initial-content");
+    const revealedSection = document.querySelector("#revealed-section");
+
+    const TRANSITION_DURATION = 3.5; 
+    const CANVAS_FADE_DURATION = 1.0; 
+    const BRUSH_INITIAL_SWEEP_DURATION = 1.5; 
+
+    if (canvas.width === 0 || canvas.height === 0) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    const isHorizontal = true; 
+    const initialProgressValue = isHorizontal ? 0 : 0; // Off-screen for sweep-in
+    const coveredProgressValue = isHorizontal ? 1 : 1; // Fully covered
+    const revealedProgressValue = isHorizontal ? 0 : 1; // Fully revealed
+
+    const paperCurtainEffect = new LiquidPaintEffect(canvas, {
+      color: "#1d3557",      // This is the color of the "brush" that moves away (matches initial-content background)
+      background: "#457b9d", // This is the color that *gets revealed* as the brush moves (matches #revealed-section background)
+      backgroundOpacity: 1, 
+      ease: "power3.inOut",
+      duration: TRANSITION_DURATION,
+      horizontal: isHorizontal, 
+      amplitude: 0.2, 
+      paintNoiseFrequency: 6.0, 
+      paintNoiseAmplitude: 0.05, 
+      flowCurveFrequency: 1.5, 
+      flowCurveAmplitude: 0.05,
+      initialProgress: initialProgressValue, // Start brush off-screen
+      brushInitialOpacity: 0 // Start brush transparent
+    });
+
+    // Initial sweep-in animation of the brush (from off-screen to covering the canvas)
+    // This animation sets the initial state of the canvas before any user interaction.
+    gsap.timeline()
+        .to(paperCurtainEffect.curtain.uniforms.uProgress, {
+            value: coveredProgressValue, // Sweep to fully covered
+            duration: BRUSH_INITIAL_SWEEP_DURATION,
+            ease: "power2.out",
+            delay: 0.2 // Small delay before sweep begins
+        }, 0)
+        .to(paperCurtainEffect.curtain.uniforms.uBrushOpacity, {
+            value: 1,
+            duration: BRUSH_INITIAL_SWEEP_DURATION * 0.8, // Slightly faster fade
+            ease: "power2.out",
+            delay: 0.3 // Small delay before fade begins
+        }, 0);
+
+
+    triggerBtn.addEventListener("click", () => {
+      triggerBtn.style.pointerEvents = 'none'; // Disable trigger button
+      revertBtn.style.pointerEvents = 'none'; // Temporarily disable revert button during forward animation
+
+      const forwardTl = gsap.timeline();
+
+      // 1. Hide initial content
+      forwardTl.to(initialContent, {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          initialContent.style.opacity = '0'; 
+          initialContent.style.pointerEvents = 'none'; 
+        }
+      }, 0); 
+
+      // 2. Start the main brush stroke animation (revealing the background)
+      forwardTl.call(() => {
+        paperCurtainEffect.in(); // Tweens uProgress from `coveredProgressValue` to `revealedProgressValue`
+      }, null, 0.5); 
+
+      // 3. Fade in the new DOM content (revealedSection)
+      forwardTl.to(revealedSection, {
+        opacity: 1,
+        duration: TRANSITION_DURATION * 0.6, 
+        ease: "power3.out",
+        onStart: () => {
+            revealedSection.style.display = 'flex'; 
+            revealedSection.style.pointerEvents = 'all';
+        }
+      }, `+=${TRANSITION_DURATION * 0.4}`); 
+
+      // 4. Fade out the brush content itself AND animate its progress to "off-screen" to morph it away
+      forwardTl.to(paperCurtainEffect.curtain.uniforms.uProgress, {
+        value: initialProgressValue, // Animate brush to its "off-screen" state (e.g., 0 for horizontal)
+        duration: CANVAS_FADE_DURATION * 1.5, 
+        ease: "power2.inOut",
+      }, `-=${CANVAS_FADE_DURATION * 1.2}`); 
+
+      forwardTl.to(paperCurtainEffect.curtain.uniforms.uBrushOpacity, {
+        value: 0,
+        duration: CANVAS_FADE_DURATION, 
+        ease: "power2.in",
+        onComplete: () => {
+          canvas.style.opacity = '0'; 
+          canvas.style.pointerEvents = 'none'; 
+          revertBtn.style.pointerEvents = 'auto'; // Re-enable revert button
+        }
+      }, `-=${CANVAS_FADE_DURATION}`); 
+    });
+
+    revertBtn.addEventListener("click", () => {
+        revertBtn.style.pointerEvents = 'none'; // Disable revert button
+        triggerBtn.style.pointerEvents = 'none'; // Temporarily disable trigger button during reverse animation
+
+        const reverseTl = gsap.timeline();
+
+        // 1. Ensure canvas is visible (even if its opacity is 0, it needs to render)
+        // And reset its internal opacity to 0 to begin the fade-in of the brush.
+        reverseTl.set(canvas, { opacity: 1, pointerEvents: 'auto' }, 0); // Make canvas CSS visible again
+
+        // 2. Animate brush back to "covered" state and fade it in
+        reverseTl.to(paperCurtainEffect.curtain.uniforms.uProgress, {
+            value: coveredProgressValue, // Sweep back to covered
+            duration: TRANSITION_DURATION * 0.8,
+            ease: "power2.out"
+        }, 0);
+
+        reverseTl.to(paperCurtainEffect.curtain.uniforms.uBrushOpacity, {
+            value: 1, // Fade brush back in
+            duration: CANVAS_FADE_DURATION * 0.8,
+            ease: "power2.out"
+        }, 0.2); // Start slightly after progress starts
+
+        // 3. Fade out revealed content
+        reverseTl.to(revealedSection, {
+            opacity: 0,
+            duration: 0.5,
+            ease: "power2.inOut",
+            onComplete: () => {
+                revealedSection.style.opacity = '0';
+                revealedSection.style.pointerEvents = 'none';
+
+            }
+        }, TRANSITION_DURATION * 0.3); // Start fading revealed section out while brush comes back
+
+        // 4. Fade in initial content
+        reverseTl.to(initialContent, {
+            opacity: 1,
+            duration: 0.5,
+            ease: "power2.inOut",
+            onStart: () => {
+                initialContent.style.display = 'flex'; // Make initial content visible
+                initialContent.style.pointerEvents = 'all'; // Allow pointer events again
+            },
+            onComplete: () => {
+                triggerBtn.style.pointerEvents = 'auto'; // Re-enable trigger button
+            }
+        }, TRANSITION_DURATION * 0.6); // Start fading initial content in
+    });
+
+  </script>
+</body>
+</html>
