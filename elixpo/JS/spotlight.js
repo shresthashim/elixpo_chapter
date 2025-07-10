@@ -116,14 +116,14 @@ function appendNews(spotlightNews) {
   
 window.onload = function() {
     appendNews(spotlightNews);
-    // const appContainer = document.getElementById('appContainer');
-    // const punchlineSection = document.getElementById('scrollZone');
-    // if (appContainer && punchlineSection) {
-    //     const appRect = appContainer.getBoundingClientRect();
-    //     const punchlineRect = punchlineSection.getBoundingClientRect();
-    //     const top = punchlineRect.top - appRect.top + appContainer.scrollTop;
-    //     appContainer.scrollTo({ top, behavior: 'smooth' });
-    // }
+    const appContainer = document.getElementById('appContainer');
+    const punchlineSection = document.getElementById('scrollZone');
+    if (appContainer && punchlineSection) {
+        const appRect = appContainer.getBoundingClientRect();
+        const punchlineRect = punchlineSection.getBoundingClientRect();
+        const top = punchlineRect.top - appRect.top + appContainer.scrollTop;
+        appContainer.scrollTo({ top, behavior: 'smooth' });
+    }
     // const appContainer = document.getElementById('appContainer');
     // if (appContainer) {
     //     appContainer.scrollTop = appContainer.scrollHeight;
