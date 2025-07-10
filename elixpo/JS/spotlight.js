@@ -83,3 +83,6 @@ window.onload = function() {
 
 
 
+document.getElementById("projectsRedirect").addEventListener("click", function() {
+  redirectTo("projects");
+});

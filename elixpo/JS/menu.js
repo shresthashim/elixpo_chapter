@@ -303,3 +303,7 @@ async function handleMenuRedirect(target) {
     e.preventDefault();
     handleMenuRedirect("publications");
   });
+
+  document.getElementById("rootRedirect").addEventListener("click", function() {
+    redirectTo("");
+  });
