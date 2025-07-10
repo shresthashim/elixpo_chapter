@@ -1,4 +1,4 @@
-const GITHUB_TOKEN = 'github_pat_11ARW4BCA0B6alMGwUIEuT_EtcyeRg16TiDw9mRG4IZCgACmRXByNoFNlT62BLU5AKAFRUOP55xxxxxxxxxxx'; 
+const GITHUB_TOKEN = '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'; 
 
 
 async function fetchGitHubData(projectURL) {
