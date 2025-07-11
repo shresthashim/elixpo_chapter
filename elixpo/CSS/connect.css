@@ -1,0 +1,38 @@
+.headingText 
+{
+    font-family: "Canopee", system-ui;
+}
+.descriptionText 
+{
+    font-family: "Pathway Gothic One", sans-serif;
+    
+}
+.emailText 
+{
+    font-family: "Pathway Gothic One", sans-serif;
+}
+#name:focus {
+    background-size: cover;
+    background-repeat: repeat;
+    animation: shine-brown 1.2s linear infinite;
+}
+#name::placeholder
+{
+    color: #888;
+}
+.emailProvoke 
+{
+    font-family: "Pathway Gothic One", sans-serif;
+}
+.submitButton 
+{
+    font-family: "Pathway Gothic One", sans-serif;
+}
+@keyframes shine-brown {
+    0% {
+        background-position-x: 0;
+    }
+    100% {
+        background-position-x: 200px;
+    }
+}
