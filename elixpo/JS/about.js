@@ -171,4 +171,7 @@ function appendNews(spotlightNews) {
   
 window.onload = function() {
     appendNews(spotlightNews);
+    document.getElementById("publicationVisit").addEventListener("click", function() {
+      redirectTo("publications")
+    });
 }
