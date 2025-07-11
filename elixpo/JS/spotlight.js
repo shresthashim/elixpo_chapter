@@ -4,25 +4,25 @@ let spotlightNews = [
     {
         "title": "Elixpo Art ",
         "date": "2025-07-06",
-        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illum quod velit aspernatur, praesentium illo molestiae recusandae doloremque non at, corporis accusamus magni.",
+        "description": "A vanilla project, which integartes generative AI and art. It is a simple project that allows users to generate art using AI models. Basically an advanced TEXT2IMAGE Generator, available across all platforms",
         "image": "../CSS/ASSESTS/spotlight/elixpo-art.png"
     },
     {
         "title": "Elixpo Hackathon",
         "date": "2025-02-06",
-        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illum quod velit aspernatur, praesentium illo molestiae recusandae doloremque non at, corporis accusamus magni laborum earum voluptatem perferendis id quia iste saepe.",
+        "description": "Hexafalls Hackathon was organized by JIS University, where I was a core-member of the organizing committee. The event was a great success, with over 300 participants and 60+ projects submitted. It was a great experience to be a part of such a large event.",
         "image": "../CSS/ASSESTS/spotlight/elixpo-hackathon.png"
     },
     {
       "title" : "Langchain Based Search",
       "date" : "2025-04-06",
-      "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum quod velit aspernatur, praesentium illo molestiae recusandae doloremque non at, corporis accusamus magni laborum earum voluptatem perferendis id quia iste saepe.",
+      "description" : "Built on the part of Pollinations to leverage the searching algorithm for the LLMs. It can search the web dynamically using different techniques of searching and indexing, and parsing the request through an LLM for NLP.",
       "image" : "../CSS/ASSESTS/spotlight/elixpoSearchPicture.png"
     },
     {
       "title" : "ASCII Terminal Art",
       "date" : "2025-04-06",
-      "description" : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum quod velit aspernatur, praesentium illo molestiae recusandae doloremque non at, corporis accusamus magni laborum earum voluptatem perferendis id quia iste saepe.",
+      "description" : "This is a fun project built to display media on the terminal using ASCII art. It uses a simple algorithm to convert images into ASCII art and display them on the terminal. It is a fun project to showcase the power of ASCII art and how it can be used to display media in a different way.",
       "image" : "../CSS/ASSESTS/spotlight/asciiArt.png"
     }
 ]
