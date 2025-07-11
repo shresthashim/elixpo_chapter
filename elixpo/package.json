@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
@@ -7,5 +8,14 @@
     "nodemailer": "^7.0.5",
     "nodemon": "^3.1.10"
   },
-  "type": "module"
+  "devDependencies": {
+    "lite-server": "^2.6.1",
+    "concurrently": "^8.2.0"
+  },
+  "scripts": {
+    "frontend": "lite-server",
+    "backend": "vercel dev",
+    "dev": "concurrently \"npm:frontend\" \"npm:backend\"",
+    "deploy": "vercel --prod"
+  }
 }

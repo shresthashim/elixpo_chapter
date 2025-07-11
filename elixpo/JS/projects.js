@@ -1,5 +1,5 @@
 async function fetchGitHubData(projectURL) {
-    const response = await fetch('http://127.0.0.1:3004/github', {
+    const response = await fetch('/api/github', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
