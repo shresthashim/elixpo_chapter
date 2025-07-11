@@ -39,7 +39,15 @@ async function fetchGitHubData(projectURL) {
 }
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:3000',
+        'http://localhost',
+        'https://me.elixpo.com',
+        'https://www.me.elixpo.com',
+        'https://elixpo.com'
+    ]
+}));
 app.use(express.json());
 
 app.post('/github', async (req, res) => {
