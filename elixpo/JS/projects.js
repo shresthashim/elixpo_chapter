@@ -1,35 +1,15 @@
-const GITHUB_TOKEN = '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'; 
-
-
 async function fetchGitHubData(projectURL) {
-    const [owner, repo] = projectURL.replace("https://github.com/", "").split("/");
-
-    const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+    const response = await fetch('http://127.0.0.1:3004/github', {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
-            Accept: "application/vnd.github+json"
-        }
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ projectURL })
     });
-    const repoData = await repoResponse.json();
-    console.log(repoData);
-
-    const contributorsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contributors`, {
-        headers: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
-        }
-    });
-    const contributors = await contributorsRes.json();
-
-    return {
-        name: repoData.name,
-        description: repoData.description,
-        stars: repoData.stargazers_count,
-        topics: repoData.topics,
-        owner: repoData.owner.login,
-        contributors: contributors.slice(0, 10),
-        url: repoData.html_url,
-        ownerLogo: repoData.owner.avatar_url
-    };
+    if (!response.ok) {
+        throw new Error('Failed to fetch GitHub data');
+    }
+    return await response.json();
 }
 
 function generateSVGGraph(contributions = 15) {
@@ -111,13 +91,16 @@ async function loadProjectTiles() {
         }, 
     ]
     for (let project of projects) {
-        const data = await fetchGitHubData(project.projectURL);
-        const html = renderProjectTile(data);
-        container.innerHTML += html;
+        try {
+            const data = await fetchGitHubData(project.projectURL);
+            const html = renderProjectTile(data);
+            container.innerHTML += html;
+        } catch (err) {
+            container.innerHTML += `<div class="project-error">Failed to load project: ${project.projectURL}</div>`;
+        }
     }
 }
 function redirectToProject(url) {
- location.href = url;
-  
+    location.href = url;
 }
 loadProjectTiles();
