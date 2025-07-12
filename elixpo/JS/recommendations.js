@@ -10,6 +10,12 @@ let recommendations = [
     "name" : "Dr. Bidisha Bhabani",
     "designation" : "Assistant Professor in JIS University",
     "image": "https://media.licdn.com/dms/image/v2/D5603AQFVTKreK1ABIQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1705933823066?e=1757548800&v=beta&t=jFjbixOgOp3mHwFuXO2DwsfrKjCiUWhHcWdULp2PqzA"
+    },
+    {
+      "content" : "I worked with Ayushman on the Pollinations project where he contributed to our search infrastructure and API documentation. He implemented reliable fallback systems, maintained key services, and took initiative on additional improvements that benefited the project.",
+      "name" : "Thomash Haferlach",
+      "designation" : "Beekeeper at Pollinations.AI",
+      "image": "https://media.licdn.com/dms/image/v2/D4D03AQH5H0wOkQnXaw/profile-displayphoto-shrink_100_100/B4DZcWBd8cGcAU-/0/1748421173392?e=1757548800&v=beta&t=WMeW8gSGXG_h_CLv3B4kWaYrj1E2CXyeY5FYE5Govko"
     }
 ]
 
