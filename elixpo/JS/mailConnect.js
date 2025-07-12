@@ -19,7 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Sending...";
 
         try {
-            const res = await fetch("http://localhost:3002/api/mail", {
+            const apiUrl = location.hostname === "localhost"
+                ? "http://localhost:3002/api/mail"
+                : "/api/mail";
+            const res = await fetch(apiUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, message })

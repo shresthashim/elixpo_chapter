@@ -1,5 +1,7 @@
 async function fetchGitHubData(projectURL) {
-    const response = await fetch('http://localhost:3002/api/github', {
+    const isLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    const apiUrl = isLocalhost ? "http://localhost:3002/api/github" : "/api/github";
+    const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
