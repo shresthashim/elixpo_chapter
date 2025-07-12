@@ -9,14 +9,15 @@
     "nodemon": "^3.1.10"
   },
   "devDependencies": {
-    "lite-server": "^2.6.1",
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "connect-history-api-fallback": "^2.0.0",
+    "lite-server": "^2.6.1"
   },
   "scripts": {
     "frontend": "lite-server",
-    "backend": "vercel dev",
-    "dev": "concurrently \"npm:frontend\" \"npm:backend\"",
+    "backend": "vercel dev --listen 3002",
+    "dev": "concurrently  \"npm run backend\" \"npm run frontend\"",
     "deploy": "vercel --prod"
   }
+
 }
-  

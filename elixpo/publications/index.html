@@ -35,7 +35,11 @@
                   <div id="publicationsMenu" class="menuItem cursor-pointer opacity-0 font-extrabold text-[4em] leading-[120px] hover:scale-105 hover:tracking-[0.03em] transition-all duration-300 text-center uppercase mt-0 mb-0 tracking-[-0.05em] font-[Canopee,sans-serif]">Publications</div>
           
             </div>
-      
+            <div id="toastNotification" class="fixed bottom-8 right-8 z-[100] flex items-center gap-3 px-6 py-4 rounded-lg shadow-lg text-[#1B1B19] bg-[#E2D9C8] border border-[#c8c1ae] opacity-0 pointer-events-none transition-all duration-500">
+              <ion-icon name="checkmark-circle" class="text-[2em] text-[#ffc300]"></ion-icon>
+              <span class="font-bold text-[1.1em]">This is a toast notification!</span>
+            </div>
+            
         <div id="appContainer" class="appContainer relative top-0 mx-auto w-full max-w-[1440px] h-[calc(100vh-100px)] max-h-[calc(100vh-100px)]  overflow-y-auto overflow-x-hidden p-10" >
             <section class="introSection mt-5 px-10 flex flex-col items-center w-full">
                 <div class="headingText text-[14em] lg:text-[12em] w-full h-[350px] flex justify-center items-center bg-[#1B1B19] text-center opacity-90 select-none rounded-[15px] tracking-[5px]">
@@ -93,6 +97,7 @@
         <script type="module" src="../JS/menu.js" defer></script>
         <script src="../JS/scroll.js" ></script>
         <script src="../JS/publications.js" ></script>
+        <script src="../JS/notification.js"></script>
         <script src="../JS/footer.js"></script>
 </body>
 </html>

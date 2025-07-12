@@ -25,7 +25,7 @@ function renderPublications(publications) {
                             <p> NEW </p> 
                         </span>
                     ` : ''}
-                    <ion-icon name="caret-forward" class="text-[2em] p-2 border-2 border-dashed border-[#222] rounded-[50%] cursor-pointer hover:rotate-[25deg] transition-[0.25s]"></ion-icon>
+                    <ion-icon name="caret-forward" class="text-[2em] p-2 border-2 border-dashed border-[#222] rounded-[50%] cursor-pointer hover:rotate-[25deg] transition-[0.25s]" onclick="showPaper()"></ion-icon>
                 </div>
             </div>
         `;
@@ -36,3 +36,8 @@ function renderPublications(publications) {
 window.onload = function() {
     renderPublications(publications);
 };
+
+function showPaper() 
+{
+    showToast("Paper details coming soon!", 3000);
+}

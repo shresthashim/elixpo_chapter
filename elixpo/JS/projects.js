@@ -1,5 +1,5 @@
 async function fetchGitHubData(projectURL) {
-    const response = await fetch('/api/github', {
+    const response = await fetch('http://localhost:3002/api/github', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -40,7 +40,7 @@ function renderProjectTile(data) {
     const graphSVG = generateSVGGraph(data.contributors.length);
 
     return `
-    <div class="project w-full flex flex-col items-center justify-center gap-1">
+    <div class="project w-full flex flex-col items-center justify-center gap-1 border-b-2 border-[#222] pb-5">
         <div class="nameStateStar px-5 flex flex-row justify-between items-center w-full">
             <p class="projectName font-extrabold text-[2.3em] text-[#222] underline cursor-pointer underline-offset-[6px] decoration-[#555] transition-[0.25s] hover:text-[#66460c]" onclick="redirectToProject('${data.url}')">
                 ${data.name}
@@ -101,6 +101,6 @@ async function loadProjectTiles() {
     }
 }
 function redirectToProject(url) {
-    location.href = url;
+    window.open(url, '_blank');
 }
 loadProjectTiles();

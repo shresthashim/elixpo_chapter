@@ -32,7 +32,7 @@ const workExpSection = document.getElementById('workExperience');
 workExperiences.forEach(exp => {
 
     let workExperienceTile = `
-        <div class="workExperienceCard shrink-0 relative h-[550px] w-[550px] border-4 border-[#222] rounded-[25px] bg-[#E2D9C8] p-5 justify-center items-center mr-5 cursor-pointer brightness-[65%] hover:brightness-[85%] transition-all duration-300 ease-in-out">
+        <div class="workExperienceCard shrink-0 relative h-[550px] w-[550px] border-4 border-[#222] rounded-[25px] bg-[#E2D9C8] p-5 justify-center items-center mr-5 cursor-grabbing brightness-[65%] hover:brightness-[85%] transition-all duration-300 ease-in-out">
         <div class="dottedContainer relative h-full w-full border-2 border-dashed border-[#222] rounded-[30px] flex flex-col gap-5 p-10">
         <div class="workInformation flex flex-row items-left gap-5 mt-5">
             <div class="userInfo flex flex-col gap-1 leading-[30px]">
@@ -51,6 +51,36 @@ workExperiences.forEach(exp => {
 });
 
 
+let isDown = false;
+let startX;
+let scrollLeft;
+
+if (workExpSection) {
+  workExpSection.addEventListener('mousedown', (e) => {
+    isDown = true;
+    workExpSection.classList.add('active');
+    startX = e.pageX - workExpSection.offsetLeft;
+    scrollLeft = workExpSection.scrollLeft;
+  });
+
+  workExpSection.addEventListener('mouseleave', () => {
+    isDown = false;
+    workExpSection.classList.remove('active');
+  });
+
+  workExpSection.addEventListener('mouseup', () => {
+    isDown = false;
+    workExpSection.classList.remove('active');
+  });
+
+  workExpSection.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - workExpSection.offsetLeft;
+    const walk = (x - startX) * 1.5; // scroll-fast
+    workExpSection.scrollLeft = scrollLeft - walk;
+  });
+}
 
 
 
