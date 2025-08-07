@@ -26,7 +26,7 @@ wav = model.inference(
     prompt_speech_path=prompt_audio,
     prompt_text=prompt_text,
     gender="female",
-    pitch="neutral",
+    pitch="moderate",
     speed="moderate"
 )
 
