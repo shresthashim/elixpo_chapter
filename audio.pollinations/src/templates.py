@@ -22,6 +22,7 @@ def create_speaker_chat(
 (
 "Generate audio following instruction.\n\n"
 <|scene_desc_start|>\n
+"SPEAKER: MODERATE, BOLD, MASCULINE, PACED VOICE WITH EMOTIONS"\n
 "Speak at a moderate pace — not too slow, not rushed. \n
 Include natural breathing, small pauses, and even ‘hmm’s when it fits, so it feels real. \n
 Build suspense dynamically — speed up or slow down when the moment calls for it. If there’s tension, let the listener feel it; if it’s joyful, let that energy shine through. \n
