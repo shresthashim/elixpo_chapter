@@ -1,4 +1,4 @@
 *.env
 __pycache__/
-sparkenv/
+higgs_audio_env/
 pretrained_models/
