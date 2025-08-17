@@ -6,10 +6,8 @@ from loguru import logger
 from utility import normalize_text
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 higgs_engine: Optional[HiggsAudioServeEngine] = None
-
 
 def create_speaker_chat(
     text: str,
@@ -18,49 +16,44 @@ def create_speaker_chat(
     reference_audio_data: Optional[str] = None,
     reference_audio_text: Optional[str] = None
 ) -> ChatMLSample:
+    logger.info(f"Creating chat template for request {requestID} with text: {text}")
     if not system: 
         systemPromptWrapper: str = """
-        "<|scene_desc_start|>\n"
-        "If no instructions are provided follow these -- "
-        "Sound totally human: it’s okay to say things like ‘um’, ‘hmm’, or take a short breath before a big detail. Feel free to *slightly* stutter, casually reword something, or chuckle if the moment’s funny — that’s what makes it real. "
-        "Add light humor where it fits — just subtle, natural stuff. If something sounds ridiculous or cool, say it like you mean it. Imagine you’re on a podcast and your goal is to keep listeners smiling and hooked. "
-        "Speed up naturally — you’re excited to tell this story — but still clear. Use pauses for effect, like after a big stat, or before a surprising twist. Don’t rush, but don’t drag either. "
-        "Smile through your voice. Be curious, expressive, slightly sassy if it works. Bring real charm, like you’re sharing this over coffee with a friend. "
-        "No robotic reading. No filler. No fake facts. Just bring the script to life with humor, breath, warmth, and energy. "
-        "The whole thing should feel like a fun, punchy, real-person monologue that lasts 3 to 4 minutes, tops. Leave listeners grinning, curious, or saying ‘whoa’."
-        "Remember, you’re not just reading a script — you’re performing it with personality and flair!"
-        "<|scene_desc_end|>"
+(
+"Generate audio following instruction.\n\n"
+<|scene_desc_start|>\n
+"Speak at a moderate pace — not too slow, not rushed. \n
+Include natural breathing, small pauses, and even ‘hmm’s when it fits, so it feels real. \n
+Build suspense dynamically — speed up or slow down when the moment calls for it. If there’s tension, let the listener feel it; if it’s joyful, let that energy shine through. \n
+Make the listener feel the exact emotion: thrill, joy, calm, or suspense. Vary your tone, pacing, and delivery to match the moment. \n
+Don’t be flat — sometimes raise your voice with excitement, sometimes soften it, as if sharing a secret. Adjust loudness and tempo to taste, just like a storyteller keeping the audience hooked. \n
+Remember, this isn’t just reading text — it’s performing it with emotion, pacing, and flair that pulls the listener into the moment.\n"
+<|scene_desc_end|>
+)
         """
+
     else:
         systemPromptWrapper: str = f"""
-        "Create natural-sounding audio, with breathing, pauses and hums which will set a clear mood of the user " \
-        "adapt to the provided instruction, if given dynamically"
-        
-        "<|scene_desc_start|>\n"
-        "{system}\n"
-        "<|scene_desc_end|>"
+(
+Generate audio following instruction.\n
+"Speak at a moderate pace — not too slow, not rushed. \n
+Include natural breathing, small pauses, and even ‘hmm’s when it fits, so it feels real. \n
+<|scene_desc_start|>\n
+"{system}"
+<|scene_desc_end|>
+)
         """
 
-    userPromptWrapper: str = f"""
-    <|generation_instruction_start|>
-    {text}
-    <|generation_instruction_start|>
-    """
-
-    messages = [
+    messages = []
+    # Add system prompt
+    messages.append(
         Message(
             role="system",
             content=systemPromptWrapper,
         )
-    ]
+    )
 
     if reference_audio_data:
-        messages.append(
-            Message(
-                role="Assistant",
-                content=AudioContent(raw_audio=reference_audio_data, audio_url="placeholder"),
-            )
-        )
         if reference_audio_text:
             messages.append(
                 Message(
@@ -68,13 +61,37 @@ def create_speaker_chat(
                     content=normalize_text(reference_audio_text),
                 )
             )
+        else:
+            messages.append(
+                Message(
+                    role="user",
+                    content="Please clone this voice.",
+                )
+            )
+       
+        messages.append(
+            Message(
+                role="assistant",  
+                content=[AudioContent(raw_audio=reference_audio_data, audio_url="")],
+            )
+        )
 
     messages.append(
         Message(
             role="user",
-            content=normalize_text(userPromptWrapper),
+            content=normalize_text(text),
         )
     )
+
+    logger.info(f"Created chat template with {len(messages)} messages for request {requestID}")
     
-    logger.info(f"Creating chat template with {len(messages)} messages for request {requestID}")
     return ChatMLSample(messages=messages)
+
+
+if __name__ == "__main__":
+    template = create_speaker_chat(
+        "An old woman with a very happy emotional voice, celebrating about her success in life",
+        "request-123",
+        "Recorded in a very noisy street"
+    )
+    print(template)
