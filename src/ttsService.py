@@ -10,6 +10,10 @@ from loguru import logger
 from utility import normalize_text, encode_audio_base64, save_temp_audio, cleanup_temp_file, set_random_seed
 import traceback
 from fastapi import HTTPException
+import argparse
+import asyncio
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 higgs_engine: Optional[HiggsAudioServeEngine] = None
 
@@ -115,3 +119,42 @@ async def synthesize_speech(
     finally:
         if temp_file:
             cleanup_temp_file(temp_file)
+
+
+if __name__ == "__main__":
+
+    parser_description = "Test TTS Service"
+    parser = argparse.ArgumentParser(description=parser_description)
+
+    text = "This is a wonderful day!"
+    reference_audio = None,
+    temperature = 0.7
+    top_p = 0.95
+    top_k = 50
+    seed = 200
+    output = "output.wav"
+
+    
+    args = parser.parse_args()
+
+    higgs_engine = HiggsAudioServeEngine("bosonai/higgs-audio-v2-generation-3B-base", "bosonai/higgs-audio-v2-tokenizer")
+
+
+    reference_audio_data = None
+    if text:
+        # with open(reference_audio, "rb") as f:
+        #     reference_audio_data = f.read()
+
+        audio_bytes = asyncio.run(
+        synthesize_speech(
+            text= text,
+            temperature= temperature,
+            top_p= top_p,
+            top_k= top_k,
+            seed= seed
+        )
+        )
+
+        with open(output, "wb") as f:
+            f.write(audio_bytes)
+            print(f"Audio written to {output}")
