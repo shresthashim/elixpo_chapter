@@ -142,7 +142,7 @@ async def download_audio(url: str) -> bytes:
     raise HTTPException(status_code=500, detail="Unexpected error in download_audio")
 
 
-def save_temp_audio(audio_data: bytes, suffix: str = ".wav") -> str:
+def save_temp_audio(audio_data: bytes, req_id: str, suffix: str = ".wav") -> str:
     if not audio_data:
         raise ValueError("Empty audio data")
     is_valid_audio = False
@@ -159,11 +159,16 @@ def save_temp_audio(audio_data: bytes, suffix: str = ".wav") -> str:
         is_valid_audio = True
     if not is_valid_audio:
         raise HTTPException(status_code=400, detail="Invalid audio file format")
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as f:
+    tmp_dir = "/tmp/higgs"
+    os.makedirs(tmp_dir, exist_ok=True)
+    file_path = os.path.join(tmp_dir, f"{req_id}{suffix}")
+    with open(file_path, "wb") as f:
         f.write(audio_data)
-        logger.debug(f"Saved {len(audio_data)} bytes to {f.name}")
-        return f.name
+        logger.debug(f"Saved {len(audio_data)} bytes to {file_path}")
+        return file_path
 
+
+        
 def validate_and_decode_base64_audio(audio_data: str) -> bytes:
     try:
         if audio_data.startswith('data:'):
