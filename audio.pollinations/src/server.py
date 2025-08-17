@@ -15,16 +15,20 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
 from config import MODEL_PATH, AUDIO_TOKENIZER_PATH, MAX_FILE_SIZE_MB
-from pydanticModels import APIMessage, OpenAIRequest
-from utility import download_audio, validate_and_decode_base64_audio, save_temp_audio
+from utility import download_audio, validate_and_decode_base64_audio, save_temp_audio, encode_audio_base64
 from synthesis import synthesize_speech
 from requestID import RequestIDMiddleware, reqID
-
-
-
 from templates import create_speaker_chat
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+if torch.cuda.is_available():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"✅ Using GPU: {torch.cuda.get_device_name(device)}")
+else:
+    device = torch.device("cpu")
+    print("⚠️ CUDA not available, using CPU instead.")
+
+
 app = FastAPI(
     title="Higgs V2 Audio API",
     description="OpenAI-compatible TTS API with voice cloning",
@@ -98,7 +102,8 @@ async def singleSpeakerInference(
                 raise HTTPException(status_code=400, detail=f"Invalid audio data: {audio}")
             if is_audio_url:
                 audio = await download_audio(audio)
-                reference_audio_data = validate_and_decode_base64_audio(audio)
+                convertBase64 = encode_audio_base64(audio) 
+                reference_audio_data = validate_and_decode_base64_audio(convertBase64)
                 tmp = save_temp_audio(reference_audio_data, requestID)
 
         template = create_speaker_chat(text, requestID, system, reference_audio_data, tmp)
@@ -165,7 +170,8 @@ async def singleSpeakerInferencePost(request: Request):
             is_audio_url = isinstance(audio, str) and (audio.startswith("http://") or audio.startswith("https://"))
             if is_audio_url:
                 audio_data = await download_audio(audio)
-                reference_audio_data = validate_and_decode_base64_audio(audio_data)
+                convertBase64 = encode_audio_base64(audio_data)
+                reference_audio_data = validate_and_decode_base64_audio(convertBase64)
                 tmp = save_temp_audio(reference_audio_data, requestID)
             else:
                 reference_audio_data = validate_and_decode_base64_audio(audio)

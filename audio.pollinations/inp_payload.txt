@@ -1,15 +1,29 @@
-{
-  "model": "openai-audio",
-  "messages": [
+"messages": 
+[
     {
-      "role": "user",
-      "content": [
-        { "type": "text", "text": "Transcribe this:" },
-        {
-          "type": "input_audio",
-          "input_audio": { "data": "{base64_audio_string}", "format": "wav" }
+        "role" : "system",
+        "content" : [
+            {"type" : "text", "text" : "System instructions here"}
+        ]
+    },
+    {
+        "role": "user",
+        "content": [
+            { "type": "text", "text": "Your prompt text here" },
+            {
+            "type": "input_audio",
+            "audio": { "data": "<base64_audio_string>", "format": "wav" }
+            },
+            {
+            "type": "audio_text",
+            "audio_text": "Transcription or description of the reference audio"
+            }
+        ]
         }
-      ]
-    }
-  ]
-}
+]
+
+
+
+
+http://127.0.0.1:8000/ssget?text=Transcribe%20this%3A&audio={url}&system=optional_system_prompt&seed=optional_seed
+
