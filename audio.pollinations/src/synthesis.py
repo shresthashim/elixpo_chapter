@@ -1,4 +1,3 @@
-
 from typing import Optional
 from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
 from fastapi import HTTPException
@@ -10,9 +9,10 @@ import torch
 import io
 import torchaudio
 import os
+import asyncio
+from templates import create_speaker_chat 
 
 higgs_engine: Optional[HiggsAudioServeEngine] = None
-
 
 async def synthesize_speech(
     chattemplate,
@@ -22,14 +22,15 @@ async def synthesize_speech(
     if higgs_engine is None:
         raise HTTPException(status_code=500, detail="TTS engine not initialized")
     try:
-        temperature: float = 0.7,
-        top_p: float = 0.95,
-        top_k: int = 50,
+        logger.info(f"Processing chat template for synthesis")
+        temperature: float = 0.7
+        top_p: float = 0.95
+        top_k: int = 50
         set_random_seed(seed)
         try:
             response = higgs_engine.generate(
                 chat_ml_sample=chattemplate,
-                max_new_tokens=1024,
+                max_new_tokens=2048,
                 temperature=temperature,
                 top_k=top_k if top_k > 0 else None,
                 top_p=top_p,
@@ -38,6 +39,7 @@ async def synthesize_speech(
                 ras_win_max_num_repeat=2,
                 force_audio_gen=True
             )
+            logger.info(f"Waiting for audio synthesis")
         except Exception as gen_error:
             logger.error(f"Generation error: {gen_error}")
             logger.error(f"Generation traceback: {traceback.format_exc()}")
@@ -61,8 +63,8 @@ async def synthesize_speech(
         logger.info(f"Generated audio: {len(audio_bytes)} bytes at {sample_rate}Hz")
         return audio_bytes
     except Exception as e:
-            logger.error(f"Synthesis error: {traceback.format_exc()}")
-            raise HTTPException(status_code=500, detail=f"Synthesis failed: {str(e)}")
+        logger.error(f"Synthesis error: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Synthesis failed: {str(e)}")
     finally:
         if temp_audio_path:
             try:
@@ -71,4 +73,19 @@ async def synthesize_speech(
             except Exception as cleanup_error:
                 logger.error(f"Failed to clean up temporary audio file: {cleanup_error}")
 
+if __name__ == "__main__":
     
+    chatTemplate = create_speaker_chat(
+        "Hmm... Once upon a time, in a small, bustling village surrounded by tall, green trees, there lived a mighty lion. The villagers would often hear his gentle roar echoing through the hills—oh, but don’t worry, he was a friendly lion! One sunny morning, as the children played near the river, the lion strolled into the village, hmm, pausing to sniff the sweet scent of fresh bread. The villagers, at first, were a little scared, but the lion sat down, swished his tail, and let out a soft, happy rumble. 'Hello, friends,' he seemed to say. From that day on, the lion and the villagers became the best of friends. They shared stories, laughter, and sometimes, hmm, even a loaf of bread or two. And so, the village was never lonely again, for they had the bravest—and kindest—lion as their friend. Hmm, what a wonderful place it was!",
+        "request-123",
+        
+    )
+    async def main():
+        global higgs_engine
+        higgs_engine = HiggsAudioServeEngine("bosonai/higgs-audio-v2-generation-3B-base", "bosonai/higgs-audio-v2-tokenizer")
+        audio_bytes = await synthesize_speech(chatTemplate)
+        with open("output.wav", "wb") as f:
+            f.write(audio_bytes)
+        print("Audio saved as output.wav")
+
+    asyncio.run(main())
