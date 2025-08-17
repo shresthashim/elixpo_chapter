@@ -4,22 +4,20 @@ import io
 import json
 import time
 import traceback
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional
 from urllib.parse import unquote
 import numpy as np
 import torch
-import torchaudio
+import sys
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, Path
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from loguru import logger
-from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine, HiggsAudioResponse
-
-
-from config import MODEL_PATH, AUDIO_TOKENIZER_PATH, SAMPLE_RATE, MAX_FILE_SIZE_MB, DEFAULT_SYSTEM_PROMPT, DEFAULT_STOP_STRINGS
+from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
+from config import MODEL_PATH, AUDIO_TOKENIZER_PATH, MAX_FILE_SIZE_MB
 from pydanticModels import APIMessage, OpenAIRequest
-from utility import normalize_text, download_audio, validate_and_decode_base64_audio, encode_audio_base64, save_temp_audio, cleanup_temp_file, set_random_seed
+from utility import normalize_text, download_audio, validate_and_decode_base64_audio
 from ttsService import synthesize_speech
 
 
@@ -123,7 +121,6 @@ async def generate_speech_get(
 
 @app.post("/openai")
 async def generate_speech_post(request: OpenAIRequest):
-    """Generate speech using OpenAI-compatible format"""
     try:
         text = ""
         for msg in reversed(request.messages):
@@ -155,7 +152,6 @@ async def generate_speech_post(request: OpenAIRequest):
             seed=request.seed
         )
         
-        # Always return WAV format for consistency
         return Response(
             content=audio_data,
             media_type="audio/wav",
@@ -171,7 +167,7 @@ async def generate_speech_post(request: OpenAIRequest):
         logger.error(f"POST TTS error: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# ==================== Error Handlers ====================
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
@@ -199,7 +195,6 @@ async def general_exception_handler(request: Request, exc: Exception):
         }
     )
 
-# ==================== Performance Middleware ====================
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
@@ -208,11 +203,9 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
-# ==================== Main ====================
+
 if __name__ == "__main__":
-    import sys
     
-    # Parse simple CLI args
     host = "127.0.0.1"
     port = 8000
     
