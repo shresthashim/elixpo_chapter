@@ -142,12 +142,14 @@ if __name__ == "__main__":
 
     reference_audio_data = None
     if text:
-        # with open(reference_audio, "rb") as f:
-        #     reference_audio_data = f.read()
+        if reference_audio: 
+            with open(reference_audio, "rb") as f:
+                reference_audio_data = f.read()
 
         audio_bytes = asyncio.run(
         synthesize_speech(
             text= text,
+            reference_audio = reference_audio_data,
             temperature= temperature,
             top_p= top_p,
             top_k= top_k,

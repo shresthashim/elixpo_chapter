@@ -1,0 +1,109 @@
+import os
+import io
+import json
+import time
+import traceback
+from typing import Optional
+from urllib.parse import unquote
+import numpy as np
+import torch
+import sys
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request, Response, Path
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from loguru import logger
+from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
+from config import MODEL_PATH, AUDIO_TOKENIZER_PATH, MAX_FILE_SIZE_MB
+from pydanticModels import APIMessage, OpenAIRequest
+from utility import normalize_text, download_audio, validate_and_decode_base64_audio
+from ttsService import synthesize_speech
+from requestID import RequestIDMiddleware, reqID
+
+
+
+from service import create_single_speaker_chat
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+app = FastAPI(
+    title="Higgs V2 Audio API",
+    description="OpenAI-compatible TTS API with voice cloning",
+    version="2.0.2"
+)
+app.add_middleware(
+    CORSMiddleware,
+    RequestIDMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.on_event("startup")
+async def startup_event():
+    global higgs_engine
+    try:
+        logger.info(f"Initializing Higgs Audio V2 on {device}...")
+        higgs_engine = HiggsAudioServeEngine(
+            model_name_or_path=MODEL_PATH,
+            audio_tokenizer_name_or_path=AUDIO_TOKENIZER_PATH,
+            device=device
+        )
+        logger.info("✅ Higgs Audio V2 initialized successfully")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Higgs: {e}")
+        logger.error(f"Initialization traceback: {traceback.format_exc()}")
+
+
+
+
+@app.get("/")
+async def health_check(request: Request):
+    requestID : str = getattr(request.state, "request_id", reqID())
+    return {
+        "status": "healthy",
+        "model": "higgs-v2",
+        "device": str(device),
+        "engine_loaded": higgs_engine is not None,
+        "max_audio_size_mb": MAX_FILE_SIZE_MB,
+        "request_id": requestID,
+        "endpoints": {
+            "get": "/{text}?model=higgs&seed=123&audio=base64_or_url",
+            "post": "/openai"
+        }
+    }
+
+@app.get("/ss")
+async def singleSpeakerInference(request: Request):
+
+    requestID : str = getattr(request.state, "request_id", reqID())
+    text = request.query_params.get("text")
+    audio = request.query_params.get("audio", None)
+    system = request.query_params.get("system", None)
+    reference_audio_data = None
+    
+    if text is None:
+        raise HTTPException(status_code=400, detail="Missing required 'text' or 'audio' parameter.")
+
+    if len(system) > 500:
+        raise HTTPException(status_code=400, detail="The 'system' parameter must not exceed 500 characters.")
+
+    if audio:
+        is_audio_url = audio.startswith("http://") or audio.startswith("https://")
+        if not is_audio_url:
+            raise HTTPException(status_code=400, detail=f"Invalid audio data: {audio}")
+        if is_audio_url:
+            audio = await download_audio(audio)
+            reference_audio_data = validate_and_decode_base64_audio(audio)
+
+            
+
+    create_single_speaker_chat(text, requestID, system, reference_audio_data)
+
+    return {
+        "text": text,
+        "audio": audio,
+        "system": system,
+        "is_audio_url": is_audio_url,
+        "request_id": requestID
+    }
