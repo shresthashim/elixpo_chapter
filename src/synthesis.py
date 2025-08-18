@@ -78,6 +78,7 @@ if __name__ == "__main__":
     chatTemplate = create_speaker_chat(
         "Hmm... Once upon a time, in a small, bustling village surrounded by tall, green trees, there lived a mighty lion. The villagers would often hear his gentle roar echoing through the hills—oh, but don’t worry, he was a friendly lion! One sunny morning, as the children played near the river, the lion strolled into the village, hmm, pausing to sniff the sweet scent of fresh bread. The villagers, at first, were a little scared, but the lion sat down, swished his tail, and let out a soft, happy rumble. 'Hello, friends,' he seemed to say. From that day on, the lion and the villagers became the best of friends. They shared stories, laughter, and sometimes, hmm, even a loaf of bread or two. And so, the village was never lonely again, for they had the bravest—and kindest—lion as their friend. Hmm, what a wonderful place it was!",
         "request-123",
+        "Add soft music to the background which will sound like a cool theme of the soundtrack, low upbeat music [SOUND EFFECTS]"
         
     )
     async def main():
