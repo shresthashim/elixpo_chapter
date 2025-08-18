@@ -1,11 +1,15 @@
+import os
+import io
+import json
 import time
 import traceback
 from typing import Optional
+from urllib.parse import unquote
+import numpy as np
 import torch
-import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+import sys
+from flask import Flask, request, jsonify, Response, g, after_this_request
+from flask_cors import CORS
 from loguru import logger
 from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
 from config import MODEL_PATH, AUDIO_TOKENIZER_PATH, MAX_FILE_SIZE_MB
@@ -13,11 +17,6 @@ from utility import download_audio, validate_and_decode_base64_audio, save_temp_
 from synthesis import synthesize_speech
 from requestID import RequestIDMiddleware, reqID
 from templates import create_speaker_chat
-from contextlib import asynccontextmanager
-import shutil
-import os
-from utility import cleanup_temp_file
-
 
 if torch.cuda.is_available():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -26,9 +25,13 @@ else:
     device = torch.device("cpu")
     print("⚠️ CUDA not available, using CPU instead.")
 
+app = Flask(__name__)
+CORS(app)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+higgs_engine = None
+
+@app.before_first_request
+def startup_event():
     global higgs_engine
     try:
         logger.info(f"Initializing Higgs Audio V2 on {device}...")
@@ -41,117 +44,94 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"❌ Failed to initialize Higgs: {e}")
         logger.error(f"Initialization traceback: {traceback.format_exc()}")
-    yield
-    
-    higgs_tmp = "/tmp/higgs"
-    try:
-        if os.path.exists(higgs_tmp):
-            for filename in os.listdir(higgs_tmp):
-                file_path = os.path.join(higgs_tmp, filename)
-                cleanup_temp_file(file_path)
-            os.rmdir(higgs_tmp)
-            logger.info(f"Cleaned up {higgs_tmp} on shutdown.")
-    except Exception as e:
-        logger.error(f"Failed to clean up {higgs_tmp}: {e}")
 
-app = FastAPI(
-    title="Higgs V2 Audio API",
-    description="OpenAI-compatible TTS API with voice cloning",
-    version="2.0.2",
-    lifespan=lifespan
-)
+@app.before_request
+def before_request():
+    g.request_id = reqID()
+    g.start_time = time.time()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-app.add_middleware(RequestIDMiddleware)
+@app.after_request
+def after_request(response):
+    process_time = time.time() - g.get('start_time', time.time())
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
 
-@app.get("/")
-async def health_check(request: Request):
-    requestID : str = getattr(request.state, "request_id", reqID())
-    return {
+@app.route("/", methods=["GET"])
+def health_check():
+    return jsonify({
         "status": "healthy",
         "model": "higgs-v2",
         "device": str(device),
         "engine_loaded": higgs_engine is not None,
         "max_audio_size_mb": MAX_FILE_SIZE_MB,
-        "request_id": requestID,
+        "request_id": g.request_id,
         "endpoints": {
-            "get": "/{text}?model=higgs&seed=123&audio=base64_or_url",
-            "post": "/openai"
+            "get": "/ssget?text=your_text_here&audio=base64_or_url&system=optional_system_prompt&seed=optional_seed",
+            "post": "/sspost"
         }
-    }
+    })
 
-@app.get("/ssget")
-async def singleSpeakerInference(
-    request: Request,
-    text: str = None,
-    audio: Optional[str] = None,
-    system: Optional[str] = None,
-    seed: Optional[int] = None
-):
+@app.route("/ssget", methods=["GET"])
+def singleSpeakerInference():
     try:
-        requestID : str = getattr(request.state, "request_id", reqID())
+        text = request.args.get("text")
+        audio = request.args.get("audio")
+        system = request.args.get("system")
+        seed = request.args.get("seed", type=int)
+        requestID = g.request_id
         reference_audio_data = None
         tmp = None
 
         if text is None:
-            raise HTTPException(status_code=400, detail=f"Missing required 'text' parameter. {requestID}")
+            return jsonify({"error": {"message": "Missing required 'text' parameter.", "type": "invalid_request_error", "code": 400}}), 400
 
         if system and len(system) > 500:
-            raise HTTPException(status_code=400, detail=f"The 'system' parameter must not exceed 500 characters. {requestID}")
+            return jsonify({"error": {"message": "The 'system' parameter must not exceed 500 characters.", "type": "invalid_request_error", "code": 400}}), 400
 
         if audio:
             is_audio_url = audio.startswith("http://") or audio.startswith("https://")
             if not is_audio_url:
-                raise HTTPException(status_code=400, detail=f"Invalid audio data: {audio}")
+                return jsonify({"error": {"message": f"Invalid audio data: {audio}", "type": "invalid_request_error", "code": 400}}), 400
             if is_audio_url:
-                audio = await download_audio(audio)
-                convertBase64 = encode_audio_base64(audio) 
+                audio_data = download_audio(audio)
+                convertBase64 = encode_audio_base64(audio_data)
                 reference_audio_data = validate_and_decode_base64_audio(convertBase64)
                 tmp = save_temp_audio(reference_audio_data, requestID)
 
-        template = create_speaker_chat(text, requestID, system, reference_audio_data, tmp)
-        audio_data = await synthesize_speech(template, temp_audio_path=tmp, seed=seed)
-        if not audio_data:
-            raise HTTPException(status_code=500, detail=f"No audio generated by model. {requestID}")
-        else:
-            logger.info(f"Generated audio for request {requestID}")
+                
 
-        return Response(
-            content=audio_data,
-            media_type="audio/wav",
-            headers={
-                "Content-Disposition": "inline; filename=speech.wav",
-                "Content-Length": str(len(audio_data))
-            }
-        )
+        # template = create_speaker_chat(text, requestID, system, reference_audio_data, tmp)
+        # audio_data = synthesize_speech(template, temp_audio_path=tmp, seed=seed)
+        # if not audio_data:
+        #     return jsonify({"error": {"message": "No audio generated by model", "type": "internal_error", "code": 500}}), 500
+        # else:
+        #     logger.info(f"Generated audio for request {requestID}")
 
-    except HTTPException:
-        raise
+        # return Response(
+        #     audio_data,
+        #     mimetype="audio/wav",
+        #     headers={
+        #         "Content-Disposition": "inline; filename=speech.wav",
+        #         "Content-Length": str(len(audio_data))
+        #     }
+        # )
+
     except Exception as e:
-        logger.error(f"GET TTS error: {traceback.format_exc()} for {requestID}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"GET TTS error: {traceback.format_exc()}")
+        return jsonify({"error": {"message": str(e), "type": "internal_error", "code": 500}}), 500
 
-
-
-@app.post("/sspost")
-async def singleSpeakerInferencePost(request: Request):
+@app.route("/sspost", methods=["POST"])
+def singleSpeakerInferencePost():
     try:
-        requestID: str = getattr(request.state, "request_id", reqID())
-        body = await request.json()
+        body = request.get_json(force=True)
         messages = body.get("messages", [])
         if not messages or not isinstance(messages, list):
-            raise HTTPException(status_code=400, detail=f"Missing or invalid 'messages' in payload. - {requestID}")
+            return jsonify({"error": {"message": "Missing or invalid 'messages' in payload.", "type": "invalid_request_error", "code": 400}}), 400
 
         message = messages[0]
         content = message.get("content", [])
         if not content or not isinstance(content, list):
-            raise HTTPException(status_code=400, detail=f"Missing or invalid 'content' in message. - {requestID}")
+            return jsonify({"error": {"message": "Missing or invalid 'content' in message.", "type": "invalid_request_error", "code": 400}}), 400
 
         text = None
         audio = None
@@ -162,7 +142,6 @@ async def singleSpeakerInferencePost(request: Request):
 
         for item in content:
             if item.get("type") == "text":
-                # Accept both user and system role text
                 if message.get("role") == "system":
                     system = item.get("text")
                 else:
@@ -173,82 +152,49 @@ async def singleSpeakerInferencePost(request: Request):
                 audio_text = item.get("audio_text")
 
         if text is None:
-            raise HTTPException(status_code=400, detail=f"Missing required 'text' in content. -  {requestID}")
+            return jsonify({"error": {"message": "Missing required 'text' in content.", "type": "invalid_request_error", "code": 400}}), 400
 
         if audio:
             is_audio_url = isinstance(audio, str) and (audio.startswith("http://") or audio.startswith("https://"))
             if is_audio_url:
-                audio_data = await download_audio(audio)
+                audio_data = download_audio(audio)
                 convertBase64 = encode_audio_base64(audio_data)
                 reference_audio_data = validate_and_decode_base64_audio(convertBase64)
-                tmp = save_temp_audio(reference_audio_data, requestID)
+                tmp = save_temp_audio(reference_audio_data, g.request_id)
             else:
                 reference_audio_data = validate_and_decode_base64_audio(audio)
-                tmp = save_temp_audio(reference_audio_data, requestID)
+                tmp = save_temp_audio(reference_audio_data, g.request_id)
 
-        template = create_speaker_chat(text, requestID, system, reference_audio_data, tmp, audio_text)
-        audio_data = await synthesize_speech(template, temp_audio_path=tmp)
+        template = create_speaker_chat(text, g.request_id, system, reference_audio_data, tmp, audio_text)
+        audio_data = synthesize_speech(template, temp_audio_path=tmp)
         if not audio_data:
-            raise HTTPException(status_code=500, detail=f"No audio generated by model - {requestID}")
+            return jsonify({"error": {"message": "No audio generated by model", "type": "internal_error", "code": 500}}), 500
         else:
-            logger.info(f"Generated audio for request {requestID}")
+            logger.info(f"Generated audio for request {g.request_id}")
 
         return Response(
-            content=audio_data,
-            media_type="audio/wav",
+            audio_data,
+            mimetype="audio/wav",
             headers={
                 "Content-Disposition": "inline; filename=speech.wav",
                 "Content-Length": str(len(audio_data))
             }
         )
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"POST TTS error: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return jsonify({"error": {"message": str(e), "type": "internal_error", "code": 500}}), 500
 
+@app.errorhandler(400)
+def bad_request(e):
+    return jsonify({"error": {"message": str(e), "type": "invalid_request_error", "code": 400}}), 400
 
-
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "error": {
-                "message": exc.detail,
-                "type": "invalid_request_error",
-                "code": exc.status_code
-            }
-        }
-    )
-
-@app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
+@app.errorhandler(500)
+def internal_error(e):
     logger.error(f"Unhandled exception: {traceback.format_exc()}")
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error": {
-                "message": "Internal server error",
-                "type": "internal_error",
-                "code": 500
-            }
-        }
-    )
-
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    response.headers["X-Process-Time"] = str(process_time)
-    return response
-
-
+    return jsonify({"error": {"message": "Internal server error", "type": "internal_error", "code": 500}}), 500
 
 if __name__ == "__main__":
-    
     host = "127.0.0.1"
     port = 8000
     postJSON = """
@@ -274,7 +220,6 @@ if __name__ == "__main__":
                 ]
                 }
         ]
-
     """
     logger.info(f"Starting Higgs V2 API Server")
     logger.info(f"Host: {host}:{port}")
@@ -283,10 +228,4 @@ if __name__ == "__main__":
     logger.info(f"GET endpoint: http://{host}:{port}/ssget?text=your_text_here&audio=base64_or_url&system=optional_system_prompt&seed=optional_seed")
     logger.info(f"POST endpoint: http://{host}:{port}/sspost  expects json payload like {postJSON}")
 
-    uvicorn.run(
-        app,
-        host=host,
-        port=port,
-        loop="uvloop",
-        log_level="info"
-    )
+    app.run(host=host, port=port, debug=True)

@@ -25,5 +25,12 @@
 
 
 
-http://127.0.0.1:8000/ssget?text=Transcribe%20this%3A&audio={url}&system=optional_system_prompt&seed=optional_seed
+ssget?text=Transcribe%20this%3A&audio={url}&system=optional_system_prompt
 
+TTS --> TEXT TO SPEECH (audio modality output) [checked]
+STS --> SPEECH TO SPEECH (audio modality output)
+STT --> SPEECH TO TEXT (text modality output)
+TTT --> TEXT TO TEXT (text modality output)
+
+
+(only audio output modality)

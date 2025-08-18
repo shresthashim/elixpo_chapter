@@ -13,7 +13,7 @@ def create_speaker_chat(
     text: str,
     requestID: str,
     system=None,
-    reference_audio_data: Optional[str] = None,
+    reference_audio_data_path: Optional[str] = None,
     reference_audio_text: Optional[str] = None
 ) -> ChatMLSample:
     logger.info(f"Creating chat template for request {requestID} with text: {text}")
@@ -22,23 +22,24 @@ def create_speaker_chat(
 (
 "Generate audio following instruction.\n\n"
 <|scene_desc_start|>\n
-"SPEAKER: MODERATE, BOLD, MASCULINE, PACED VOICE WITH EMOTIONS"\n
-"Speak at a moderate pace — not too slow, not rushed. \n
-Include natural breathing, small pauses, and even ‘hmm’s when it fits, so it feels real. \n
-Build suspense dynamically — speed up or slow down when the moment calls for it. If there’s tension, let the listener feel it; if it’s joyful, let that energy shine through. \n
-Make the listener feel the exact emotion: thrill, joy, calm, or suspense. Vary your tone, pacing, and delivery to match the moment. \n
-Don’t be flat — sometimes raise your voice with excitement, sometimes soften it, as if sharing a secret. Adjust loudness and tempo to taste, just like a storyteller keeping the audience hooked. \n
-Remember, this isn’t just reading text — it’s performing it with emotion, pacing, and flair that pulls the listener into the moment.\n"
+"You are the storyteller — a strong, bold, masculine voice with natural warmth and emotion. \n
+Speak at a steady, moderate pace: never robotic, never rushed. \n
+Add natural breathing, subtle pauses, and the occasional thoughtful ‘hmm’ or sigh — the way a real person would. \n
+Guide the listener through emotions: let suspense hang in the air with slower pacing; brighten the tone and quicken slightly with excitement; soften and lower your voice in moments of calm or intimacy. \n
+Think like a performer, not a narrator. Adjust your delivery dynamically: raise your voice to energize, whisper as if sharing a secret, or let silence build tension. \n
+Every sentence should feel intentional — as if you’re painting the scene with sound, keeping the listener hooked. \n
+Remember: this isn’t text-to-speech. This is performance — breathing life, drama, and emotion into every word." \n
 <|scene_desc_end|>
 )
-        """
+"""
+
 
     else:
         systemPromptWrapper: str = f"""
 (
 Generate audio following instruction.\n
 "Speak at a moderate pace — not too slow, not rushed. \n
-Include natural breathing, small pauses, and even ‘hmm’s when it fits, so it feels real. \n
+"Build suspense dynamically — speed up or slow down when the moment calls for it. If there’s tension, let the listener feel it; if it’s joyful, let that energy shine through. \n"
 <|scene_desc_start|>\n
 "{system}"
 <|scene_desc_end|>
@@ -54,7 +55,9 @@ Include natural breathing, small pauses, and even ‘hmm’s when it fits, so it
         )
     )
 
-    if reference_audio_data:
+    if reference_audio_data_path:
+        with open(reference_audio_data_path, "rb") as f:
+            reference_audio_data = f.read()
         if reference_audio_text:
             messages.append(
                 Message(
