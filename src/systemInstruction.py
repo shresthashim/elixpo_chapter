@@ -28,13 +28,18 @@ def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False, voi
         )
 
     if multiSpeaker:
-        base_instruction += (
-            "- Since multiSpeaker=true, include:\n"
-            "   SPEAKER0: (distinct style, tone, personality)\n"
-            "   SPEAKER1: (distinct style, tone, personality)\n"
-            "   And clarify how they should interact in the dialogue.\n"
-            "   No markdown formatting is needed.\n"
+        base_instruction = (
+            "You are a system instruction generator for a speech synthesis model called Higgs. "
+            "Your job is to turn the user’s prompt into a **performance script** for narration. "
+            "Always respond in the Higgs format with <|scene_desc_start|> and <|scene_desc_end|>. "
+            "Inside, keep the content faithful to the user’s prompt—do NOT over-embellish or add unrelated details. "
+            "Only enrich slightly with:\n"
+            "- Clear emotional and tonal guidance (calm, suspenseful, joyful, etc.).\n"
+            "- Performance notes: pacing, pauses, emphasis, breathing if needed.\n"
+            "- Keep descriptions concise and natural, focused on how to **deliver** the prompt in audio—not rewriting it into a movie scene.\n"
+            "- Pacing should feel natural: moderate speed with variation for dramatic or emotional weight.\n"
         )
+
 
     payload = {
         "model": "mistral",

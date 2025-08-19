@@ -1,32 +1,32 @@
 import requests
 from dotenv import load_dotenv
 from typing import Optional
-import os
+import os 
 from loguru import logger
 
 load_dotenv()
 
-def generate_script(prompt: str, max_tokens: Optional[int] = 1024) -> str:
-    logger.info(f"Generating script for prompt: {prompt} with max tokens: {max_tokens}")
+def generate_reply(prompt: str, max_tokens: Optional[int] = 60) -> str:
+    logger.info(f"Generating reply for prompt: {prompt} with max tokens: {max_tokens}")
     payload = {
         "model": "mistral",
         "messages": [
             {
                 "role": "system",
                 "content": (
-                    "You are a professional scriptwriter AI. "
-                    "Given a prompt, you will generate a detailed script with dialogue, narration, and stage directions. "
-                    "Keep the script structured, cinematic, and engaging. "
-                    "Limit the output to the requested max token length. "
-                    "Do not wrap the script in markdown formatting."
+                    "You are a friendly and natural conversational AI. "
+                    "Your job is to generate a short, casual reply to the user's message. "
+                    "Keep it concise, engaging, and natural sounding, as if chatting with a friend. "
+                    "Do not write scripts, narration, or long paragraphs."
+                    "Don't use any emoji"
                 )
             },
             {
                 "role": "user",
-                "content": f"Prompt: {prompt}\n\nWrite a script of up to {max_tokens} tokens."
+                "content": f"{prompt}"
             }
         ],
-        "temperature": 0.8,
+        "temperature": 0.7,
         "stream": False,
         "private": True,
         "token": os.getenv("POLLI_TOKEN"),
@@ -42,17 +42,17 @@ def generate_script(prompt: str, max_tokens: Optional[int] = 1024) -> str:
     data = response.json()
 
     try:
-        script = data["choices"][0]["message"]["content"]
+        reply = data["choices"][0]["message"]["content"]
     except Exception as e:
         raise RuntimeError(f"Unexpected response format: {data}") from e
 
-    return script.strip()
+    return reply.strip()
 
 
 if __name__ == "__main__":
     # Example usage
-    user_prompt = "A suspenseful sci-fi scene where astronauts discover signs of alien life on Mars."
-    script = generate_script(user_prompt, max_tokens=1024)
+    user_prompt = "Hey, what's going on guys!! Do you wanna play a game of tug?"
+    reply = generate_reply(user_prompt)
 
-    print("\n--- Generated Script ---\n")
-    print(script)
+    print("\n--- Generated Reply ---\n")
+    print(reply)

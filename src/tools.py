@@ -19,13 +19,13 @@ tools = [
                         "type": "string",
                         "description": "system prompt or scene description for the speaker.",
                     },
-                    "reference_audio_data_path": {
+                    "clone_audio_path": {
                         "type": "string",
                         "description": "Optional, path to the file containing base64 string of the voice to be cloned",
                     },
                     "reference_audio_text": {
                         "type": "string",
-                        "description": "Optional text corresponding to the reference audio.",
+                        "description": "Optional text transcript to the reference audio.",
                     }
                 },
                 "required": ["text", "requestID"]
@@ -81,14 +81,14 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "generate_script",
-            "description": "Generates a detailed script with dialogue, narration, and stage directions based on a prompt.",
+            "name": "generate_reply",
+            "description": "Generates a detailed script with dialogue, narration, and stage directions based on a prompt used for conversational reply.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "prompt": {
                         "type": "string",
-                        "description": "The prompt or idea for the script."
+                        "description": "The prompt or idea for the reply."
                     },
                     "max_tokens": {
                         "type": "integer",
