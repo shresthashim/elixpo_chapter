@@ -34,19 +34,21 @@ def generate_reply(prompt: str, max_tokens: Optional[int] = 60) -> str:
         "max_tokens": max_tokens
     }
 
-    response = requests.post("https://text.pollinations.ai/openai", json=payload)
-
-    if response.status_code != 200:
-        raise RuntimeError(f"Request failed: {response.status_code}, {response.text}")
-
-    data = response.json()
-
     try:
-        reply = data["choices"][0]["message"]["content"]
-    except Exception as e:
-        raise RuntimeError(f"Unexpected response format: {data}") from e
+        response = requests.post("https://text.pollinations.ai/openai", json=payload, timeout=30)
+        if response.status_code != 200:
+            raise RuntimeError(f"Request failed: {response.status_code}, {response.text}")
 
-    return reply.strip()
+        data = response.json()
+        try:
+            reply = data["choices"][0]["message"]["content"]
+        except Exception as e:
+            raise RuntimeError(f"Unexpected response format: {data}") from e
+
+        return reply.strip()
+    except requests.exceptions.Timeout:
+        logger.warning("Timeout occurred in generate_reply, returning generic system instruction.")
+        return f"{prompt}"
 
 
 if __name__ == "__main__":
