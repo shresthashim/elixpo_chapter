@@ -12,6 +12,7 @@ from pydub import AudioSegment
 import io
 from typing import Optional
 import wave
+from config import MAX_FILE_SIZE_MB
 
 
 def normalize_text(text: str) -> str:
@@ -59,135 +60,80 @@ def normalize_text(text: str) -> str:
     return text
 
 
-def is_wav_bytes(data: bytes) -> bool:
-    """Check RIFF/WAVE header."""
-    return (
-        len(data) > 12 and
-        data[0:4] == b"RIFF" and
-        data[8:12] == b"WAVE"
-    )
+async def processCloneInputAudio(reference_audio: str, reqID: str):
+    MAX_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024  
 
+    if reference_audio.startswith("http://") or reference_audio.startswith("https://"):
+        return HTTPException(status_code=400, detail="Audio URL is not supported. Please provide base64 encoded audio data.")
+    else:
+        logger.info(f"Using provided audio data for reference: {reference_audio}")
+        if reference_audio.startswith("data:audio/wav;base64,"):
+            b64_data = reference_audio.split(",", 1)[1]
+            try:
+                audio_bytes = base64.b64decode(b64_data)
+            except Exception:
+                return HTTPException(status_code=400, detail="Invalid base64 audio data.")
+            if len(audio_bytes) > MAX_SIZE_BYTES:
+                return HTTPException(status_code=400, detail="Audio file is too large. Maximum allowed size is 5MB.")
+            audio_data_path_clone = save_temp_audio(reference_audio, reqID, "clone")
+            return audio_data_path_clone
+        else:
+            return HTTPException(status_code=400, detail="Invalid audio format. Expected base64 encoded WAV data or audio - URL")
 
-def validate_wav_pcm(audio_bytes: bytes) -> bool:
-    """Check if WAV file is PCM (uncompressed)."""
-    try:
-        with wave.open(io.BytesIO(audio_bytes), 'rb') as wf:
-            return wf.getcomptype() == 'NONE'  
-    except wave.Error:
-        return False
+def processSynthesisInputAudio(speechInput: str, reqID: str):
+    MAX_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024  
 
+    if speechInput.startswith("http://") or speechInput.startswith("https://"):
+        return HTTPException(status_code=400, detail="Audio URL is not supported. Please provide base64 encoded audio data.")
+    else:
+        logger.info(f"Using provided audio data for synthesis: {speechInput}")
+        if speechInput.startswith("data:audio/wav;base64,"):
+            b64_data = speechInput.split(",", 1)[1]
+            try:
+                audio_bytes = base64.b64decode(b64_data)
+            except Exception:
+                return HTTPException(status_code=400, detail="Invalid base64 audio data.")
+            if len(audio_bytes) > MAX_SIZE_BYTES:
+                return HTTPException(status_code=400, detail="Audio file is too large. Maximum allowed size is 5MB.")
+            audio_data_path_synthesis = save_temp_audio(speechInput, reqID, "synthesis")
+            return audio_data_path_synthesis
+        else:
+            return HTTPException(status_code=400, detail="Invalid audio format. Expected base64 encoded WAV data or audio - URL")
+        
 
-def ensure_wav(audio_bytes: bytes) -> bytes:
-    if is_wav_bytes(audio_bytes) and validate_wav_pcm(audio_bytes):
-        return audio_bytes  
-
-    try:
-        audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-        wav_io = io.BytesIO()
-        audio.export(wav_io, format="wav")
-        return wav_io.getvalue()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to convert audio to WAV: {str(e)}")
-
-
-async def download_audio(url: str) -> bytes:
-    """Download audio from URL and return as validated WAV bytes."""
-    max_retries = 3
-    timeout_config = aiohttp.ClientTimeout(total=45, connect=10, sock_read=30)
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'Accept': 'audio/*,*/*;q=0.9',
-        'Accept-Encoding': 'gzip, deflate',
-        'Connection': 'keep-alive',
-    }
-
-    for attempt in range(max_retries):
-        try:
-            logger.info(f"Downloading audio from {url} (attempt {attempt + 1}/{max_retries})")
-            async with aiohttp.ClientSession(timeout=timeout_config, headers=headers) as session:
-                async with session.get(url) as response:
-                    if response.status != 200:
-                        if response.status in [404, 403, 410]:
-                            raise HTTPException(status_code=400, detail=f"Audio URL returned {response.status}: {url}")
-                        continue
-
-                    content_length = response.headers.get('Content-Length')
-                    if content_length:
-                        size_mb = int(content_length) / (1024 * 1024)
-                        if size_mb > MAX_FILE_SIZE_MB:
-                            raise HTTPException(status_code=413, detail=f"Audio file too large: {size_mb:.1f}MB")
-
-                    data = await response.read()
-                    if not data:
-                        raise HTTPException(status_code=400, detail="Downloaded audio is empty")
-
-                    logger.info(f"Downloaded {len(data)} bytes, validating as WAV")
-                    return ensure_wav(data)  # <-- Ensure WAV here
-
-        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
-            logger.warning(f"Error downloading {url} (attempt {attempt+1}): {e}")
-            if attempt == max_retries - 1:
-                raise HTTPException(status_code=400, detail=f"Failed to download audio: {str(e)}")
-        await asyncio.sleep(1.0 * (attempt + 1))
-
-    raise HTTPException(status_code=500, detail="Unexpected error in download_audio")
-
-
-def validate_and_decode_base64_audio(audio_data: str) -> bytes:
-    """Decode base64 audio and ensure WAV format."""
-    try:
-        if audio_data.startswith("data:"):
-            if ";base64," in audio_data:
-                audio_data = audio_data.split(";base64,")[1]
-            else:
-                raise ValueError("Invalid data URL format")
-
-        decoded_data = base64.b64decode(audio_data, validate=True)
-        size_mb = len(decoded_data) / (1024 * 1024)
-        if size_mb > MAX_FILE_SIZE_MB:
-            raise HTTPException(status_code=413, detail=f"Base64 audio too large: {size_mb:.1f}MB")
-
-        if not decoded_data:
-            raise HTTPException(status_code=400, detail="Base64 audio data is empty")
-
-        wav_data = ensure_wav(decoded_data)
-        logger.info(f"Decoded {len(wav_data)} bytes of WAV audio")
-        return wav_data
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid audio data: {str(e)}")
-
-
-def save_temp_audio(audio_data: bytes, req_id: str, useCase: str = "clone") -> str:
+def save_temp_audio(audio_data: str, req_id: str, usageType: str = "clone") -> str:
     if not audio_data:
         raise ValueError("Empty audio data")
 
     tmp_dir = f"/tmp/higgs/{req_id}"
     os.makedirs(tmp_dir, exist_ok=True)
-    file_path = os.path.join(tmp_dir, f"voice_{req_id}.wav" if useCase == "clone" else f"speech_{req_id}.wav")
+    file_path = os.path.join(tmp_dir, f"voice_{req_id}.txt" if usageType == "clone" else f"speech_{req_id}.txt")
 
     with open(file_path, "wb") as f:
-        f.write(audio_data)
+        f.write(audio_data.encode("utf-8"))
     logger.debug(f"Saved {len(audio_data)} bytes WAV to {file_path}")
     return file_path
-
-
-def encode_audio_base64(audio_path: str) -> str:
-    with open(audio_path, "rb") as f:
-        audio_bytes = f.read()
-    wav_bytes = ensure_wav(audio_bytes)
-    if not wav_bytes:
-        raise ValueError("Invalid WAV audio data")
-    else:
-        logger.debug(f"Encoded {len(wav_bytes)} bytes of WAV audio to base64")
-    return base64.b64encode(wav_bytes).decode("utf-8")
 
 
 def cleanup_temp_file(filepath: str):
     try:
         if filepath and os.path.exists(filepath):
-            os.unlink(filepath)
-            logger.debug(f"Cleaned up temp file: {filepath}")
+            if os.path.isdir(filepath):
+                # Remove all files and subdirectories
+                for root, dirs, files in os.walk(filepath, topdown=False):
+                    for name in files:
+                        file_path = os.path.join(root, name)
+                        os.unlink(file_path)
+                        logger.debug(f"Cleaned up temp file: {file_path}")
+                    for name in dirs:
+                        dir_path = os.path.join(root, name)
+                        os.rmdir(dir_path)
+                        logger.debug(f"Cleaned up temp directory: {dir_path}")
+                os.rmdir(filepath)
+                logger.debug(f"Cleaned up temp directory: {filepath}")
+            else:
+                os.unlink(filepath)
+                logger.debug(f"Cleaned up temp file: {filepath}")
     except Exception as e:
         logger.warning(f"Failed to cleanup {filepath}: {e}")
 
@@ -201,9 +147,63 @@ def set_random_seed(seed: Optional[int] = None):
             torch.cuda.manual_seed_all(seed)
 
 
+def encode_audio_base64(audio_path: str) -> str:
+    def is_base64(s: str) -> bool:
+        try:
+            # Check for typical base64 header
+            if s.startswith("data:audio"):
+                s = s.split(",")[1]
+            base64.b64decode(s, validate=True)
+            return True
+        except Exception:
+            return False
+
+    def is_wav_bytes(data: bytes) -> bool:
+        return data[:4] == b'RIFF' and data[8:12] == b'WAVE'
+
+    # If input is base64 string
+    if isinstance(audio_path, str) and (audio_path.startswith("data:audio") or is_base64(audio_path)):
+        # Remove header if present
+        b64_data = audio_path
+        if audio_path.startswith("data:audio"):
+            b64_data = audio_path.split(",")[1]
+        audio_bytes = base64.b64decode(b64_data)
+        if is_wav_bytes(audio_bytes):
+            logger.info(f"Input base64 audio is already WAV format ({len(audio_bytes)} bytes)")
+            return base64.b64encode(audio_bytes).decode("utf-8")
+        else:
+            # Convert to WAV using pydub
+            try:
+                audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
+                buf = io.BytesIO()
+                audio.export(buf, format="wav")
+                wav_bytes = buf.getvalue()
+                logger.info(f"Converted base64 audio to WAV format ({len(wav_bytes)} bytes)")
+                return base64.b64encode(wav_bytes).decode("utf-8")
+            except Exception as e:
+                logger.error(f"Failed to convert base64 audio to WAV: {e}")
+                raise ValueError("Invalid base64 audio data or unsupported format")
+    else:
+        # Assume it's a file path
+        with open(audio_path, "rb") as f:
+            audio_bytes = f.read()
+        if is_wav_bytes(audio_bytes):
+            logger.info(f"Input file is already WAV format ({len(audio_bytes)} bytes)")
+            return base64.b64encode(audio_bytes).decode("utf-8")
+        else:
+            try:
+                audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
+                buf = io.BytesIO()
+                audio.export(buf, format="wav")
+                wav_bytes = buf.getvalue()
+                logger.info(f"Converted file audio to WAV format ({len(wav_bytes)} bytes)")
+                return base64.b64encode(wav_bytes).decode("utf-8")
+            except Exception as e:
+                logger.error(f"Failed to convert file audio to WAV: {e}")
+                raise ValueError("Invalid audio file or unsupported format")
+
 if __name__ == "__main__":
     audio = "audio.wav"
     audio_b64 = encode_audio_base64(audio)
-    decoded_audio = validate_and_decode_base64_audio(audio_b64)
-    is_valid = validate_wav_pcm(decoded_audio)
-    print(f"Is valid PCM WAV: {is_valid}")
+    savedAudioBase64 = save_temp_audio(audio_b64, "test_request", "clone")
+    print(f"Saved location -- {savedAudioBase64}")

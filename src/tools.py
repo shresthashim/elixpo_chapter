@@ -21,14 +21,14 @@ tools = [
                     },
                     "reference_audio_data_path": {
                         "type": "string",
-                        "description" : "Optional, path to the file containing base64 string of the voice to be cloned",
+                        "description": "Optional, path to the file containing base64 string of the voice to be cloned",
                     },
                     "reference_audio_text": {
                         "type": "string",
                         "description": "Optional text corresponding to the reference audio.",
                     }
                 },
-                "required": ["query"]
+                "required": ["text", "requestID"]
             }
         }
     },
@@ -40,20 +40,16 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "chattemplate": {
-                        "type": "object",
-                        "description": "The chat template object generated for the speaker."
-                    },
-                    "temp_audio_path": {
+                    "chatTemplate_path": {
                         "type": "string",
-                        "description" : "Optional, path to the file containing base64 string of the voice to be cloned",
+                        "description": "The file path to the chat template generated for the speaker."
                     },
                     "seed": {
                         "type": "integer",
                         "description": "Optional random seed for deterministic synthesis."
                     }
                 },
-                "required": ["chattemplate"]
+                "required": ["chatTemplate_path"]
             }
         }
     },
@@ -72,9 +68,13 @@ tools = [
                     "multiSpeaker": {
                         "type": "boolean",
                         "description": "Whether the scene involves multiple speakers with distinct styles and interactions."
+                    },
+                    "voiceCloning": {
+                        "type": "boolean",
+                        "description": "Whether to adapt the instruction for voice cloning.",
                     }
                 },
-                "required": ["text"]
+                "required": ["text", "multiSpeaker", "voiceCloning"]
             }
         }
     },
@@ -93,7 +93,6 @@ tools = [
                     "max_tokens": {
                         "type": "integer",
                         "description": "Maximum number of tokens for the generated script.",
-                        "default": 1024
                     }
                 },
                 "required": ["prompt"]
@@ -103,14 +102,18 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "transcribe_audio",
+            "name": "transcribe_audio_from_base64",
             "description": "Transcribes speech from a base64-encoded audio file using OpenAI Whisper.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "b64_file": {
+                    "b64_audio_path": {
                         "type": "string",
                         "description": "Path to the file containing the base64-encoded audio data."
+                    },
+                    "reqID": {
+                        "type": "string",
+                        "description": "Unique identifier for the transcription request."
                     },
                     "model_size": {
                         "type": "string",
@@ -118,56 +121,9 @@ tools = [
                         "default": "small"
                     }
                 },
-                "required": ["b64_file"]
+                "required": ["b64_audio_path", "reqID"]
             }
         }
     },
-    {
-        "type": "function",
-        "function": {
-            "name": "save_temp_audio",
-            "description": "Validates and saves audio data to a temporary file, returning the file path.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "audio_data": {
-                        "type": "string",
-                        "description": "Base64-encoded audio data to be saved."
-                    },
-                    "req_id": {
-                        "type": "string",
-                        "description": "A unique identifier for the request, used in the filename."
-                    },
-                    "suffix": {
-                        "type": "string",
-                        "description": "Optional file extension (e.g., .wav, .mp3, .flac, .ogg).",
-                        "default": ".wav"
-                    },
-                    "useCase": {
-                        "type": "string",
-                        "description": "Optional, specifies the use case for the audio file 'clone' or 'synthesis' to determine the filename pattern.",
-                        "default": "clone"
-                    }
-                },
-                "required": ["audio_data", "req_id"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "download_audio",
-            "description": "Downloads audio data from a URL with retries, validation, and size checks.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "type": "string",
-                        "description": "The URL of the audio file to download."
-                    }
-                },
-                "required": ["url"]
-            }
-        }
-    },
+    
 ]

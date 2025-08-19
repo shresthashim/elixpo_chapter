@@ -1,10 +1,13 @@
 import requests
 from dotenv import load_dotenv
+from typing import Optional
 import os
+from loguru import logger
 
 load_dotenv()
 
-def generate_script(prompt: str, max_tokens: int = 1024) -> str:
+def generate_script(prompt: str, max_tokens: Optional[int] = 1024) -> str:
+    logger.info(f"Generating script for prompt: {prompt} with max tokens: {max_tokens}")
     payload = {
         "model": "mistral",
         "messages": [
