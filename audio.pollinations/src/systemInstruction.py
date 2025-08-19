@@ -44,7 +44,8 @@ def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False ) ->
         "private": True,
         "token" : os.getenv("POLLI_TOKEN"),
         "referrer" : "elixpoart",
-        "max_tokens" : 300
+        "max_tokens" : 300,
+        "seed" : 42
     }
 
     response = requests.post("https://text.pollinations.ai/openai", json=payload)

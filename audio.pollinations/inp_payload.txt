@@ -27,7 +27,7 @@
 
 ssget?text=Transcribe%20this%3A&audio={url}&system=optional_system_prompt
 
-TTS --> TEXT TO SPEECH (audio modality output) [checked]
+TTS --> TEXT TO SPEECH (audio modality output)
 STS --> SPEECH TO SPEECH (audio modality output)
 STT --> SPEECH TO TEXT (text modality output)
 TTT --> TEXT TO TEXT (text modality output)

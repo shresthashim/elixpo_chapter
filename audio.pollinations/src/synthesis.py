@@ -17,7 +17,8 @@ higgs_engine: Optional[HiggsAudioServeEngine] = None
 async def synthesize_speech(
     chattemplate,
     temp_audio_path: Optional[str] = None,
-    seed: Optional[int] = None
+    seed: Optional[int] = None,
+    higgs_engine: Optional[HiggsAudioServeEngine] = None
 ) -> bytes:
     if higgs_engine is None:
         raise HTTPException(status_code=500, detail="TTS engine not initialized")
