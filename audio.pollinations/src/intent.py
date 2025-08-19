@@ -3,97 +3,118 @@ import json
 import os
 import random
 import logging
-from datetime import datetime, timezone
-from tools import tools
-from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
+from fastapi import HTTPException
 import asyncio
-from utility import encode_audio_base64, validate_and_decode_base64_audio, save_temp_audio
+from load_models import higgs_engine
+from tools import tools
+from config import TEMP_SAVE_DIR
+from utility import processCloneInputAudio, processSynthesisInputAudio, cleanup_temp_file
 from templates import create_speaker_chat
 from systemInstruction import generate_higgs_system_instruction
 from synthesis import synthesize_speech
+from scriptGenerator import generate_script
+from transcribe import transcribe_audio_from_base64
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("elixpo-audio")
 
 POLLINATIONS_TOKEN = os.getenv("POLLI_TOKEN")
-MODEL = "mistral"
+MODEL = os.getenv("MODEL")
 REFERRER = os.getenv("REFERRER")
 POLLINATIONS_ENDPOINT = "https://text.pollinations.ai/openai"
 
 
 async def run_elixpoaudio_pipeline(
-    text: str = None,
-    system_instruction: str = None,
-    reference_audio: str = None,
-    reference_audio_text: str = None,
     reqID: str = None,
-    event_id: str = None
+    text: str = None,
+    speechInput: str = None, #this is b64 speech input for STS or STT 
+    reference_audio: str = None, #this is b64 voice clone input
+    reference_audio_text: str = None, #this is transcript of the cloned voice
+    system_instruction: str = None,
+    
 ):
-    logger.info(f"Starting Audio Pipeline for reqID={reqID}")
+    b64_save_path_clone = None
+    b64_save_path_synthesis = None
+    logger.info(f" [{reqID}] Starting Audio Pipeline")
+    if (reference_audio):
+        b64_save_path_clone = processCloneInputAudio(reference_audio, reqID)
+    if (speechInput):
+       b64_save_path_synthesis = processSynthesisInputAudio(speechInput, reqID)
+    logger.info(f"[{reqID}] Saved base64 for the required media ")
 
-    def format_sse(event: str, data: str) -> str:
-        lines = data.splitlines()
-        data_str = ''.join(f"data: {line}\n" for line in lines)
-        return f"event: {event}\n{data_str}\n\n"
-
-    def emit_event(event_type, message):
-        if event_id:
-            return format_sse(event_type, message)
-        return None
-
-    initial_event = emit_event("INFO", f" Initiating Audio Pipeline reqID={reqID} ")
-    if initial_event:
-        yield initial_event
-
+    
     try:
-        current_utc_time = datetime.now(timezone.utc)
-
         messages = [
-            {
-                "role": "system",
-                "content": f"""
-You are an intent router and pipeline orchestrator for a multimodal model called Higgs.
+    {
+        "role": "system",
+        "content": f"""
+        You are an expert intention analyst for Elixpo Audio Service.  
+        You are provided with tools and user context.  
+        Your task is to **dynamically infer the user's true intent** from the inputs and generate the correct sequence of tool calls.  
 
-Inputs: 
-- text (optional)
-- system_instruction (optional)
-- reference_audio_data (optional)
-- reference_audio_url (optional)
-- reference_audio_text (optional)
+        ---
 
-INTENTS:
-- TTS: text → audio
-- STT: audio → text
-- STS: audio → audio
-- TTT: text → text
+        ### Core Logic:
+        1. **Text-only input**  
+        - If it looks like a *script generation request* (storytelling, scene writing, cinematic instruction) →  
+            Call [`generate_script`] → return **Text**.  
+        - Otherwise →  
+            Call [`generate_higgs_system_instruction`] (detect if multi-speaker or not from text/system).  
+            Then call [`create_speaker_chat`] → [`synthesize_speech`] → return **Audio**.  
 
-Decision Framework:
-1. If text + system_instruction → could be TTT or TTS.
-   - If prompt looks like script/narration request → TTT (use generate_script).
-   - Else → TTS (prepare chat template + synthesize_speech).
-2. If text only → TTS (if narration) or TTT (if script request).
-3. If audio only → STT (use transcribe_audio).
-4. If audio + text → STS (default = clone voice, else synthesis).
-5. If audio_url provided → download_audio → save_temp_audio.
-6. Always propagate reqID in calls.
+        2. **Audio-only input**  
+        - Call [`transcribe_audio_from_base64`] → return **Text transcription**.  
 
-Performance Guidance:
-- For TTS: If system_instruction not present, call generate_higgs_system_instruction to create it.
-- For STS: Use reference_audio_text if provided for cloning context.
-- Always return audio for TTS/STS, text for STT/TTT.
-{current_utc_time}
+        3. **Clone-Audio-Path + Text/System**  
+        - If cloning is enabled, ensure [`generate_higgs_system_instruction`] adapts to provided voice.  
+        - Then call [`create_speaker_chat`] (with reference audio).  
+        - Finally call [`synthesize_speech`] → return **Audio**.  
+
+        4. **Clone-Audio-Path + Synthesis-Audio + Text/System**  
+        - This is **Speech-to-Speech with cloning**.  
+        - Use reference audio for voice style, and synthesis audio as base input.  
+        - Pipeline: [`generate_higgs_system_instruction`] → [`create_speaker_chat`] (with both audios) → [`synthesize_speech`] → return **Audio**.  
+
+        ---
+
+        ### Dynamic Understanding Rules:
+        - **Detect multi-speaker needs**: If text/system mentions "dialogue", "multiple speakers", or contains roles → treat as multi-speaker.  
+        - **Detect script generation intent**: If request asks for "script", "scene", "story", or "expand narration" → use `generate_script`.  
+        - **Voice cloning**: If `Clone-Audio-Path` is present → always adapt Higgs instructions to provided reference voice.  
+        - **Transcription**: If input is only audio (no text/system) → `transcribe_audio_from_base64`.  
+        - **Final Output Type**: Explicitly indicate whether result is **Text** (script/transcription) or **Audio** (synthesized/cloned voice).  
+
+        ---
+
+        ### Available Tools:
+        - `create_speaker_chat(text, requestID, system, reference_audio_data_path, reference_audio_text)`
+        - `generate_higgs_system_instruction(text: str, multiSpeaker: bool, voiceCloning: bool)`
+        - `synthesize_speech(chatTemplate, higgs_engine)`
+        - `generate_script(prompt: str, max_tokens: int)`
+        - `transcribe_audio_from_base64(audio_data: str, reqID: str)`
+
+        ---
+
+        ### Output Format:
+        Always return a **sequential array of tool calls** showing the processing pipeline in order.  
+        At the end, clearly state the **final response type** (`Text` or `Audio`).  
+
+        Final Response: Audio or Text
 """
-            },
-            {
-                "role": "user",
-                "content": f"""RequestID: {reqID}
-Text: {text}
-System Instruction: {system_instruction}
-Reference Audio Text: {reference_audio_text}
+    },
+    {
+        "role": "user",
+        "content": f"""
+        RequestID: {reqID}
+        Text: {text}
+        System: {system_instruction}
+        Reference Audio Text: {reference_audio_text}
+        Clone-Audio-Path: {b64_save_path_clone}
+        Synthesis-Audio: {b64_save_path_synthesis}
 """
-            }
-        ]
+    }
+]
 
         max_iterations = 6
         current_iteration = 0
@@ -123,8 +144,6 @@ Reference Audio Text: {reference_audio_text}
             except requests.exceptions.RequestException as e:
                 error_text = getattr(e.response, "text", "[No error text]")
                 logger.error(f"Pollinations API call failed: {e}\n{error_text}")
-                if event_id:
-                    yield format_sse("error", f"[ERROR] Pollinations API failed: {e}")
                 break
 
             assistant_message = response_data["choices"][0]["message"]
@@ -143,8 +162,56 @@ Reference Audio Text: {reference_audio_text}
 
                 try:
                     if fn_name == "create_speaker_chat":
-                        # tool_result = create_speaker_chat(**fn_args)
-                        pass
+                        text = fn_args.get("text")
+                        requestID = fn_args.get("requestID")
+                        system = fn_args.get("system")
+                        reference_audio_data_path = fn_args.get("reference_audio_data_path")
+                        reference_audio_text = fn_args.get("reference_audio_text")
+                        chatTemplate = create_speaker_chat(
+                            text=text,
+                            requestID=requestID,
+                            system=system,
+                            reference_audio_data_path=reference_audio_data_path,
+                            reference_audio_text=reference_audio_text
+                        )
+                        tool_result = f"Saved ChatTemplate at location: {chatTemplate}"
+                    elif fn_name == "generate_higgs_system_instruction":
+                        text = fn_args.get("text")
+                        multiSpeaker = fn_args.get("multiSpeaker", False)
+                        voiceCloning = fn_args.get("voiceCloning", False)
+                        system_instruction = generate_higgs_system_instruction(
+                            text=text,
+                            multiSpeaker=multiSpeaker,
+                            voiceCloning=voiceCloning
+                        )
+                        tool_result = system_instruction
+
+                    elif fn_name == "generate_script":
+                        prompt = fn_args.get("prompt")
+                        max_tokens = fn_args.get("max_tokens", 200)
+                        script = generate_script(prompt, max_tokens)
+                        tool_result = f"Generated script: {script}"
+                    
+                    elif fn_name == "transcribe_audio_from_base64":
+                        audio_data_path = fn_args.get("b64_audio_path")
+                        reqID = fn_args.get("reqID")
+                        transcript = transcribe_audio_from_base64(audio_data_path, reqID)
+                        tool_result = f"Transcription: {transcript}"
+
+                    elif fn_name == "synthesize_speech":
+                        global higgs_engine
+                        chatTemplate_path = fn_args.get("chatTemplate_path")
+                        seed = fn_args.get("seed", None)
+                        if not higgs_engine:
+                            raise HTTPException(status_code=500, detail="Higgs engine not initialized")
+                        audio_bytes = await synthesize_speech(
+                            chatTemplate_path=chatTemplate_path,
+                            seed=seed,
+                            higgs_engine=higgs_engine
+                        )
+                        with open(f"/tmp/higgs/{reqID}_output.wav", "wb") as f:
+                            f.write(audio_bytes)
+                        tool_result = f"Audio synthesized successfully, size: {len(audio_bytes)} bytes"
 
                     else:
                         tool_result = f"[ERROR] Unknown tool: {fn_name}"
@@ -165,17 +232,28 @@ Reference Audio Text: {reference_audio_text}
 
         if final_message_content:
             logger.info(f"Final content for reqID={reqID}")
-            if event_id:
-                yield format_sse("final", final_message_content)
+            if "Audio synthesized successfully" in final_message_content or final_message_content.lower().startswith("audio"):
+                result = {
+                    "type": "audio",
+                    "data": f"/tmp/higgs/{reqID}_output.wav",
+                    "reqID": reqID
+                }
             else:
-                print(final_message_content)
-            return
+                result = {
+                    "type": "text",
+                    "data": final_message_content,
+                    "reqID": reqID
+                }
+
+            return result
         else:
             error_msg = f"[ERROR] Audio Pipeline failed after {max_iterations} iterations for reqID={reqID}"
             logger.error(error_msg)
-            if event_id:
-                yield format_sse("error", error_msg)
-
+            return {
+                "type": "error",
+                "message": error_msg,
+                "reqID": reqID
+            }
     except Exception as e:
         logger.error(f"Pipeline error: {e}", exc_info=True)
     finally:
@@ -185,25 +263,28 @@ Reference Audio Text: {reference_audio_text}
 
 
 if __name__ == "__main__":
-
     async def main():
-        audio = "audio.wav"
-        # base64_audio = encode_audio_base64(audio)
-        # audio_bytes = validate_and_decode_base64_audio(base64_audio)
-        # saved_audio = save_temp_audio(audio_bytes, "test_req_id", useCase="clone")
-        # print(saved_audio)
-        audio_text = "Welcome to Elixpo"
-        text = "Speak this out for me -- in a calm cozy voice 'Hey, welcome to the test run for MOE Service'"
-        logger.info(f"Creating chat template now!")
-        systemInstruction = generate_higgs_system_instruction(text, False)
-        print(f"System Instruction: {systemInstruction}")
-        text = "Hey, welcome to the test run for MOE Service"
-        chatTemplate, reqID = create_speaker_chat(text, "test_req_id", system=systemInstruction, reference_audio_path=audio, reference_audio_text=audio_text)
-        print(f"Chat Template created with request ID: {reqID}")
-        # print(chatTemplate)
-        higgs_engine = HiggsAudioServeEngine("bosonai/higgs-audio-v2-generation-3B-base", "bosonai/higgs-audio-v2-tokenizer")
-        audio = await synthesize_speech(chatTemplate, higgs_engine=higgs_engine)
-        with open("output_intent.wav", "wb") as f:
-            f.write(audio)
-        print("Audio saved as output_intent.wav")
+        text = "Hey, what's going on guys!! Do you wanna play a game of tug?"
+        requestID = "123Request"
+
+        result = await run_elixpoaudio_pipeline(reqID=requestID, text=text)
+
+        if not result:
+            print("[ERROR] Pipeline returned None")
+            return
+
+        if result["type"] == "text":
+            print(f"[Pipeline Result | Text]\n{result['data']}")
+
+        elif result["type"] == "audio":
+            audio_path = "genAudio/"
+            if os.path.exists(audio_path):
+                print(f"[Pipeline Result | Audio] Saved at: {audio_path}")
+            else:
+                print(f"[WARNING] Expected audio file not found at: {audio_path}")
+
+        elif result["type"] == "error":
+            print(f"[Pipeline Error] {result['message']}")
+        cleanup_temp_file(f"{TEMP_SAVE_DIR}{requestID}")
+
     asyncio.run(main())

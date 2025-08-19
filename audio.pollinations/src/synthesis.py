@@ -15,14 +15,16 @@ from templates import create_speaker_chat
 higgs_engine: Optional[HiggsAudioServeEngine] = None
 
 async def synthesize_speech(
-    chattemplate,
-    temp_audio_path: Optional[str] = None,
+    chatTemplate_path: str,
     seed: Optional[int] = None,
     higgs_engine: Optional[HiggsAudioServeEngine] = None
 ) -> bytes:
     if higgs_engine is None:
         raise HTTPException(status_code=500, detail="TTS engine not initialized")
     try:
+
+        with open(chatTemplate_path, "r") as f:
+            chatTemplate = f.read()
         logger.info(f"Processing chat template for synthesis")
         temperature: float = 0.7
         top_p: float = 0.95
@@ -30,7 +32,7 @@ async def synthesize_speech(
         set_random_seed(seed)
         try:
             response = higgs_engine.generate(
-                chat_ml_sample=chattemplate,
+                chat_ml_sample=chatTemplate,
                 max_new_tokens=2048,
                 temperature=temperature,
                 top_k=top_k if top_k > 0 else None,
@@ -46,7 +48,7 @@ async def synthesize_speech(
             logger.error(f"Generation traceback: {traceback.format_exc()}")
             logger.info("Retrying with minimal parameters...")
             response = higgs_engine.generate(
-                chat_ml_sample=chattemplate,
+                chat_ml_sample=chatTemplate,
                 max_new_tokens=512,
                 temperature=0.8,
                 force_audio_gen=True
@@ -66,13 +68,6 @@ async def synthesize_speech(
     except Exception as e:
         logger.error(f"Synthesis error: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Synthesis failed: {str(e)}")
-    finally:
-        if temp_audio_path:
-            try:
-                os.remove(temp_audio_path)
-                logger.info(f"Temporary audio file {temp_audio_path} cleaned up")
-            except Exception as cleanup_error:
-                logger.error(f"Failed to clean up temporary audio file: {cleanup_error}")
 
 if __name__ == "__main__":
     

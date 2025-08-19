@@ -5,6 +5,8 @@ from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
 from loguru import logger
 from utility import normalize_text
 import sys
+from config import TEMP_SAVE_DIR
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 higgs_engine: Optional[HiggsAudioServeEngine] = None
@@ -13,7 +15,7 @@ def create_speaker_chat(
     text: str,
     requestID: str,
     system: Optional[str] = None,
-    reference_audio_path: Optional[str] = None,
+    reference_audio_data_path: Optional[str] = None,
     reference_audio_text: Optional[str] = None
 ) -> ChatMLSample:
     logger.info(f"Creating chat template for request {requestID} with text: {text}")
@@ -39,7 +41,10 @@ Generate audio following instruction.\n
         )
     )
 
-    if reference_audio_path:
+
+    if reference_audio_data_path:
+        with open(reference_audio_data_path, "r") as f:
+            reference_audio_data = f.read()
         if reference_audio_text:
             messages.append(
                 Message(
@@ -54,11 +59,11 @@ Generate audio following instruction.\n
                     content="Please clone this voice.",
                 )
             )
-       
+        
         messages.append(
             Message(
                 role="assistant",  
-                content=[AudioContent(audio_url=reference_audio_path)],
+                content=[AudioContent(raw_audio=reference_audio_data, audio_url="")],
             )
         )
 
@@ -71,7 +76,10 @@ Generate audio following instruction.\n
 
     logger.info(f"Created chat template with {len(messages)} messages for request {requestID}")
     
-    return ChatMLSample(messages=messages), requestID
+    with open(f"{TEMP_SAVE_DIR}{requestID}/chatTemplate.txt", "w", encoding="utf-8") as f:
+        f.write(ChatMLSample(messages))
+
+    return f"{TEMP_SAVE_DIR}{requestID}/chatTemplate.txt"
 
 
 if __name__ == "__main__":
@@ -81,6 +89,4 @@ if __name__ == "__main__":
         "Recorded in a very noisy street"
     )
     print(template)
-    os.makedirs(f"/temp/higgs/{request_id}/", exist_ok=True)
-    with open(f"/temp/higgs/{request_id}/chatTemplate.txt", "w", encoding="utf-8") as f:
-        f.write(str(template))
+    print(f"Chat template saved to {template}")
