@@ -16,10 +16,11 @@ def create_speaker_chat(
     text: str,
     requestID: str,
     system: Optional[str] = None,
-    reference_audio_data_path: Optional[str] = None,
+    clone_audio_path: Optional[str] = None,
     reference_audio_text: Optional[str] = None
 ) -> ChatMLSample:
     logger.info(f"Creating chat template for request {requestID} with text: {text}")
+    messages = []
     if system:
         if "<|scene_desc_start|>" in system and "<|scene_desc_end|>" not in system:
             systemPromptWrapper: str = f"""
@@ -35,7 +36,7 @@ def create_speaker_chat(
         else:
             systemPromptWrapper: str = system
 
-        messages = []
+        
         messages.append(
             Message(
                 role="system",
@@ -44,8 +45,8 @@ def create_speaker_chat(
         )
 
 
-    if reference_audio_data_path:
-        with open(reference_audio_data_path, "r") as f:
+    if clone_audio_path:
+        with open(clone_audio_path, "r") as f:
             reference_audio_data = f.read()
         if reference_audio_text:
             messages.append(
@@ -78,11 +79,20 @@ def create_speaker_chat(
 
     logger.info(f"Created chat template with {len(messages)} messages for request {requestID}")
     os.makedirs(f"{TEMP_SAVE_DIR}{requestID}", exist_ok=True)
+    
     def serialize_message(msg: Message):
+        # Handles both string and list-of-AudioContent for content
+        if isinstance(msg.content, str):
+            content = msg.content
+        elif isinstance(msg.content, list):
+            # Ensure all items are dicts (for AudioContent or future types)
+            content = [c.__dict__ if hasattr(c, "__dict__") else c for c in msg.content]
+        else:
+            # Fallback for unexpected types
+            content = str(msg.content)
         return {
             "role": msg.role,
-            "content": msg.content if isinstance(msg.content, str)
-                      else [c.dict() for c in msg.content]
+            "content": content
         }
 
     serialized_messages = [serialize_message(m) for m in messages]

@@ -1,7 +1,7 @@
 import json
 from typing import Optional
 from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
-from boson_multimodal.data_types import ChatMLSample, Message
+from boson_multimodal.data_types import ChatMLSample, Message, AudioContent
 from fastapi import HTTPException
 from utility import set_random_seed
 from loguru import logger
@@ -16,6 +16,13 @@ from templates import create_speaker_chat
 
 higgs_engine: Optional[HiggsAudioServeEngine] = None
 
+def reconstruct_message(m):
+    # If content is a list, reconstruct AudioContent objects
+    content = m["content"]
+    if isinstance(content, list):
+        content = [AudioContent(**c) for c in content]
+    return Message(role=m["role"], content=content)
+
 async def synthesize_speech(
     chatTemplate_path: str,
     seed: Optional[int] = None,
@@ -27,7 +34,8 @@ async def synthesize_speech(
 
         with open(chatTemplate_path, "r", encoding="utf-8") as f:
             messages = json.load(f)   # list of dicts
-        chatTemplate = ChatMLSample(messages=[Message(**m) for m in messages])
+        # FIX: reconstruct Message and AudioContent objects
+        chatTemplate = ChatMLSample(messages=[reconstruct_message(m) for m in messages])
         logger.info(f"Processing chat template for synthesis")
         temperature: float = 0.7
         top_p: float = 0.95
