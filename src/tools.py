@@ -17,7 +17,7 @@ tools = [
                     },
                     "system": {
                         "type": "string",
-                        "description": "Optional system prompt or scene description for the speaker.",
+                        "description": "system prompt or scene description for the speaker.",
                     },
                     "reference_audio_data_path": {
                         "type": "string",
@@ -99,5 +99,75 @@ tools = [
                 "required": ["prompt"]
             }
         }
-    }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "transcribe_audio",
+            "description": "Transcribes speech from a base64-encoded audio file using OpenAI Whisper.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "b64_file": {
+                        "type": "string",
+                        "description": "Path to the file containing the base64-encoded audio data."
+                    },
+                    "model_size": {
+                        "type": "string",
+                        "description": "Optional Whisper model size to use (e.g., tiny, base, small, medium, large).",
+                        "default": "small"
+                    }
+                },
+                "required": ["b64_file"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "save_temp_audio",
+            "description": "Validates and saves audio data to a temporary file, returning the file path.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "audio_data": {
+                        "type": "string",
+                        "description": "Base64-encoded audio data to be saved."
+                    },
+                    "req_id": {
+                        "type": "string",
+                        "description": "A unique identifier for the request, used in the filename."
+                    },
+                    "suffix": {
+                        "type": "string",
+                        "description": "Optional file extension (e.g., .wav, .mp3, .flac, .ogg).",
+                        "default": ".wav"
+                    },
+                    "useCase": {
+                        "type": "string",
+                        "description": "Optional, specifies the use case for the audio file 'clone' or 'synthesis' to determine the filename pattern.",
+                        "default": "clone"
+                    }
+                },
+                "required": ["audio_data", "req_id"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "download_audio",
+            "description": "Downloads audio data from a URL with retries, validation, and size checks.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The URL of the audio file to download."
+                    }
+                },
+                "required": ["url"]
+            }
+        }
+    },
 ]

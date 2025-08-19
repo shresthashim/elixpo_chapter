@@ -1,21 +1,32 @@
 import whisper
+import base64
+import tempfile
+import os
 
-def transcribe_audio(file_path: str, model_size: str = "large") -> str:
-    """
-    Transcribe speech from an audio file using OpenAI Whisper.
+def transcribe_audio(b64_file: str, model_size: str = "small") -> str:
 
-    Args:
-        file_path (str): Path to the audio file.
-        model_size (str): Whisper model size (tiny, base, small, medium, large).
+    with open(b64_file, "r") as f:
+        b64_audio = f.read().strip()
 
-    Returns:
-        str: Transcribed text.
-    """
-    model = whisper.load_model(model_size)  # runs on GPU automatically if available
-    result = model.transcribe(file_path)
-    return result["text"]
+
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp_file:
+        tmp_file.write(base64.b64decode(b64_audio))
+        audio_path = tmp_file.name  
+
+    try:
+
+        model = whisper.load_model(model_size)
+        result = model.transcribe(audio_path)
+
+        return result["text"]
+
+    finally:
+
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+
 
 if __name__ == "__main__":
-    text = transcribe_audio("example.mp3", model_size="large")
+    text = transcribe_audio("audio_base64.txt", model_size="small")
     print("\n--- Transcription ---\n")
     print(text)
