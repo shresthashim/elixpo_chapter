@@ -76,6 +76,8 @@ async def run_elixpoaudio_pipeline(
         - Use reference audio for voice style, and synthesis audio as base input.  
         - Pipeline: [`generate_higgs_system_instruction`] → [`create_speaker_chat`] (with both audios) → [`synthesize_speech`] → return **Audio**.  
 
+        5.
+        - ** Always create a system instruction if it is not provided by the user. Use the `generate_higgs_system_instruction` tool to create a cinematic system instruction based on the provided text.
         ---
 
         ### Dynamic Understanding Rules:
@@ -84,6 +86,7 @@ async def run_elixpoaudio_pipeline(
         - **Voice cloning**: If `Clone-Audio-Path` is present → always adapt Higgs instructions to provided reference voice.  
         - **Transcription**: If input is only audio (no text/system) → `transcribe_audio_from_base64`.  
         - **Final Output Type**: Explicitly indicate whether result is **Text** (script/transcription) or **Audio** (synthesized/cloned voice).  
+        - ** Always create a system instruction if it is not provided by the user. Use the `generate_higgs_system_instruction` tool to create a cinematic system instruction based on the provided text.
 
         ---
 
@@ -96,10 +99,15 @@ async def run_elixpoaudio_pipeline(
 
         ---
 
+        When you produce your final response, always prefix it with one of these tags:
+        - [[AUDIO]] if the final output is audio
+        - [[TEXT]] if the final output is plain text
+
+        Do not include both. Do not omit the tag.
+
         ### Output Format:
         Always return a **sequential array of tool calls** showing the processing pipeline in order.  
         At the end, clearly state the **final response type** (`Text` or `Audio`).  
-
         Final Response: Audio or Text
 """
     },
@@ -209,9 +217,16 @@ async def run_elixpoaudio_pipeline(
                             seed=seed,
                             higgs_engine=higgs_engine
                         )
-                        with open(f"/tmp/higgs/{reqID}_output.wav", "wb") as f:
+
+                        output_dir = "genAudio"
+                        os.makedirs(output_dir, exist_ok=True)
+                        output_path = os.path.join(output_dir, f"{reqID}.wav")
+
+                        with open(output_path, "wb") as f:
                             f.write(audio_bytes)
-                        tool_result = f"Audio synthesized successfully, size: {len(audio_bytes)} bytes"
+
+                        tool_result = f"Audio synthesized successfully, path: {output_path}, size: {len(audio_bytes)} bytes"
+
 
                     else:
                         tool_result = f"[ERROR] Unknown tool: {fn_name}"
@@ -231,17 +246,35 @@ async def run_elixpoaudio_pipeline(
             logger.info(f"Completed tool execution for iteration {current_iteration} reqID={reqID}")
 
         if final_message_content:
-            logger.info(f"Final content for reqID={reqID}")
-            if "Audio synthesized successfully" in final_message_content or final_message_content.lower().startswith("audio"):
+            logger.info(f"Final content for reqID={reqID}: {final_message_content[:100]}...")
+
+            if final_message_content.startswith("[[AUDIO]]"):
+                # Save audio
                 result = {
                     "type": "audio",
-                    "data": f"/tmp/higgs/{reqID}_output.wav",
+                    "data": f"genAudio/{reqID}.wav",
                     "reqID": reqID
                 }
-            else:
+
+            elif final_message_content.startswith("[[TEXT]]"):
+                clean_text = final_message_content.replace("[[TEXT]]", "", 1).strip()
+
+                output_dir = "genAudio"
+                os.makedirs(output_dir, exist_ok=True)
+                text_path = os.path.join(output_dir, f"{reqID}.txt")
+                with open(text_path, "w", encoding="utf-8") as f:
+                    f.write(clean_text)
+
                 result = {
                     "type": "text",
-                    "data": final_message_content,
+                    "data": text_path,
+                    "reqID": reqID
+                }
+
+            else:
+                result = {
+                    "type": "error",
+                    "message": "Final response missing required [[TEXT]] or [[AUDIO]] tag",
                     "reqID": reqID
                 }
 

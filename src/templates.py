@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 import os
 from boson_multimodal.data_types import ChatMLSample, Message, AudioContent
@@ -19,27 +20,28 @@ def create_speaker_chat(
     reference_audio_text: Optional[str] = None
 ) -> ChatMLSample:
     logger.info(f"Creating chat template for request {requestID} with text: {text}")
-    if "<|scene_desc_start|>" in system and "<|scene_desc_end|>" not in system:
-        systemPromptWrapper: str = f"""
-(
-Generate audio following instruction.\n
-"Speak at a moderate pace — not too slow, not rushed. \n
-"Build suspense dynamically — speed up or slow down when the moment calls for it. If there’s tension, let the listener feel it; if it’s joyful, let that energy shine through. \n"
-<|scene_desc_start|>\n
-"{system}"
-<|scene_desc_end|>
-)
-        """
-    else:
-        systemPromptWrapper: str = system
-
-    messages = []
-    messages.append(
-        Message(
-            role="system",
-            content=systemPromptWrapper,
-        )
+    if system:
+        if "<|scene_desc_start|>" in system and "<|scene_desc_end|>" not in system:
+            systemPromptWrapper: str = f"""
+    (
+    Generate audio following instruction.\n
+    "Speak at a moderate pace — not too slow, not rushed. \n
+    "Build suspense dynamically — speed up or slow down when the moment calls for it. If there’s tension, let the listener feel it; if it’s joyful, let that energy shine through. \n"
+    <|scene_desc_start|>\n
+    "{system}"
+    <|scene_desc_end|>
     )
+            """
+        else:
+            systemPromptWrapper: str = system
+
+        messages = []
+        messages.append(
+            Message(
+                role="system",
+                content=systemPromptWrapper,
+            )
+        )
 
 
     if reference_audio_data_path:
@@ -75,15 +77,25 @@ Generate audio following instruction.\n
     )
 
     logger.info(f"Created chat template with {len(messages)} messages for request {requestID}")
-    
-    with open(f"{TEMP_SAVE_DIR}{requestID}/chatTemplate.txt", "w", encoding="utf-8") as f:
-        f.write(ChatMLSample(messages))
+    os.makedirs(f"{TEMP_SAVE_DIR}{requestID}", exist_ok=True)
+    def serialize_message(msg: Message):
+        return {
+            "role": msg.role,
+            "content": msg.content if isinstance(msg.content, str)
+                      else [c.dict() for c in msg.content]
+        }
 
-    return f"{TEMP_SAVE_DIR}{requestID}/chatTemplate.txt"
+    serialized_messages = [serialize_message(m) for m in messages]
+
+    chat_template_path = f"{TEMP_SAVE_DIR}{requestID}/chatTemplate.json"
+    with open(chat_template_path, "w", encoding="utf-8") as f:
+        json.dump(serialized_messages, f, ensure_ascii=False, indent=2)
+
+    return chat_template_path
 
 
 if __name__ == "__main__":
-    template, request_id = create_speaker_chat(
+    template = create_speaker_chat(
         "An old woman with a very happy emotional voice, celebrating about her success in life",
         "request-123",
         "Recorded in a very noisy street"

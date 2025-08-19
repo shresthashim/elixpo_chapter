@@ -1,5 +1,7 @@
+import json
 from typing import Optional
 from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
+from boson_multimodal.data_types import ChatMLSample, Message
 from fastapi import HTTPException
 from utility import set_random_seed
 from loguru import logger
@@ -23,8 +25,9 @@ async def synthesize_speech(
         raise HTTPException(status_code=500, detail="TTS engine not initialized")
     try:
 
-        with open(chatTemplate_path, "r") as f:
-            chatTemplate = f.read()
+        with open(chatTemplate_path, "r", encoding="utf-8") as f:
+            messages = json.load(f)   # list of dicts
+        chatTemplate = ChatMLSample(messages=[Message(**m) for m in messages])
         logger.info(f"Processing chat template for synthesis")
         temperature: float = 0.7
         top_p: float = 0.95
