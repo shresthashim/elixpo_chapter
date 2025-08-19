@@ -67,18 +67,25 @@ def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False, voi
         "max_tokens": 100,
         "seed": 42
     }
-
-    response = requests.post("https://text.pollinations.ai/openai", json=payload)
-    if response.status_code != 200:
-        raise RuntimeError(f"Request failed: {response.status_code}, {response.text}")
-
-    data = response.json()
     try:
-        system_instruction = data["choices"][0]["message"]["content"]
-    except Exception as e:
-        raise RuntimeError(f"Unexpected response format: {data}") from e
+        response = requests.post("https://text.pollinations.ai/openai", json=payload, timeout=30)
+        if response.status_code != 200:
+            raise RuntimeError(f"Request failed: {response.status_code}, {response.text}")
 
-    return system_instruction.strip()
+        data = response.json()
+        try:
+            system_instruction = data["choices"][0]["message"]["content"]
+        except Exception as e:
+            raise RuntimeError(f"Unexpected response format: {data}") from e
+
+        return system_instruction.strip()
+    except requests.exceptions.Timeout:
+        return f"""
+            You are a lively and natural voice artist, adapt to the prompts 
+            and generate the emotions and the feelings of the scene so that 
+            it sounds like a perfect performance.
+
+        """
 
 
 if __name__ == "__main__":
