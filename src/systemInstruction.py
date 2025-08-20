@@ -17,6 +17,7 @@ def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False, voi
         "- Performance notes: pacing, pauses, breathing, emphasis.\n"
         "- The overall pacing should be moderate-fast: natural storytelling speed, but dynamically "
         "adapting tempo when emotions require slower or more dramatic delivery.\n"
+        "don't add any emojis or any other thing than just alphabets and numbers"
     )
 
     if voiceCloning:

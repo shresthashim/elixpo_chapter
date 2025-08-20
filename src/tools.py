@@ -23,7 +23,7 @@ tools = [
                         "type": "string",
                         "description": "Optional, path to the file containing base64 string of the voice to be cloned",
                     },
-                    "reference_audio_text": {
+                    "clone_audio_transcript": {
                         "type": "string",
                         "description": "Optional text transcript to the reference audio.",
                     }
@@ -107,7 +107,7 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "b64_audio_path": {
+                    "synthesis_audio_path": {
                         "type": "string",
                         "description": "Path to the file containing the base64-encoded audio data."
                     },
