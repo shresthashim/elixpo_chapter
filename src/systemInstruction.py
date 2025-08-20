@@ -5,8 +5,8 @@ from loguru import logger
 load_dotenv()
 
 
-def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False, voiceCloning: bool = False) -> str:
-    logger.info(f"Generating Higgs system instruction for text: {text}, multiSpeaker: {multiSpeaker}, voiceCloning: {voiceCloning}")
+def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False) -> str:
+    logger.info(f"Generating Higgs system instruction for text: {text}, multiSpeaker: {multiSpeaker}")
     base_instruction = (
         "You are a system instruction generator for a speech synthesis model called Higgs. "
         "Your job is to transform the user’s prompt into a cinematic voice performance script. "
@@ -20,25 +20,29 @@ def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False, voi
         "don't add any emojis or any other thing than just alphabets and numbers"
     )
 
-    if voiceCloning:
-        base_instruction += (
-            "- IMPORTANT: Voice cloning is enabled. A reference voice has already been provided to the Higgs model. "
-            "You must adapt all emotional delivery, pacing, and tonal variations to stay consistent with this provided voice. "
-            "Do NOT invent arbitrary new speaker identities; instead, guide how the cloned voice should shift tone, "
-            "emotion, and rhythm to match the scene.\n"
-        )
 
     if multiSpeaker:
         base_instruction = (
-            "You are a system instruction generator for a speech synthesis model called Higgs. "
-            "Your job is to turn the user’s prompt into a **performance script** for narration. "
-            "Always respond in the Higgs format with <|scene_desc_start|> and <|scene_desc_end|>. "
-            "Inside, keep the content faithful to the user’s prompt—do NOT over-embellish or add unrelated details. "
-            "Only enrich slightly with:\n"
-            "- Clear emotional and tonal guidance (calm, suspenseful, joyful, etc.).\n"
-            "- Performance notes: pacing, pauses, emphasis, breathing if needed.\n"
-            "- Keep descriptions concise and natural, focused on how to **deliver** the prompt in audio—not rewriting it into a movie scene.\n"
-            "- Pacing should feel natural: moderate speed with variation for dramatic or emotional weight.\n"
+            """
+            You are a system instruction generator for a speech synthesis model called Higgs. 
+            Your job is to turn the user’s prompt into a **performance script** for narration. 
+            Inside, keep the content faithful to the user’s prompt—do NOT over-embellish or add unrelated details. 
+            Only enrich slightly with:\n
+            - Clear emotional and tonal guidance (calm, suspenseful, joyful, etc.).\n
+            - Performance notes: pacing, pauses, emphasis, breathing if needed.\n
+            - Keep descriptions concise and natural, focused on how to **deliver** the prompt in audio—not rewriting it into a movie scene.\n
+            - Pacing should feel natural: moderate speed with variation for dramatic or emotional weight.\n
+
+            Always respond with this structure:- 
+            (
+            You are a voice synthesis engine. Speak the user’s text exactly and only as written. Do not add extra words, introductions, or confirmations.\n
+            Apply the emotions as written in the user prompt.\n
+            Generate audio following instruction.\n
+            <|scene_desc_start|>\n
+            
+            <|scene_desc_end|>\n
+            )
+            """
         )
 
 
@@ -49,14 +53,7 @@ def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False, voi
             {
                 "role": "user",
                 "content": (
-                    f"User prompt: {text}\nMulti-speaker: {multiSpeaker}\nVoice Cloning: {voiceCloning}\n"
-                    "Generate the Higgs system instruction in the following format:\n\n"
-                    "(\n"
-                    "\"Generate audio following instruction.\\n\\n\"\n"
-                    "<|scene_desc_start|>\\n\n"
-                    "[Expanded scene description + emotions + voice/speaker guidance]\\n\n"
-                    "<|scene_desc_end|>\n"
-                    ")\n"
+                    f"User prompt: {text}\nMulti-speaker: {multiSpeaker}\n"
                 )
             }
         ],
@@ -82,19 +79,17 @@ def generate_higgs_system_instruction(text: str, multiSpeaker: bool = False, voi
         return system_instruction.strip()
     except requests.exceptions.Timeout:
         return f"""
-            You are a lively and natural voice artist, adapt to the prompts 
-            and generate the emotions and the feelings of the scene so that 
-            it sounds like a perfect performance.
+            You are a voice synthesis engine. Speak the user’s text exactly and only as written. Do not add extra words, introductions, or confirmations.\n
+            Apply the emotions as written in the user prompt.\n
+            Generate audio following instruction.\n
 
         """
 
 
 if __name__ == "__main__":
-    # Example usage
     user_prompt = "A tense courtroom drama where the verdict is about to be announced."
     multi = True  
-    cloning = True  # test with cloning
 
-    system_instruction = generate_higgs_system_instruction(user_prompt, multiSpeaker=multi, voiceCloning=cloning)
+    system_instruction = generate_higgs_system_instruction(user_prompt, multiSpeaker=multi)
     print("\n--- Generated Higgs System Instruction ---\n")
     print(system_instruction)
