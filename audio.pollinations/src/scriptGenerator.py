@@ -18,7 +18,7 @@ def generate_reply(prompt: str, max_tokens: Optional[int] = 60) -> str:
                     "Your job is to generate a short, casual reply to the user's message. "
                     "Keep it concise, engaging, and natural sounding, as if chatting with a friend. "
                     "Do not write scripts, narration, or long paragraphs."
-                    "Don't use any emoji"
+                    "don't add any emojis or any other thing than just alphabets and numbers"
                 )
             },
             {

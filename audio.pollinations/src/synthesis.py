@@ -10,14 +10,19 @@ import traceback
 import torch
 import io
 import torchaudio
-import os
 import asyncio
-from templates import create_speaker_chat 
+from templates import create_speaker_chat
+import base64
 
 higgs_engine: Optional[HiggsAudioServeEngine] = None
 
+
+def encode_audio_base64(audio_path: str) -> str:
+    with open(audio_path, "rb") as f:
+        return base64.b64encode(f.read()).decode("utf-8")
+
+
 def reconstruct_message(m):
-    # If content is a list, reconstruct AudioContent objects
     content = m["content"]
     if isinstance(content, list):
         content = [AudioContent(**c) for c in content]
@@ -32,26 +37,28 @@ async def synthesize_speech(
         raise HTTPException(status_code=500, detail="TTS engine not initialized")
     try:
 
-        with open(chatTemplate_path, "r", encoding="utf-8") as f:
-            messages = json.load(f)   # list of dicts
-        # FIX: reconstruct Message and AudioContent objects
-        chatTemplate = ChatMLSample(messages=[reconstruct_message(m) for m in messages])
+        # with open(chatTemplate_path, "r", encoding="utf-8") as f:
+        #     messages = json.load(f)   
+        # chatTemplate = ChatMLSample(messages=[reconstruct_message(m) for m in messages])
+
+
+        chatTemplate = chatTemplate_path
         logger.info(f"Processing chat template for synthesis")
-        temperature: float = 0.7
+        temperature: float = 0.6
         top_p: float = 0.95
         top_k: int = 50
         set_random_seed(seed)
         try:
             response = higgs_engine.generate(
                 chat_ml_sample=chatTemplate,
-                max_new_tokens=2048,
+                max_new_tokens=1024,
                 temperature=temperature,
+                force_audio_gen=True,
                 top_k=top_k if top_k > 0 else None,
                 top_p=top_p,
                 stop_strings=DEFAULT_STOP_STRINGS,
                 ras_win_len=7,
                 ras_win_max_num_repeat=2,
-                force_audio_gen=True
             )
             logger.info(f"Waiting for audio synthesis")
         except Exception as gen_error:
@@ -82,18 +89,23 @@ async def synthesize_speech(
 
 if __name__ == "__main__":
     
-    chatTemplate = create_speaker_chat(
-        "Hmm... Once upon a time, in a small, bustling village surrounded by tall, green trees, there lived a mighty lion. The villagers would often hear his gentle roar echoing through the hills—oh, but don’t worry, he was a friendly lion! One sunny morning, as the children played near the river, the lion strolled into the village, hmm, pausing to sniff the sweet scent of fresh bread. The villagers, at first, were a little scared, but the lion sat down, swished his tail, and let out a soft, happy rumble. 'Hello, friends,' he seemed to say. From that day on, the lion and the villagers became the best of friends. They shared stories, laughter, and sometimes, hmm, even a loaf of bread or two. And so, the village was never lonely again, for they had the bravest—and kindest—lion as their friend. Hmm, what a wonderful place it was!",
-        "request-123",
-        "Add soft music to the background which will sound like a cool theme of the soundtrack, low upbeat music [SOUND EFFECTS]"
-        
-    )
+
     async def main():
         global higgs_engine
+        # chatTemplate = "/tmp/higgs/request224/chatTemplate.json"
+        cloneAudio = "audio.wav"
+        base64 = encode_audio_base64(cloneAudio)
+        chatTemplate = create_speaker_chat(
+            text = "This is a test audio being generated as a part of the api response check",
+            requestID = "request12",
+            system = "You are a voice synthesis engine. Speak the user’s text exactly and only as written. Do not add extra words, introductions, or confirmations.",
+            clone_audio_path = base64,
+            clone_audio_transcript = None
+        )
         higgs_engine = HiggsAudioServeEngine("bosonai/higgs-audio-v2-generation-3B-base", "bosonai/higgs-audio-v2-tokenizer")
-        audio_bytes = await synthesize_speech(chatTemplate)
-        with open("output.wav", "wb") as f:
+        audio_bytes = await synthesize_speech(chatTemplate, higgs_engine=higgs_engine)
+        with open("output3.wav", "wb") as f:
             f.write(audio_bytes)
-        print("Audio saved as output.wav")
+        print("Audio saved as output3.wav")
 
     asyncio.run(main())

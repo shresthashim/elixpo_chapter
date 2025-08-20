@@ -4,9 +4,9 @@ import os
 from load_models import model
 from loguru import logger
 
-def transcribe_audio_from_base64(b64_audio_path: str, reqID: str, model_size: str = "small") -> str:
-    logger.info(f"Transcribing audio from base64 file: {b64_audio_path} for request ID: {reqID} using model size: {model_size}")
-    with open(b64_audio_path, "r") as f:
+def transcribe_audio_from_base64(synthesis_audio_path: str, reqID: str, model_size: str = "small") -> str:
+    logger.info(f"Transcribing audio from base64 file: {synthesis_audio_path} for request ID: {reqID} using model size: {model_size}")
+    with open(synthesis_audio_path, "r") as f:
         b64_audio = f.read().strip()
     tmp_dir = f"/tmp/higgs/{reqID}"
     os.makedirs(tmp_dir, exist_ok=True)
@@ -21,7 +21,7 @@ def transcribe_audio_from_base64(b64_audio_path: str, reqID: str, model_size: st
 if __name__ == "__main__":
     reqID = "test_request"
     # Read base64 string from file (as saved by save_temp_audio)
-    b64_audio_path = "/tmp/higgs/test_request/voice_test_request.txt"
-    text = transcribe_audio_from_base64(b64_audio_path, reqID, model_size="small")
+    synthesis_audio_path = "/tmp/higgs/test_request/voice_test_request.txt"
+    text = transcribe_audio_from_base64(synthesis_audio_path, reqID, model_size="small")
     print("\n--- Transcription ---\n")
     print(text)

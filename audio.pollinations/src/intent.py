@@ -26,30 +26,30 @@ MODEL = os.getenv("MODEL")
 REFERRER = os.getenv("REFERRER")
 POLLINATIONS_ENDPOINT = "https://text.pollinations.ai/openai"
 
-# synthesis_audio: {b64_save_path_synthesis if b64_save_path_synthesis else None}
-# clone_audio_text: {reference_audio_text if reference_audio_text else None}
 
-async def run_elixpoaudio_pipeline(
+async def run_audio_pipeline(
     reqID: str = None,
     text: str = None,
-    speechInput: str = None, #this is b64 speech input for STS or STT 
+    synthesis_audio_path: str = None, #this is b64 speech input for STS or STT 
     clone_audio_path: str = None, #this is b64 voice clone input
-    reference_audio_text: str = None, #this is transcript of the cloned voice
+    clone_audio_transcript: str = None, #this is transcript of the cloned voice
     system_instruction: str = None,
     voice: str = "alloy" #default voice
     
 ):
-    clone_audio_path = None
-    b64_save_path_synthesis = None
+
+
     logger.info(f" [{reqID}] Starting Audio Pipeline")
+    logger.info(f"Synthesis audio {synthesis_audio_path} | Clone Audio {clone_audio_path}")
     if (clone_audio_path):
         clone_audio_path = processCloneInputAudio(clone_audio_path, reqID)
     else:
         if(voice):
             clone_audio_path = VOICE_BASE64_MAP.get(voice, "alloy")
+            print(f"[{reqID}] Using default voice clone path: {clone_audio_path}")
 
-    if (speechInput):
-       b64_save_path_synthesis = processSynthesisInputAudio(speechInput, reqID)
+    if (synthesis_audio_path):
+       synthesis_audio_path = processSynthesisInputAudio(synthesis_audio_path, reqID)
     logger.info(f"[{reqID}] Saved base64 for the required media ")
 
     
@@ -60,12 +60,23 @@ async def run_elixpoaudio_pipeline(
     "content": """
 You are Elixpo Audio, an advanced audio synthesis agent. You must follow the pipeline strictly. 
 You have access to these tools:
-- create_speaker_chat(text, requestID, system, reference_audio_data_path, reference_audio_text)
+- create_speaker_chat(text, requestID, system, reference_audio_data_path, clone_audio_transcript)
 - generate_higgs_system_instruction(text: str, multiSpeaker: bool, voiceCloning: bool)
 - synthesize_speech(chatTemplate_path, higgs_engine)
 - generate_reply(prompt: str, max_tokens: int)
 - transcribe_audio_from_base64(audio_data: str, reqID: str)
 
+
+Strict pipeline rules:
+1. Always ensure that all required information (reply or direct text, system_instruction, 
+   clone_audio_path if provided) is prepared **before** calling create_speaker_chat. 
+   Do not call it multiple times.
+2. Always call create_speaker_chat once.
+3. Always call synthesize_speech once, and only after create_speaker_chat.
+4. Never add extra overhead phrases to the spoken audio. The output audio must contain 
+   only the intended clean text.
+
+   
 There are 4 Types 
 Text to Speech (Direct TTS or Reply TTS) [AUDIO OUTPUT]
 Text to Text (Reply TTT) [TEXT OUTPUT]
@@ -73,59 +84,76 @@ Speech to Text (Direct STT or Reply STT) [TEXT OUTPUT]
 Speech to Speech (Reply STS) [AUDIO OUTPUT]
 
 Read the inputs which will be given to you 
-The Prompt, System instruction, Voice-Cloning-Path, User-Provided-Speech, RequestID
+The prompt, system_instruction, clone_audio_path, synthesis_audio_path, requestID
 
 From the prompt figure out what the user wants:- 
 1. If the user wants TTS then follow this pipeline:
 1.1 If the prompt is like generic sentence then get to reply mode
 call the generate_reply function to get a reply of the text
-1.2 Generate a system instruction if not provided by the user using generate_higgs_system_instruction
-1.3 pass the reply and system_instruction to create_speaker_chat
-1.4 call the synthesize_speech and generate the audio
-1.5 return the audio path with [AUDIO] tag
+1.2 If the prompt mentions direct TTS request, like "say this as it is" or anything similar DIRECT TTS REQUESTS
+then just pass the prompt as it is to the create_speaker_chat function no need to call generate_reply
+1.3 Generate a system instruction if not provided by the user using generate_higgs_system_instruction
+1.4 pass the reply and system_instruction to create_speaker_chat
+1.5 call the synthesize_speech and generate the audio
+1.6 return the audio path with [AUDIO] tag
+Important:- If clone_audio_path is provided then regardless of whether 
+the system is TTS or STS 
+add the clone_audio_path to the create_speaker_chat 
+THIS IS MANDATORY
 
 2. If the user wants TTT then follow this pipeline:
 2.1 If the prompt is like generic sentence then get to reply mode
 call the generate_reply function to get a reply of the text
 2.2 return the text response with [TEXT] tag
 
+
 3. If the user wants STS then follow this pipeline:
-3.1 Pass the Synthesis-Audio path to the transcribe_audio_from_base64 and get the text
+3.1 Pass the synthesis_audio_path to the transcribe_audio_from_base64 and get the text
 3.2 Understand the text and if the text is like generic sentence then get to reply mode
 call the generate_reply function to get a reply of the text
-3.3 pass the reply and system_instruction to create_speaker_chat
-3.4 call the synthesize_speech and generate the audio
-3.5 return the audio path with [AUDIO] tag
+3.3 If the text mentions direct TTS request, like "say this as it is" or anything similar
+then just pass the text as it is to the create_speaker_chat function no need to call generate_reply
+3.4 pass the reply and system_instruction to create_speaker_chat
+3.5 call the synthesize_speech and generate the audio
+3.6 return the audio path with [AUDIO] tag
+Important:- If clone_audio_path is provided then regardless of whether
+the system is TTS or STS 
+add the clone_audio_path to the create_speaker_chat 
+THIS IS MANDATORY
 
 4. If the user wants STT then follow this pipeline:
-4.1  Pass the Synthesis-Audio path to the transcribe_audio_from_base64 and get the text
+4.1  Pass the synthesis_audio_path to the transcribe_audio_from_base64 and get the text
 4.2 Understand the text and if the text is like generic sentence then get to reply mode
 call the generate_reply function to get a reply of the text
 4.3 return the text response with [TEXT] tag.
 
-Important:- If clone_audio_path is provided then regardless of whether 
-the system is TTS or STS 
-add the clone_audio_path to the create_speaker_chat 
+Rules for clean audio generation:
+- Before passing any text to create_speaker_chat, **remove directive phrases** like 
+  "say this as it is", "speak it out", "generate TTS", or similar. Only the core content 
+  should be spoken in case of a direct TTS requests.
+- The text to be spoken must never include meta instructions in case of direct TTS requests.
 
 Make sure that the pipeline is strict and all the details are decided -- 
 ALWAYS -- call the create_speaker_chat function before the synthesize_speech function 
 should be called only once with all the arguments set, so process everything before function calling.
 Always make a system_instruction ready
 The final message must contain only one tag: [AUDIO] or [TEXT]
+Don't add any overhead text to the TTS
     """
     },
     {
         "role": "user",
         "content": f"""
-        RequestID: {reqID}
+        requestID: {reqID}
         prompt: {text}
+        synthesis_audio_path: {synthesis_audio_path if synthesis_audio_path else None}
         system_instruction: {system_instruction if system_instruction else None}
         clone_audio_path: {clone_audio_path if clone_audio_path else None}
+        clone_audio_transcript: {clone_audio_transcript if clone_audio_transcript else None}
         """
     }
 ]
-
-
+        
         max_iterations = 6
         current_iteration = 0
         final_message_content = None
@@ -177,13 +205,13 @@ The final message must contain only one tag: [AUDIO] or [TEXT]
                         requestID = fn_args.get("requestID")
                         system = fn_args.get("system")
                         clone_audio_path = fn_args.get("clone_audio_path")
-                        reference_audio_text = fn_args.get("reference_audio_text")
+                        clone_audio_transcript = fn_args.get("clone_audio_transcript")
                         chatTemplate = create_speaker_chat(
                             text=text,
                             requestID=requestID,
                             system=system,
                             clone_audio_path=clone_audio_path,
-                            reference_audio_text=reference_audio_text if reference_audio_text else None
+                            clone_audio_transcript=clone_audio_transcript if clone_audio_transcript else None
                         )
                         tool_result = f"Saved ChatTemplate at location: {chatTemplate}"
                     elif fn_name == "generate_higgs_system_instruction":
@@ -300,11 +328,11 @@ The final message must contain only one tag: [AUDIO] or [TEXT]
 
 if __name__ == "__main__":
     async def main():
-        text = "Hey, what's going on guys!! Do you wanna play a game of tug?"
+        text = "Speak it out as it is -- 'This is an awesome solar event happening this year school students will be taken for a field trip!!'"
         requestID = reqID()
-        voice = "ash"
+        voice = "alloy"
 
-        result = await run_elixpoaudio_pipeline(reqID=requestID, text=text, speechInput=None, clone_audio_path=None, reference_audio_text=None, voice=voice)
+        result = await run_audio_pipeline(reqID=requestID, text=text, synthesis_audio_path=None, clone_audio_path=None, clone_audio_transcript=None, voice=voice)
 
         if not result:
             print("[ERROR] Pipeline returned None")
