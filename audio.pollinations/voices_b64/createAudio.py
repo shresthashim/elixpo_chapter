@@ -5,12 +5,7 @@ import os
 load_dotenv()
 
 text = """
-Speak this sentence out to me -- 'Sometimes, when we take a step back from the rush of everyday life, we realize that the small,
-ordinary moments — like the sound of rain falling gently on the window, the warmth of a cup of tea 
-held between our hands, or the quiet comfort of sitting with someone we care about without needing 
-to say a word — are actually the moments that shape our memories the most, reminding us that happiness
-is often found not in great achievements or loud celebrations, but in the subtle, almost invisible 
-threads that weave our days together.'
+Speak this sentence out to me -- 'Happiness often lives in small, quiet moments — a sip of tea, rain on the window, or sitting in silence with someone we love.'
 """
 
 

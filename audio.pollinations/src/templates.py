@@ -24,12 +24,12 @@ def create_speaker_chat(
     if system:
         if "<|scene_desc_start|>" not in system or "<|scene_desc_end|>" not in system:
             systemPromptWrapper: str = f"""
-    (
-    Generate audio following instruction.\n
-    <|scene_desc_start|>\n
-    "{system}"
-    <|scene_desc_end|>
-    )
+                (
+                Generate audio following instruction.\n
+                <|scene_desc_start|>\n
+                "{system}"
+                <|scene_desc_end|>
+                )
             """
         else:
             systemPromptWrapper: str = system
@@ -43,9 +43,9 @@ def create_speaker_chat(
         )
 
 
-    # if clone_audio_path:
-    #     with open(clone_audio_path, "r") as f:
-            # reference_audio_data = f.read()
+    if clone_audio_path:
+        with open(clone_audio_path, "r") as f:
+            reference_audio_data = f.read()
         
         if clone_audio_transcript:
             messages.append(
@@ -65,7 +65,7 @@ def create_speaker_chat(
         messages.append(
             Message(
                 role="assistant",  
-                content=[AudioContent(raw_audio=clone_audio_path, audio_url="")],
+                content=[AudioContent(raw_audio=reference_audio_data, audio_url="")],
             )
         )
 
@@ -76,25 +76,25 @@ def create_speaker_chat(
         )
     )
 
-    logger.info(f"Created chat template with {len(messages)} messages for request {requestID}")
-    os.makedirs(f"{TEMP_SAVE_DIR}{requestID}", exist_ok=True)
+    # logger.info(f"Created chat template with {len(messages)} messages for request {requestID}")
+    # os.makedirs(f"{TEMP_SAVE_DIR}{requestID}", exist_ok=True)
     
-    def serialize_message(msg: Message):
-        # Handles both string and list-of-AudioContent for content
-        if isinstance(msg.content, str):
-            content = msg.content
-        elif isinstance(msg.content, list):
-            # Ensure all items are dicts (for AudioContent or future types)
-            content = [c.__dict__ if hasattr(c, "__dict__") else c for c in msg.content]
-        else:
-            # Fallback for unexpected types
-            content = str(msg.content)
-        return {
-            "role": msg.role,
-            "content": content
-        }
+    # def serialize_message(msg: Message):
+    #     # Handles both string and list-of-AudioContent for content
+    #     if isinstance(msg.content, str):
+    #         content = msg.content
+    #     elif isinstance(msg.content, list):
+    #         # Ensure all items are dicts (for AudioContent or future types)
+    #         content = [c.__dict__ if hasattr(c, "__dict__") else c for c in msg.content]
+    #     else:
+    #         # Fallback for unexpected types
+    #         content = str(msg.content)
+    #     return {
+    #         "role": msg.role,
+    #         "content": content
+    #     }
 
-    serialized_messages = [serialize_message(m) for m in messages]
+    # serialized_messages = [serialize_message(m) for m in messages]
 
     # chat_template_path = f"{TEMP_SAVE_DIR}{requestID}/chatTemplate.json"
     # with open(chat_template_path, "w", encoding="utf-8") as f:
