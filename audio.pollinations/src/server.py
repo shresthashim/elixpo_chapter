@@ -3,9 +3,8 @@ import json
 import os
 import random
 import logging
-from fastapi import HTTPException
 import asyncio
-from load_models import higgs_engine
+import shutil
 from tools import tools
 from config import TEMP_SAVE_DIR
 from utility import processCloneInputAudio, processSynthesisInputAudio, cleanup_temp_file
@@ -38,6 +37,11 @@ async def run_audio_pipeline(
     logger.info(f" [{reqID}] Starting Audio Pipeline")
     logger.info(f"Synthesis audio {synthesis_audio_path} | Clone Audio {clone_audio_path}")
     
+    # Create higgs directory for this request
+    higgs_dir = f"/tmp/higgs/{reqID}"
+    os.makedirs(higgs_dir, exist_ok=True)
+    logger.info(f"[{reqID}] Created higgs directory: {higgs_dir}")
+    
     # Process clone audio if provided
     if clone_audio_path:
         clone_audio_path = processCloneInputAudio(clone_audio_path, reqID)
@@ -50,9 +54,9 @@ async def run_audio_pipeline(
 
     try:
         messages = [
-{
-    "role": "system",
-    "content": """
+            {
+                "role": "system",
+                "content": """
 You are Elixpo Audio, an advanced audio synthesis agent that routes requests to the appropriate pipeline.
 
 Available Functions:
@@ -69,17 +73,16 @@ Available pipelines:
 
 Your job is to analyze the inputs and determine which pipeline to use, then call the appropriate function:
 
-1. **TTS Pipeline**: Use when text input is provided and audio output is desired
+1. TTS Pipeline
    - Call generate_tts with text, requestID, system, clone_path, clone_text, voice
 
-2. **TTT Pipeline**: Use when text input is provided and text output is desired
+2. TTT Pipeline
    - Call generate_ttt with text, requestID, system
 
-3. **STS Pipeline**: Use when synthesis_audio_path is provided and audio output is desired
+3. STS Pipeline:
    - Call generate_sts with text, synthesis_audio_path, requestID, system, clone_path, clone_text, voice
 
-4. **STT Pipeline**: Use when synthesis_audio_path is provided and text output is desired
-   - Call generate_stt with text, synthesis_audio_path, requestID, system
+4. STT Pipeline: - Call generate_stt with text, synthesis_audio_path, requestID, system
 
 Decision logic:
 - If synthesis_audio_path is provided:
@@ -89,24 +92,25 @@ Decision logic:
   - If user wants audio response → TTS
   - If user wants text response → TTT
 
+Pass the arguments as it is, don't change them, the pipelines will handle whatever change is needed!
 Analyze the user's request to determine their intent for output type.
 """
-},
-{
-    "role": "user",
-    "content": f"""
-    requestID: {reqID}
-    prompt: {text}
-    synthesis_audio_path: {synthesis_audio_path if synthesis_audio_path else None}
-    system_instruction: {system_instruction if system_instruction else None}
-    clone_audio_path: {clone_audio_path if clone_audio_path else None}
-    clone_audio_transcript: {clone_audio_transcript if clone_audio_transcript else None}
-    voice: {voice}
-    
-    Analyze this request and call the appropriate pipeline function.
-    """
-}
-]
+            },
+            {
+                "role": "user",
+                "content": f"""
+                requestID: {reqID}
+                prompt: {text}
+                synthesis_audio_path: {synthesis_audio_path if synthesis_audio_path else None}
+                system_instruction: {system_instruction if system_instruction else None}
+                clone_audio_path: {clone_audio_path if clone_audio_path else None}
+                clone_audio_transcript: {clone_audio_transcript if clone_audio_transcript else None}
+                voice: {voice}
+                
+                Analyze this request and call the appropriate pipeline function.
+                """
+            }
+        ]
         
         max_iterations = 3
         current_iteration = 0
@@ -161,6 +165,7 @@ Analyze the user's request to determine their intent for output type.
 
                 try:
                     if fn_name == "generate_tts":
+                        logger.info(f"[{reqID}] Calling TTS pipeline")
                         audio_bytes = await generate_tts(
                             text=fn_args.get("text"),
                             requestID=fn_args.get("requestID"),
@@ -170,42 +175,49 @@ Analyze the user's request to determine their intent for output type.
                             voice=fn_args.get("voice", "alloy")
                         )
                         
-                        # Save audio file
-                        output_dir = "genAudio"
-                        os.makedirs(output_dir, exist_ok=True)
-                        output_path = os.path.join(output_dir, f"{reqID}.wav")
-                        
-                        with open(output_path, "wb") as f:
+                        audio_path = os.path.join(higgs_dir, f"{reqID}.wav")
+                        with open(audio_path, "wb") as f:
                             f.write(audio_bytes)
-                        
+                        logger.info(f"[{reqID}] TTS audio saved to: {audio_path}")
+
+                        # Also save a copy to genAudio directory
+                        os.makedirs("genAudio", exist_ok=True)
+                        gen_audio_path = f"genAudio/{reqID}.wav"
+                        with open(gen_audio_path, "wb") as f:
+                            f.write(audio_bytes)
+                        logger.info(f"[{reqID}] TTS audio also saved to: {gen_audio_path}")
+
                         return {
                             "type": "audio",
-                            "data": output_path,
+                            "data": audio_bytes,
+                            "file_path": audio_path,
                             "reqID": reqID
                         }
 
                     elif fn_name == "generate_ttt":
+                        logger.info(f"[{reqID}] Calling TTT pipeline")
                         text_result = await generate_ttt(
                             text=fn_args.get("text"),
                             requestID=fn_args.get("requestID"),
                             system=fn_args.get("system")
                         )
                         
-                        # Save text file
-                        output_dir = "genAudio"
-                        os.makedirs(output_dir, exist_ok=True)
-                        text_path = os.path.join(output_dir, f"{reqID}.txt")
-                        
+                        # Save text to higgs directory
+                        text_path = os.path.join(higgs_dir, f"{reqID}.txt")
                         with open(text_path, "w", encoding="utf-8") as f:
                             f.write(text_result)
                         
+                        logger.info(f"[{reqID}] TTT text saved to: {text_path}")
+                        
                         return {
                             "type": "text",
-                            "data": text_path,
+                            "data": text_result,
+                            "file_path": text_path,
                             "reqID": reqID
                         }
 
                     elif fn_name == "generate_sts":
+                        logger.info(f"[{reqID}] Calling STS pipeline")
                         audio_bytes = await generate_sts(
                             text=fn_args.get("text"),
                             audio_base64_path=fn_args.get("synthesis_audio_path"),
@@ -216,21 +228,22 @@ Analyze the user's request to determine their intent for output type.
                             voice=fn_args.get("voice", "alloy")
                         )
                         
-                        # Save audio file
-                        output_dir = "genAudio"
-                        os.makedirs(output_dir, exist_ok=True)
-                        output_path = os.path.join(output_dir, f"{reqID}.wav")
-                        
-                        with open(output_path, "wb") as f:
+                        # Save audio bytes to higgs directory
+                        audio_path = os.path.join(higgs_dir, f"{reqID}.wav")
+                        with open(audio_path, "wb") as f:
                             f.write(audio_bytes)
+                        
+                        logger.info(f"[{reqID}] STS audio saved to: {audio_path}")
                         
                         return {
                             "type": "audio",
-                            "data": output_path,
+                            "data": audio_bytes,
+                            "file_path": audio_path,
                             "reqID": reqID
                         }
 
                     elif fn_name == "generate_stt":
+                        logger.info(f"[{reqID}] Calling STT pipeline")
                         text_result = await generate_stt(
                             text=fn_args.get("text"),
                             audio_base64_path=fn_args.get("synthesis_audio_path"),
@@ -238,17 +251,17 @@ Analyze the user's request to determine their intent for output type.
                             system=fn_args.get("system")
                         )
                         
-                        # Save text file
-                        output_dir = "genAudio"
-                        os.makedirs(output_dir, exist_ok=True)
-                        text_path = os.path.join(output_dir, f"{reqID}.txt")
-                        
+                        # Save text to higgs directory
+                        text_path = os.path.join(higgs_dir, f"{reqID}.txt")
                         with open(text_path, "w", encoding="utf-8") as f:
                             f.write(text_result)
                         
+                        logger.info(f"[{reqID}] STT text saved to: {text_path}")
+                        
                         return {
                             "type": "text",
-                            "data": text_path,
+                            "data": text_result,
+                            "file_path": text_path,
                             "reqID": reqID
                         }
 
@@ -286,6 +299,16 @@ Analyze the user's request to determine their intent for output type.
             "reqID": reqID
         }
     finally:
+        # Clean up higgs directory after pipeline completion
+        try:
+            if os.path.exists(higgs_dir):
+                shutil.rmtree(higgs_dir)
+                logger.info(f"[{reqID}] Cleaned up higgs directory: {higgs_dir}")
+        except Exception as cleanup_error:
+            logger.error(f"[{reqID}] Failed to cleanup higgs directory: {cleanup_error}")
+        
+        # Clean up temp files
+        cleanup_temp_file(f"{TEMP_SAVE_DIR}{reqID}")
         logger.info(f"Audio Pipeline Completed for reqID={reqID}")
 
 
@@ -293,7 +316,7 @@ if __name__ == "__main__":
     async def main():
         text = "Speak it out as it is -- 'This is an awesome solar event happening this year school students will be taken for a field trip!!'"
         requestID = reqID()
-        voice = "alloy"
+        voice = "ash"
 
         result = await run_audio_pipeline(reqID=requestID, text=text, synthesis_audio_path=None, clone_audio_path=None, clone_audio_transcript=None, voice=voice)
 
@@ -302,14 +325,14 @@ if __name__ == "__main__":
             return
 
         if result["type"] == "text":
-            print(f"[Pipeline Result | Text] Saved at: {result['data']}")
+            print(f"[Pipeline Result | Text] Content: {result['data']}")
+            print(f"[Pipeline Result | Text] File saved at: {result.get('file_path', 'N/A')}")
 
         elif result["type"] == "audio":
-            print(f"[Pipeline Result | Audio] Saved at: {result['data']}")
+            print(f"[Pipeline Result | Audio] Audio bytes length: {len(result['data'])} bytes")
+            print(f"[Pipeline Result | Audio] File saved at: {result.get('file_path', 'N/A')}")
 
         elif result["type"] == "error":
             print(f"[Pipeline Error] {result['message']}")
-            
-        cleanup_temp_file(f"{TEMP_SAVE_DIR}{requestID}")
 
     asyncio.run(main())

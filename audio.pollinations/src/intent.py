@@ -67,7 +67,7 @@ async def getIntentType(text: str, system: Optional[str] = None, max_tokens: Opt
 
 if __name__ == "__main__":
 
-    test_text = "Can you transcribe this audio file for me?"
+    test_text = "Speak it out as it is -- 'This is an awesome solar event happening this year school students will be taken for a field trip!!'"
     test_system = "Transcription system"
     result = asyncio.run(getIntentType(test_text, test_system))
     print(f"Result: {result}")
