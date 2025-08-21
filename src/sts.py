@@ -7,7 +7,7 @@ from loguru import logger
 from voiceMap import VOICE_BASE64_MAP
 from typing import Optional
 import asyncio
-from load_models import higgs_engine
+from load_models import audio_model
 
 
 async def generate_sts(text: str, audio_base64_path: str, requestID: str, system: Optional[str] = None, clone_path: Optional[str] = None, clone_text: Optional[str] = None, voice: Optional[str] = "alloy") -> str:
@@ -35,7 +35,7 @@ async def generate_sts(text: str, audio_base64_path: str, requestID: str, system
         clone_audio_path=clone_path,
         clone_audio_transcript=clone_text
     )
-    audio_bytes = await synthesize_speech(chatTemplate, higgs_engine=higgs_engine)
+    audio_bytes = await synthesize_speech(chatTemplate, higgs_engine=audio_model)
     return audio_bytes
 
 

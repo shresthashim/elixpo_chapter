@@ -1,4 +1,3 @@
-from scriptGenerator import generate_reply
 from systemInstruction import generate_higgs_system_instruction
 from transcribe import transcribe_audio_from_base64
 from utility import encode_audio_base64, save_temp_audio
@@ -25,12 +24,14 @@ async def generate_stt(text: str, audio_base64_path: str, requestID: str, system
             {system}\n
         "<|scene_desc_end|>"
         """
-    intention = await getIntentType(text, system)
+    intention_detection = await getIntentType(f"This is the prompt and {text} and this is the audio transcript {transcription}", system)
+    intention = intention_detection.get("intent")
+    content = intention_detection.get("content")
+
     if intention == "DIRECT":
         return transcription.strip()
     if intention == "REPLY":
-        get_reply = await generate_reply(f"This is the prompt {text} and this is the transcript {transcription}")
-        return get_reply
+        return content
     else:
         return transcription.strip()
 

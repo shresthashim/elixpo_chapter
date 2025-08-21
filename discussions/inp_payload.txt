@@ -11,13 +11,18 @@
         "content": [
             { "type": "text", "text": "Your prompt text here" },
             {
-            "type": "input_audio",
+            "type": "clone_audio",
             "audio": { "data": "<base64_audio_string>", "format": "wav" }
             },
             {
-            "type": "audio_text",
+            "type": "clone_audio_transcript",
             "audio_text": "Transcription or description of the reference audio"
-            }
+            },
+            {
+                "type": "speech_audio",
+                "audio":  { "data": "<base64_audio_string>", "format": "wav" }
+            },
+            "voice" : "alloy"
         ]
         }
 ]
@@ -25,7 +30,7 @@
 
 
 
-ssget?text=Transcribe%20this%3A&audio={url}&system=optional_system_prompt
+text=Transcribe%20this%3A&system=optional_system_prompt&voice=alloy
 
 TTS --> TEXT TO SPEECH (audio modality output)
 STS --> SPEECH TO SPEECH (audio modality output)
@@ -33,4 +38,3 @@ STT --> SPEECH TO TEXT (text modality output)
 TTT --> TEXT TO TEXT (text modality output)
 
 
-(only audio output modality)

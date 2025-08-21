@@ -1,10 +1,9 @@
 from templates import create_speaker_chat
 from synthesis import synthesize_speech
-from scriptGenerator import generate_reply
 from systemInstruction import generate_higgs_system_instruction
 from intent import getIntentType
 from utility import encode_audio_base64
-from load_models import higgs_engine
+from load_models import audio_model
 from voiceMap import VOICE_BASE64_MAP
 import asyncio
 from typing import Optional
@@ -18,7 +17,9 @@ async def generate_tts(text: str,  requestID: str, system: Optional[str] = None,
             base64 = encode_audio_base64(load_audio_path)    
             clone_path = base64
 
-    type = await getIntentType(text, system)
+    result = await getIntentType(text, system)
+    type = result.get("intent")
+    content = result.get("content")
     print(type)
     if type not in ["DIRECT", 'REPLY']:
         type = "DIRECT"
@@ -37,14 +38,14 @@ async def generate_tts(text: str,  requestID: str, system: Optional[str] = None,
             """
         print(f"The formatted system instruction is:- {system}")
         prepareChatTemplate =  create_speaker_chat(
-            text = text,
+            text = content,
             requestID = requestID,
             system = system,
             clone_audio_path = clone_path,
             clone_audio_transcript = clone_text
         )
-        print(f"The prepared chat template is {prepareChatTemplate}")
-        audio_bytes = await synthesize_speech(prepareChatTemplate, higgs_engine=higgs_engine)
+        # print(f"The prepared chat template is {prepareChatTemplate}")
+        audio_bytes = await synthesize_speech(prepareChatTemplate, higgs_engine=audio_model)
         return audio_bytes
     elif type == "REPLY":
         if system is None:
@@ -59,16 +60,15 @@ async def generate_tts(text: str,  requestID: str, system: Optional[str] = None,
             "<|scene_desc_end|>"
             """
         print(f"The formatted system instruction is:- {system}")
-        replyText = await generate_reply(text)
         prepareChatTemplate =  create_speaker_chat(
-            text = replyText,
+            text = content,
             requestID = requestID,
             system=system,
             clone_audio_path=clone_path,
             clone_audio_transcript=clone_text
         )
         print(f"The prepared chat template is {prepareChatTemplate}")
-        audio_bytes = await synthesize_speech(prepareChatTemplate, higgs_engine=higgs_engine)
+        audio_bytes = await synthesize_speech(prepareChatTemplate, higgs_engine=audio_model)
         return audio_bytes
 
 
@@ -79,7 +79,8 @@ if __name__ == "__main__":
         system = None
         voice = "alloy"
         clone_path = None  
-        clone_text = None  
+        clone_text = None
+        synthesis_audio = None  
         
         audio_bytes = await generate_tts(text, requestID, system, clone_path, clone_text, voice)
         with open("output_reply.wav", "wb") as f:
