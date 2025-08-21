@@ -7,10 +7,10 @@ import asyncio
 import shutil
 from tools import tools
 from config import TEMP_SAVE_DIR
-from utility import processCloneInputAudio, processSynthesisInputAudio, cleanup_temp_file
+from utility import encode_audio_base64, save_temp_audio, cleanup_temp_file
 from requestID import reqID
+from typing import Optional
 
-# Import the pipeline functions
 from tts import generate_tts
 from ttt import generate_ttt
 from sts import generate_sts
@@ -28,27 +28,23 @@ POLLINATIONS_ENDPOINT = "https://text.pollinations.ai/openai"
 async def run_audio_pipeline(
     reqID: str = None,
     text: str = None,
-    synthesis_audio_path: str = None, #this is b64 speech input for STS or STT 
-    clone_audio_path: str = None, #this is b64 voice clone input
-    clone_audio_transcript: str = None, #this is transcript of the cloned voice
-    system_instruction: str = None,
-    voice: str = "alloy" #default voice
+    synthesis_audio_path: Optional[str] = None, #this is b64 speech input for STS or STT 
+    clone_audio_path: Optional[str] = None, #this is b64 voice clone input
+    clone_audio_transcript: Optional[str] = None, #this is transcript of the cloned voice
+    system_instruction: Optional[str] = None,
+    voice: Optional[str] = "alloy" 
 ):
+    
+    
+
     logger.info(f" [{reqID}] Starting Audio Pipeline")
     logger.info(f"Synthesis audio {synthesis_audio_path} | Clone Audio {clone_audio_path}")
-    
-    # Create higgs directory for this request
+
     higgs_dir = f"/tmp/higgs/{reqID}"
     os.makedirs(higgs_dir, exist_ok=True)
     logger.info(f"[{reqID}] Created higgs directory: {higgs_dir}")
     
-    # Process clone audio if provided
-    if clone_audio_path:
-        clone_audio_path = processCloneInputAudio(clone_audio_path, reqID)
-    
-    # Process synthesis audio if provided
-    if synthesis_audio_path:
-        synthesis_audio_path = processSynthesisInputAudio(synthesis_audio_path, reqID)
+
     
     logger.info(f"[{reqID}] Saved base64 for the required media")
 
@@ -56,60 +52,61 @@ async def run_audio_pipeline(
         messages = [
             {
                 "role": "system",
-                "content": """
-You are Elixpo Audio, an advanced audio synthesis agent that routes requests to the appropriate pipeline.
+"content": """
+You are Elixpo Audio, an advanced audio synthesis agent that routes requests to the correct pipeline.
 
 Available Functions:
-- generate_tts
-- generate_ttt
-- generate_sts
-- generate_stt
+- generate_tts(text, requestID, system, clone_path, clone_text, voice)
+- generate_ttt(text, requestID, system)
+- generate_sts(text, synthesis_audio_path, requestID, system, clone_path, clone_text, voice)
+- generate_stt(text, synthesis_audio_path, requestID, system)
 
-Available pipelines:
+Available Pipelines:
 - TTS (Text-to-Speech): Convert text to audio
-- TTT (Text-to-Text): Generate text responses 
+- TTT (Text-to-Text): Generate text responses
 - STS (Speech-to-Speech): Convert speech input to speech output
-- STT (Speech-to-Text): Convert speech to text
+- STT (Speech-to-Text): Convert speech input to text output
 
-Your job is to analyze the inputs and determine which pipeline to use, then call the appropriate function:
+Decision Logic:
 
-1. TTS Pipeline
-   - Call generate_tts with text, requestID, system, clone_path, clone_text, voice
+1. If a synthesis_audio_path is provided:
+   - This means the user has given speech input.
+   - If the instruction or prompt clearly requests a **spoken response** 
+     (e.g., "reply back in voice", "speak it out", "say it", "answer in audio"), use **STS**.
+   - If the instruction or prompt clearly requests a **text response** 
+     (e.g., "transcribe", "give me the text", "show me words", "reply in writing"), use **STT**.
+   - Fallback: If unclear or ambiguous, default to **STT**.
 
-2. TTT Pipeline
-   - Call generate_ttt with text, requestID, system
+2. If no synthesis_audio_path is provided:
+   - This means the user input is text-only.
+   - If the instruction or prompt clearly requests the response **spoken aloud** 
+     (e.g., "say this", "convert to speech", "read it", "reply in voice"), use **TTS**.
+   - Otherwise, if the instruction or prompt suggests a **text reply**, use **TTT**.
+   - Fallback: If unclear or ambiguous, default to **TTT**.
 
-3. STS Pipeline:
-   - Call generate_sts with text, synthesis_audio_path, requestID, system, clone_path, clone_text, voice
+3. Always pass the arguments exactly as provided. Do not modify or omit parameters.
 
-4. STT Pipeline: - Call generate_stt with text, synthesis_audio_path, requestID, system
-
-Decision logic:
-- If synthesis_audio_path is provided:
-  - If user wants audio response → STS
-  - If user wants text response → STT
-- If no synthesis audio is provided:
-  - If user wants audio response → TTS
-  - If user wants text response → TTT
-
-Pass the arguments as it is, don't change them, the pipelines will handle whatever change is needed!
-Analyze the user's request to determine their intent for output type.
+Your task:
+- Analyze the user’s request (prompt + system_instruction + provided fields).
+- Decide which pipeline applies based on whether input/output is expected in speech or text.
+- If the request is ambiguous, apply the fallback defaults (STT for speech input, TTT for text input).
+- Call the correct function with the given arguments.
 """
-            },
-            {
-                "role": "user",
-                "content": f"""
-                requestID: {reqID}
-                prompt: {text}
-                synthesis_audio_path: {synthesis_audio_path if synthesis_audio_path else None}
-                system_instruction: {system_instruction if system_instruction else None}
-                clone_audio_path: {clone_audio_path if clone_audio_path else None}
-                clone_audio_transcript: {clone_audio_transcript if clone_audio_transcript else None}
-                voice: {voice}
-                
-                Analyze this request and call the appropriate pipeline function.
-                """
-            }
+},
+{
+"role": "user",
+"content": f"""
+requestID: {reqID}
+prompt: {text}
+synthesis_audio_path: {synthesis_audio_path if synthesis_audio_path else None}
+system_instruction: {system_instruction if system_instruction else None}
+clone_audio_path: {clone_audio_path if clone_audio_path else None}
+clone_audio_transcript: {clone_audio_transcript if clone_audio_transcript else None}
+voice: {voice}
+
+Analyze this request and call the appropriate pipeline function.
+"""
+}
         ]
         
         max_iterations = 3
@@ -314,11 +311,25 @@ Analyze the user's request to determine their intent for output type.
 
 if __name__ == "__main__":
     async def main():
-        text = "Speak it out as it is -- 'This is an awesome solar event happening this year school students will be taken for a field trip!!'"
+        text = "Give me a voice response if the said fact is true?'"
+        synthesis_audio_path = "sample.wav"
         requestID = reqID()
         voice = "ash"
+        clone_audio_path = None
+        clone_audio_transcript = None
+        saved_base64_path_clone = None
+        saved_base64_path_speech = None
 
-        result = await run_audio_pipeline(reqID=requestID, text=text, synthesis_audio_path=None, clone_audio_path=None, clone_audio_transcript=None, voice=voice)
+
+        if clone_audio_path:
+            base64_clone_path = encode_audio_base64(clone_audio_path)
+            saved_base64_path_clone = save_temp_audio(base64_clone_path, reqID, "clone")
+    
+        if synthesis_audio_path:
+            base64_synthesis_audio = encode_audio_base64(synthesis_audio_path)
+            saved_base64_path_speech = save_temp_audio(base64_synthesis_audio, reqID, "speech")
+
+        result = await run_audio_pipeline(reqID=requestID, text=text, synthesis_audio_path=saved_base64_path_speech, clone_audio_path=saved_base64_path_clone, clone_audio_transcript=clone_audio_transcript, voice=voice)
 
         if not result:
             print("[ERROR] Pipeline returned None")

@@ -1,49 +1,34 @@
 import os
-import io
-import json
 import time
 import traceback
-from typing import Optional
-from urllib.parse import unquote
-import numpy as np
-import torch
-import sys
-from flask import Flask, request, jsonify, Response, g, after_this_request
+import io
+import wave
+import base64
+from flask import Flask, request, jsonify, Response, g
 from flask_cors import CORS
 from loguru import logger
-from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
-from config import MODEL_PATH, AUDIO_TOKENIZER_PATH, MAX_FILE_SIZE_MB
-from utility import download_audio, validate_and_decode_base64_audio, save_temp_audio, encode_audio_base64
-from synthesis import synthesize_speech
-from requestID import RequestIDMiddleware, reqID
-from templates import create_speaker_chat
+from utility import save_temp_audio, cleanup_temp_file
+from requestID import reqID
+import asyncio
 
-if torch.cuda.is_available():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"✅ Using GPU: {torch.cuda.get_device_name(device)}")
-else:
-    device = torch.device("cpu")
-    print("⚠️ CUDA not available, using CPU instead.")
+from server import run_audio_pipeline
 
 app = Flask(__name__)
 CORS(app)
 
-higgs_engine = None
-
-@app.before_first_request
-def startup_event():
-    global higgs_engine
+def validate_and_decode_base64_audio(b64str, max_duration_sec=None):
     try:
-        logger.info(f"Initializing Higgs Audio V2 on {device}...")
-        higgs_engine = HiggsAudioServeEngine(
-            model_name_or_path=MODEL_PATH,
-            audio_tokenizer_name_or_path=AUDIO_TOKENIZER_PATH,
-            device=device
-        )
-        logger.info("✅ Higgs Audio V2 initialized successfully")
+        audio_bytes = base64.b64decode(b64str)
+        with io.BytesIO(audio_bytes) as audio_io:
+            with wave.open(audio_io, "rb") as wav_file:
+                n_frames = wav_file.getnframes()
+                framerate = wav_file.getframerate()
+                duration = n_frames / float(framerate)
+                if max_duration_sec and duration > max_duration_sec:
+                    raise Exception(f"Audio duration {duration:.2f}s exceeds max allowed {max_duration_sec}s")
+        return audio_bytes
     except Exception as e:
-        logger.error(f"❌ Failed to initialize Higgs: {e}")
-        logger.error(f"Initialization traceback: {traceback.format_exc()}")
+        raise Exception(f"Invalid base64 WAV audio: {e}")
 
 @app.before_request
 def before_request():
@@ -60,172 +45,160 @@ def after_request(response):
 def health_check():
     return jsonify({
         "status": "healthy",
-        "model": "higgs-v2",
-        "device": str(device),
-        "engine_loaded": higgs_engine is not None,
-        "max_audio_size_mb": MAX_FILE_SIZE_MB,
-        "request_id": g.request_id,
         "endpoints": {
-            "get": "/ssget?text=your_text_here&audio=base64_or_url&system=optional_system_prompt&seed=optional_seed",
-            "post": "/sspost"
+            "GET": "/audio?text=your_text_here&system=optional_system_prompt&voice=optional_voice",
+            "POST": "/audio"
         }
     })
 
-@app.route("/ssget", methods=["GET"])
-def singleSpeakerInference():
-    try:
-        text = request.args.get("text")
-        audio = request.args.get("audio")
-        system = request.args.get("system")
-        seed = request.args.get("seed", type=int)
-        requestID = g.request_id
-        reference_audio_data = None
-        tmp = None
+@app.route("/audio", methods=["GET", "POST"])
+def audio_endpoint():
+    request_id = g.request_id
+    if request.method == "GET":
+        try:
+            text = request.args.get("text")
+            system = request.args.get("system")
+            voice = request.args.get("voice", "alloy")
 
-        if text is None:
-            return jsonify({"error": {"message": "Missing required 'text' parameter.", "type": "invalid_request_error", "code": 400}}), 400
+            if not text or not isinstance(text, str) or not text.strip():
+                return jsonify({"error": {"message": "Missing required 'text' parameter.", "code": 400}}), 400
 
-        if system and len(system) > 500:
-            return jsonify({"error": {"message": "The 'system' parameter must not exceed 500 characters.", "type": "invalid_request_error", "code": 400}}), 400
+            # Only text, system, and voice allowed in GET
+            # No audio or clone audio allowed in GET
+            result = asyncio.run(run_audio_pipeline(
+                reqID=request_id,
+                text=text,
+                system_instruction=system,
+                voice=voice
+            ))
 
-        if audio:
-            is_audio_url = audio.startswith("http://") or audio.startswith("https://")
-            if not is_audio_url:
-                return jsonify({"error": {"message": f"Invalid audio data: {audio}", "type": "invalid_request_error", "code": 400}}), 400
-            if is_audio_url:
-                audio_data = download_audio(audio)
-                convertBase64 = encode_audio_base64(audio_data)
-                reference_audio_data = validate_and_decode_base64_audio(convertBase64)
-                tmp = save_temp_audio(reference_audio_data, requestID)
-
-                
-
-        # template = create_speaker_chat(text, requestID, system, reference_audio_data, tmp)
-        # audio_data = synthesize_speech(template, temp_audio_path=tmp, seed=seed)
-        # if not audio_data:
-        #     return jsonify({"error": {"message": "No audio generated by model", "type": "internal_error", "code": 500}}), 500
-        # else:
-        #     logger.info(f"Generated audio for request {requestID}")
-
-        # return Response(
-        #     audio_data,
-        #     mimetype="audio/wav",
-        #     headers={
-        #         "Content-Disposition": "inline; filename=speech.wav",
-        #         "Content-Length": str(len(audio_data))
-        #     }
-        # )
-
-    except Exception as e:
-        logger.error(f"GET TTS error: {traceback.format_exc()}")
-        return jsonify({"error": {"message": str(e), "type": "internal_error", "code": 500}}), 500
-
-@app.route("/sspost", methods=["POST"])
-def singleSpeakerInferencePost():
-    try:
-        body = request.get_json(force=True)
-        messages = body.get("messages", [])
-        if not messages or not isinstance(messages, list):
-            return jsonify({"error": {"message": "Missing or invalid 'messages' in payload.", "type": "invalid_request_error", "code": 400}}), 400
-
-        message = messages[0]
-        content = message.get("content", [])
-        if not content or not isinstance(content, list):
-            return jsonify({"error": {"message": "Missing or invalid 'content' in message.", "type": "invalid_request_error", "code": 400}}), 400
-
-        text = None
-        audio = None
-        audio_text = None
-        system = None
-        reference_audio_data = None
-        tmp = None
-
-        for item in content:
-            if item.get("type") == "text":
-                if message.get("role") == "system":
-                    system = item.get("text")
-                else:
-                    text = item.get("text")
-            elif item.get("type") == "input_audio":
-                audio = item.get("audio", {}).get("data")
-            elif item.get("type") == "audio_text":
-                audio_text = item.get("audio_text")
-
-        if text is None:
-            return jsonify({"error": {"message": "Missing required 'text' in content.", "type": "invalid_request_error", "code": 400}}), 400
-
-        if audio:
-            is_audio_url = isinstance(audio, str) and (audio.startswith("http://") or audio.startswith("https://"))
-            if is_audio_url:
-                audio_data = download_audio(audio)
-                convertBase64 = encode_audio_base64(audio_data)
-                reference_audio_data = validate_and_decode_base64_audio(convertBase64)
-                tmp = save_temp_audio(reference_audio_data, g.request_id)
+            if result["type"] == "audio":
+                return Response(
+                    result["data"],
+                    mimetype="audio/wav",
+                    headers={
+                        "Content-Disposition": f"inline; filename={request_id}.wav",
+                        "Content-Length": str(len(result["data"]))
+                    }
+                )
+            elif result["type"] == "text":
+                return jsonify({"text": result["data"], "request_id": request_id})
             else:
-                reference_audio_data = validate_and_decode_base64_audio(audio)
-                tmp = save_temp_audio(reference_audio_data, g.request_id)
+                return jsonify({"error": {"message": result.get("message", "Unknown error"), "code": 500}}), 500
 
-        template = create_speaker_chat(text, g.request_id, system, reference_audio_data, tmp, audio_text)
-        audio_data = synthesize_speech(template, temp_audio_path=tmp)
-        if not audio_data:
-            return jsonify({"error": {"message": "No audio generated by model", "type": "internal_error", "code": 500}}), 500
-        else:
-            logger.info(f"Generated audio for request {g.request_id}")
+        except Exception as e:
+            logger.error(f"GET error: {traceback.format_exc()}")
+            return jsonify({"error": {"message": str(e), "code": 500}}), 500
 
-        return Response(
-            audio_data,
-            mimetype="audio/wav",
-            headers={
-                "Content-Disposition": "inline; filename=speech.wav",
-                "Content-Length": str(len(audio_data))
-            }
-        )
+    elif request.method == "POST":
+        try:
+            body = request.get_json(force=True)
+            messages = body.get("messages", [])
+            if not messages or not isinstance(messages, list):
+                return jsonify({"error": {"message": "Missing or invalid 'messages' in payload.", "code": 400}}), 400
 
-    except Exception as e:
-        logger.error(f"POST TTS error: {traceback.format_exc()}")
-        return jsonify({"error": {"message": str(e), "type": "internal_error", "code": 500}}), 500
+            # Parse system and user message
+            system_instruction = None
+            user_content = None
+            for msg in messages:
+                if msg.get("role") == "system":
+                    for item in msg.get("content", []):
+                        if item.get("type") == "text":
+                            system_instruction = item.get("text")
+                elif msg.get("role") == "user":
+                    user_content = msg.get("content", [])
+
+            if not user_content or not isinstance(user_content, list):
+                return jsonify({"error": {"message": "Missing or invalid 'content' in user message.", "code": 400}}), 400
+
+            text = None
+            clone_audio_b64 = None
+            clone_audio_transcript = None
+            speech_audio_b64 = None
+            voice = "alloy"
+
+            for item in user_content:
+                if isinstance(item, dict):
+                    if item.get("type") == "text":
+                        text = item.get("text")
+                    elif item.get("type") == "clone_audio":
+                        clone_audio_b64 = item.get("audio", {}).get("data")
+                    elif item.get("type") == "clone_audio_transcript":
+                        clone_audio_transcript = item.get("audio_text")
+                    elif item.get("type") == "speech_audio":
+                        speech_audio_b64 = item.get("audio", {}).get("data")
+                    elif item.get("type") == "voice":
+                        voice = item.get("voice", "alloy")
+
+            if not text or not isinstance(text, str) or not text.strip():
+                return jsonify({"error": {"message": "Missing required 'text' in content.", "code": 400}}), 400
+
+            # If both clone_audio and voice are provided, error
+            if clone_audio_b64 and voice and voice != "alloy":
+                return jsonify({"error": {"message": "Provide either 'clone_audio' or 'voice', not both.", "code": 400}}), 400
+
+            # Validate base64 audio if present
+            clone_audio_path = None
+            speech_audio_path = None
+
+            if clone_audio_b64:
+                try:
+                    decoded = validate_and_decode_base64_audio(clone_audio_b64, max_duration_sec=5)
+                    clone_audio_path = save_temp_audio(decoded, request_id, "clone")
+                except Exception as e:
+                    return jsonify({"error": {"message": f"Invalid clone_audio: {e}", "code": 400}}), 400
+
+            if speech_audio_b64:
+                try:
+                    decoded = validate_and_decode_base64_audio(speech_audio_b64, max_duration_sec=60)
+                    speech_audio_path = save_temp_audio(decoded, request_id, "speech")
+                except Exception as e:
+                    return jsonify({"error": {"message": f"Invalid speech_audio: {e}", "code": 400}}), 400
+
+            # If clone_audio is present, ignore voice param
+            pipeline_voice = None if clone_audio_path else voice
+
+            result = asyncio.run(run_audio_pipeline(
+                reqID=request_id,
+                text=text,
+                synthesis_audio_path=speech_audio_path,
+                clone_audio_path=clone_audio_path,
+                clone_audio_transcript=clone_audio_transcript,
+                system_instruction=system_instruction,
+                voice=pipeline_voice
+            ))
+
+            if result["type"] == "audio":
+                return Response(
+                    result["data"],
+                    mimetype="audio/wav",
+                    headers={
+                        "Content-Disposition": f"inline; filename={request_id}.wav",
+                        "Content-Length": str(len(result["data"]))
+                    }
+                )
+            elif result["type"] == "text":
+                return jsonify({"text": result["data"], "request_id": request_id})
+            else:
+                return jsonify({"error": {"message": result.get("message", "Unknown error"), "code": 500}}), 500
+
+        except Exception as e:
+            logger.error(f"POST error: {traceback.format_exc()}")
+            return jsonify({"error": {"message": str(e), "code": 500}}), 500
+        finally:
+            cleanup_temp_file(request_id)
 
 @app.errorhandler(400)
 def bad_request(e):
-    return jsonify({"error": {"message": str(e), "type": "invalid_request_error", "code": 400}}), 400
+    return jsonify({"error": {"message": str(e), "code": 400}}), 400
 
 @app.errorhandler(500)
 def internal_error(e):
     logger.error(f"Unhandled exception: {traceback.format_exc()}")
-    return jsonify({"error": {"message": "Internal server error", "type": "internal_error", "code": 500}}), 500
+    return jsonify({"error": {"message": "Internal server error", "code": 500}}), 500
 
 if __name__ == "__main__":
     host = "127.0.0.1"
     port = 8000
-    postJSON = """
-        "messages": [
-            {
-                "role" : "system",
-                "content" : [
-                    {"type" : "text", "text" : "System instructions here"}
-                ]
-            },
-            {
-                "role": "user",
-                "content": [
-                    { "type": "text", "text": "Your prompt text here" },
-                    {
-                    "type": "input_audio",
-                    "audio": { "data": "<base64_audio_string>", "format": "wav" }
-                    },
-                    {
-                    "type": "audio_text",
-                    "audio_text": "Transcription or description of the reference audio"
-                    }
-                ]
-                }
-        ]
-    """
-    logger.info(f"Starting Higgs V2 API Server")
-    logger.info(f"Host: {host}:{port}")
-    logger.info(f"Device: {device}")
-    logger.info(f"Max audio size: {MAX_FILE_SIZE_MB}MB")
-    logger.info(f"GET endpoint: http://{host}:{port}/ssget?text=your_text_here&audio=base64_or_url&system=optional_system_prompt&seed=optional_seed")
-    logger.info(f"POST endpoint: http://{host}:{port}/sspost  expects json payload like {postJSON}")
-
+    logger.info(f"Starting Elixpo Audio API Server at {host}:{port}")
     app.run(host=host, port=port, debug=True)

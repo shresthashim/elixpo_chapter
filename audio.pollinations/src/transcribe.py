@@ -1,6 +1,6 @@
 import base64
 import os
-from load_models import model
+from load_models import transcribe_model
 from loguru import logger
 import asyncio
 
@@ -15,7 +15,7 @@ async def transcribe_audio_from_base64(synthesis_audio_path: str, reqID: str, mo
         f.write(base64.b64decode(b64_audio))
 
     
-    result = model.transcribe(audio_path)
+    result = transcribe_model.transcribe(audio_path)
     return result["text"]
 
 if __name__ == "__main__":
