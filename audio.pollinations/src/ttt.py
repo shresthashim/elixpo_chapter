@@ -1,5 +1,4 @@
 from scriptGenerator import generate_reply
-from systemInstruction import generate_higgs_system_instruction
 import asyncio
 
 async def generate_ttt(text: str, requestID:str, system: str = None):

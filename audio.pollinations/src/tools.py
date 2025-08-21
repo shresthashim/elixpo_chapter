@@ -2,30 +2,35 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "create_speaker_chat",
-            "description": "Creates the chat template suited to HIGGS for a speaker with specific instructions and messages.",
+            "name": "generate_tts",
+            "description": "Executes the Text-to-Speech pipeline to convert text input to audio output.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "text": {
                         "type": "string",
-                        "description": "The main text or prompt that the speaker should say."
+                        "description": "The text to be converted to speech."
                     },
                     "requestID": {
                         "type": "string",
-                        "description": "A unique identifier for the request."
+                        "description": "Unique identifier for the request."
                     },
                     "system": {
                         "type": "string",
-                        "description": "system prompt or scene description for the speaker.",
+                        "description": "Optional system instruction or scene description for speech synthesis."
                     },
-                    "clone_audio_path": {
+                    "clone_path": {
                         "type": "string",
-                        "description": "Optional, path to the file containing base64 string of the voice to be cloned",
+                        "description": "Optional path to the cloned voice audio file (base64)."
                     },
-                    "clone_audio_transcript": {
+                    "clone_text": {
                         "type": "string",
-                        "description": "Optional text transcript to the reference audio.",
+                        "description": "Optional transcript of the cloned voice audio."
+                    },
+                    "voice": {
+                        "type": "string",
+                        "description": "Voice to use for synthesis (default: alloy).",
+                        "default": "alloy"
                     }
                 },
                 "required": ["text", "requestID"]
@@ -35,95 +40,97 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "synthesize_speech",
-            "description": "Synthesizes speech audio from a chat template using the HIGGS audio engine.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "chatTemplate_path": {
-                        "type": "string",
-                        "description": "The file path to the chat template generated for the speaker."
-                    },
-                    "seed": {
-                        "type": "integer",
-                        "description": "Optional random seed for deterministic synthesis."
-                    }
-                },
-                "required": ["chatTemplate_path"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "generate_higgs_system_instruction",
-            "description": "Generates a cinematic system instruction for the Higgs speech synthesis model, expanding a user prompt into a vivid scene description with emotional and performance guidance.",
+            "name": "generate_ttt",
+            "description": "Executes the Text-to-Text pipeline to generate text responses from text input.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "text": {
                         "type": "string",
-                        "description": "The user prompt or main text to be transformed into a Higgs system instruction."
+                        "description": "The input text prompt."
                     },
-                    "multiSpeaker": {
-                        "type": "boolean",
-                        "description": "Whether the scene involves multiple speakers with distinct styles and interactions."
-                    },
-                    "voiceCloning": {
-                        "type": "boolean",
-                        "description": "Whether to adapt the instruction for voice cloning.",
-                    }
-                },
-                "required": ["text", "multiSpeaker", "voiceCloning"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "generate_reply",
-            "description": "Generates a detailed script with dialogue, narration, and stage directions based on a prompt used for conversational reply.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "prompt": {
+                    "requestID": {
                         "type": "string",
-                        "description": "The prompt or idea for the reply."
+                        "description": "Unique identifier for the request."
                     },
-                    "max_tokens": {
-                        "type": "integer",
-                        "description": "Maximum number of tokens for the generated script.",
+                    "system": {
+                        "type": "string",
+                        "description": "Optional system instruction for text generation."
                     }
                 },
-                "required": ["prompt"]
+                "required": ["text", "requestID"]
             }
         }
     },
     {
         "type": "function",
         "function": {
-            "name": "transcribe_audio_from_base64",
-            "description": "Transcribes speech from a base64-encoded audio file using OpenAI Whisper.",
+            "name": "generate_sts",
+            "description": "Executes the Speech-to-Speech pipeline to convert speech input to speech output.",
             "parameters": {
                 "type": "object",
                 "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "The prompt or instruction that is to be done!"
+                    },
                     "synthesis_audio_path": {
                         "type": "string",
-                        "description": "Path to the file containing the base64-encoded audio data."
+                        "description": "Path to the input speech audio file (base64)."
                     },
-                    "reqID": {
+                    "requestID": {
                         "type": "string",
-                        "description": "Unique identifier for the transcription request."
+                        "description": "Unique identifier for the request."
                     },
-                    "model_size": {
+                    "system": {
                         "type": "string",
-                        "description": "Optional Whisper model size to use (e.g., tiny, base, small, medium, large).",
-                        "default": "small"
+                        "description": "Optional system instruction for speech processing."
+                    },
+                    "clone_path": {
+                        "type": "string",
+                        "description": "Optional path to the cloned voice audio file (base64)."
+                    },
+                    "clone_text": {
+                        "type": "string",
+                        "description": "Optional transcript of the cloned voice audio."
+                    },
+                    "voice": {
+                        "type": "string",
+                        "description": "Voice to use for synthesis (default: alloy).",
+                        "default": "alloy"
                     }
                 },
-                "required": ["b64_audio_path", "reqID"]
+                "required": ["synthesis_audio_path", "requestID"]
             }
         }
     },
-    
+    {
+        "type": "function",
+        "function": {
+            "name": "generate_stt",
+            "description": "Executes the Speech-to-Text pipeline to convert speech input to text output.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "Prompt tor instruction that is to be done!"
+                    },
+                    "synthesis_audio_path": {
+                        "type": "string",
+                        "description": "Path to the input speech audio file (base64)."
+                    },
+                    "requestID": {
+                        "type": "string",
+                        "description": "Unique identifier for the request."
+                    },
+                    "system": {
+                        "type": "string",
+                        "description": "Optional system instruction for speech processing."
+                    }
+                },
+                "required": ["synthesis_audio_path", "requestID"]
+            }
+        }
+    }
 ]
