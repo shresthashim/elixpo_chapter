@@ -3,13 +3,13 @@ from synthesis import synthesize_speech
 from scriptGenerator import generate_reply
 from systemInstruction import generate_higgs_system_instruction
 from utility import encode_audio_base64
+from typing import Optional
 from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
 from voiceMap import VOICE_BASE64_MAP
 import asyncio
+from load_models import higgs_engine
 
-higgs_engine = HiggsAudioServeEngine("bosonai/higgs-audio-v2-generation-3B-base", "bosonai/higgs-audio-v2-tokenizer")
-
-async def generate_tts(text: str,  requestID: str, system: str = None, clone_path: str = None, clone_text: str = None, type: str = "direct") -> bytes:
+async def generate_tts(text: str,  requestID: str, system: Optional[str] = None, clone_path: Optional[str] = None, clone_text: Optional[str] = None, type: str = "direct") -> bytes:
     
     if type == "direct":
         if system is None:
