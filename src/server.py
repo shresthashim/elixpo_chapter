@@ -1,231 +1,315 @@
-import os
-import io
+import requests
 import json
-import time
-import traceback
-from typing import Optional
-from urllib.parse import unquote
-import numpy as np
-import torch
-import sys
-from flask import Flask, request, jsonify, Response, g, after_this_request
-from flask_cors import CORS
-from loguru import logger
-from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
-from config import MODEL_PATH, AUDIO_TOKENIZER_PATH, MAX_FILE_SIZE_MB
-from utility import download_audio, validate_and_decode_base64_audio, save_temp_audio, encode_audio_base64
-from synthesis import synthesize_speech
-from requestID import RequestIDMiddleware, reqID
-from templates import create_speaker_chat
+import os
+import random
+import logging
+from fastapi import HTTPException
+import asyncio
+from load_models import higgs_engine
+from tools import tools
+from config import TEMP_SAVE_DIR
+from utility import processCloneInputAudio, processSynthesisInputAudio, cleanup_temp_file
+from requestID import reqID
 
-if torch.cuda.is_available():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"✅ Using GPU: {torch.cuda.get_device_name(device)}")
-else:
-    device = torch.device("cpu")
-    print("⚠️ CUDA not available, using CPU instead.")
+# Import the pipeline functions
+from tts import generate_tts
+from ttt import generate_ttt
+from sts import generate_sts
+from stt import generate_stt
 
-app = Flask(__name__)
-CORS(app)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("elixpo-audio")
 
-higgs_engine = None
+POLLINATIONS_TOKEN = os.getenv("POLLI_TOKEN")
+MODEL = os.getenv("MODEL")
+REFERRER = os.getenv("REFERRER")
+POLLINATIONS_ENDPOINT = "https://text.pollinations.ai/openai"
 
-@app.before_first_request
-def startup_event():
-    global higgs_engine
+
+async def run_audio_pipeline(
+    reqID: str = None,
+    text: str = None,
+    synthesis_audio_path: str = None, #this is b64 speech input for STS or STT 
+    clone_audio_path: str = None, #this is b64 voice clone input
+    clone_audio_transcript: str = None, #this is transcript of the cloned voice
+    system_instruction: str = None,
+    voice: str = "alloy" #default voice
+):
+    logger.info(f" [{reqID}] Starting Audio Pipeline")
+    logger.info(f"Synthesis audio {synthesis_audio_path} | Clone Audio {clone_audio_path}")
+    
+    # Process clone audio if provided
+    if clone_audio_path:
+        clone_audio_path = processCloneInputAudio(clone_audio_path, reqID)
+    
+    # Process synthesis audio if provided
+    if synthesis_audio_path:
+        synthesis_audio_path = processSynthesisInputAudio(synthesis_audio_path, reqID)
+    
+    logger.info(f"[{reqID}] Saved base64 for the required media")
+
     try:
-        logger.info(f"Initializing Higgs Audio V2 on {device}...")
-        higgs_engine = HiggsAudioServeEngine(
-            model_name_or_path=MODEL_PATH,
-            audio_tokenizer_name_or_path=AUDIO_TOKENIZER_PATH,
-            device=device
-        )
-        logger.info("✅ Higgs Audio V2 initialized successfully")
-    except Exception as e:
-        logger.error(f"❌ Failed to initialize Higgs: {e}")
-        logger.error(f"Initialization traceback: {traceback.format_exc()}")
+        messages = [
+{
+    "role": "system",
+    "content": """
+You are Elixpo Audio, an advanced audio synthesis agent that routes requests to the appropriate pipeline.
 
-@app.before_request
-def before_request():
-    g.request_id = reqID()
-    g.start_time = time.time()
+Available Functions:
+- generate_tts
+- generate_ttt
+- generate_sts
+- generate_stt
 
-@app.after_request
-def after_request(response):
-    process_time = time.time() - g.get('start_time', time.time())
-    response.headers["X-Process-Time"] = str(process_time)
-    return response
+Available pipelines:
+- TTS (Text-to-Speech): Convert text to audio
+- TTT (Text-to-Text): Generate text responses 
+- STS (Speech-to-Speech): Convert speech input to speech output
+- STT (Speech-to-Text): Convert speech to text
 
-@app.route("/", methods=["GET"])
-def health_check():
-    return jsonify({
-        "status": "healthy",
-        "model": "higgs-v2",
-        "device": str(device),
-        "engine_loaded": higgs_engine is not None,
-        "max_audio_size_mb": MAX_FILE_SIZE_MB,
-        "request_id": g.request_id,
-        "endpoints": {
-            "get": "/ssget?text=your_text_here&audio=base64_or_url&system=optional_system_prompt&seed=optional_seed",
-            "post": "/sspost"
-        }
-    })
+Your job is to analyze the inputs and determine which pipeline to use, then call the appropriate function:
 
-@app.route("/ssget", methods=["GET"])
-def singleSpeakerInference():
-    try:
-        text = request.args.get("text")
-        audio = request.args.get("audio")
-        system = request.args.get("system")
-        seed = request.args.get("seed", type=int)
-        requestID = g.request_id
-        reference_audio_data = None
-        tmp = None
+1. **TTS Pipeline**: Use when text input is provided and audio output is desired
+   - Call generate_tts with text, requestID, system, clone_path, clone_text, voice
 
-        if text is None:
-            return jsonify({"error": {"message": "Missing required 'text' parameter.", "type": "invalid_request_error", "code": 400}}), 400
+2. **TTT Pipeline**: Use when text input is provided and text output is desired
+   - Call generate_ttt with text, requestID, system
 
-        if system and len(system) > 500:
-            return jsonify({"error": {"message": "The 'system' parameter must not exceed 500 characters.", "type": "invalid_request_error", "code": 400}}), 400
+3. **STS Pipeline**: Use when synthesis_audio_path is provided and audio output is desired
+   - Call generate_sts with text, synthesis_audio_path, requestID, system, clone_path, clone_text, voice
 
-        if audio:
-            is_audio_url = audio.startswith("http://") or audio.startswith("https://")
-            if not is_audio_url:
-                return jsonify({"error": {"message": f"Invalid audio data: {audio}", "type": "invalid_request_error", "code": 400}}), 400
-            if is_audio_url:
-                audio_data = download_audio(audio)
-                convertBase64 = encode_audio_base64(audio_data)
-                reference_audio_data = validate_and_decode_base64_audio(convertBase64)
-                tmp = save_temp_audio(reference_audio_data, requestID)
+4. **STT Pipeline**: Use when synthesis_audio_path is provided and text output is desired
+   - Call generate_stt with text, synthesis_audio_path, requestID, system
 
-                
+Decision logic:
+- If synthesis_audio_path is provided:
+  - If user wants audio response → STS
+  - If user wants text response → STT
+- If no synthesis audio is provided:
+  - If user wants audio response → TTS
+  - If user wants text response → TTT
 
-        # template = create_speaker_chat(text, requestID, system, reference_audio_data, tmp)
-        # audio_data = synthesize_speech(template, temp_audio_path=tmp, seed=seed)
-        # if not audio_data:
-        #     return jsonify({"error": {"message": "No audio generated by model", "type": "internal_error", "code": 500}}), 500
-        # else:
-        #     logger.info(f"Generated audio for request {requestID}")
+Analyze the user's request to determine their intent for output type.
+"""
+},
+{
+    "role": "user",
+    "content": f"""
+    requestID: {reqID}
+    prompt: {text}
+    synthesis_audio_path: {synthesis_audio_path if synthesis_audio_path else None}
+    system_instruction: {system_instruction if system_instruction else None}
+    clone_audio_path: {clone_audio_path if clone_audio_path else None}
+    clone_audio_transcript: {clone_audio_transcript if clone_audio_transcript else None}
+    voice: {voice}
+    
+    Analyze this request and call the appropriate pipeline function.
+    """
+}
+]
+        
+        max_iterations = 3
+        current_iteration = 0
+        
+        while current_iteration < max_iterations:
+            current_iteration += 1
+            logger.info(f"Iteration {current_iteration} for reqID={reqID}")
 
-        # return Response(
-        #     audio_data,
-        #     mimetype="audio/wav",
-        #     headers={
-        #         "Content-Disposition": "inline; filename=speech.wav",
-        #         "Content-Length": str(len(audio_data))
-        #     }
-        # )
-
-    except Exception as e:
-        logger.error(f"GET TTS error: {traceback.format_exc()}")
-        return jsonify({"error": {"message": str(e), "type": "internal_error", "code": 500}}), 500
-
-@app.route("/sspost", methods=["POST"])
-def singleSpeakerInferencePost():
-    try:
-        body = request.get_json(force=True)
-        messages = body.get("messages", [])
-        if not messages or not isinstance(messages, list):
-            return jsonify({"error": {"message": "Missing or invalid 'messages' in payload.", "type": "invalid_request_error", "code": 400}}), 400
-
-        message = messages[0]
-        content = message.get("content", [])
-        if not content or not isinstance(content, list):
-            return jsonify({"error": {"message": "Missing or invalid 'content' in message.", "type": "invalid_request_error", "code": 400}}), 400
-
-        text = None
-        audio = None
-        audio_text = None
-        system = None
-        reference_audio_data = None
-        tmp = None
-
-        for item in content:
-            if item.get("type") == "text":
-                if message.get("role") == "system":
-                    system = item.get("text")
-                else:
-                    text = item.get("text")
-            elif item.get("type") == "input_audio":
-                audio = item.get("audio", {}).get("data")
-            elif item.get("type") == "audio_text":
-                audio_text = item.get("audio_text")
-
-        if text is None:
-            return jsonify({"error": {"message": "Missing required 'text' in content.", "type": "invalid_request_error", "code": 400}}), 400
-
-        if audio:
-            is_audio_url = isinstance(audio, str) and (audio.startswith("http://") or audio.startswith("https://"))
-            if is_audio_url:
-                audio_data = download_audio(audio)
-                convertBase64 = encode_audio_base64(audio_data)
-                reference_audio_data = validate_and_decode_base64_audio(convertBase64)
-                tmp = save_temp_audio(reference_audio_data, g.request_id)
-            else:
-                reference_audio_data = validate_and_decode_base64_audio(audio)
-                tmp = save_temp_audio(reference_audio_data, g.request_id)
-
-        template = create_speaker_chat(text, g.request_id, system, reference_audio_data, tmp, audio_text)
-        audio_data = synthesize_speech(template, temp_audio_path=tmp)
-        if not audio_data:
-            return jsonify({"error": {"message": "No audio generated by model", "type": "internal_error", "code": 500}}), 500
-        else:
-            logger.info(f"Generated audio for request {g.request_id}")
-
-        return Response(
-            audio_data,
-            mimetype="audio/wav",
-            headers={
-                "Content-Disposition": "inline; filename=speech.wav",
-                "Content-Length": str(len(audio_data))
+            payload = {
+                "model": MODEL,
+                "messages": messages,
+                "tools": tools,
+                "tool_choice": "auto",
+                "token": POLLINATIONS_TOKEN,
+                "referrer": REFERRER,
+                "private": True,
+                "seed": random.randint(1000, 9999)
             }
-        )
+
+            headers = {"Content-Type": "application/json"}
+
+            try:
+                response = requests.post(POLLINATIONS_ENDPOINT, headers=headers, json=payload)
+                response.raise_for_status()
+                response_data = response.json()
+            except requests.exceptions.RequestException as e:
+                error_text = getattr(e.response, "text", "[No error text]")
+                logger.error(f"Pollinations API call failed: {e}\n{error_text}")
+                break
+
+            assistant_message = response_data["choices"][0]["message"]
+            messages.append(assistant_message)
+
+            tool_calls = assistant_message.get("tool_calls")
+            
+            if not tool_calls:
+                final_content = assistant_message.get("content")
+                if final_content:
+                    logger.info(f"Final response: {final_content}")
+                    return {
+                        "type": "error",
+                        "message": "No pipeline was executed",
+                        "reqID": reqID
+                    }
+                break
+
+            tool_outputs = []
+            for tool_call in tool_calls:
+                fn_name = tool_call["function"]["name"]
+                fn_args = json.loads(tool_call["function"]["arguments"])
+                logger.info(f"[reqID={reqID}] Executing pipeline: {fn_name} with args: {fn_args}")
+
+                try:
+                    if fn_name == "generate_tts":
+                        audio_bytes = await generate_tts(
+                            text=fn_args.get("text"),
+                            requestID=fn_args.get("requestID"),
+                            system=fn_args.get("system"),
+                            clone_path=fn_args.get("clone_path"),
+                            clone_text=fn_args.get("clone_text"),
+                            voice=fn_args.get("voice", "alloy")
+                        )
+                        
+                        # Save audio file
+                        output_dir = "genAudio"
+                        os.makedirs(output_dir, exist_ok=True)
+                        output_path = os.path.join(output_dir, f"{reqID}.wav")
+                        
+                        with open(output_path, "wb") as f:
+                            f.write(audio_bytes)
+                        
+                        return {
+                            "type": "audio",
+                            "data": output_path,
+                            "reqID": reqID
+                        }
+
+                    elif fn_name == "generate_ttt":
+                        text_result = await generate_ttt(
+                            text=fn_args.get("text"),
+                            requestID=fn_args.get("requestID"),
+                            system=fn_args.get("system")
+                        )
+                        
+                        # Save text file
+                        output_dir = "genAudio"
+                        os.makedirs(output_dir, exist_ok=True)
+                        text_path = os.path.join(output_dir, f"{reqID}.txt")
+                        
+                        with open(text_path, "w", encoding="utf-8") as f:
+                            f.write(text_result)
+                        
+                        return {
+                            "type": "text",
+                            "data": text_path,
+                            "reqID": reqID
+                        }
+
+                    elif fn_name == "generate_sts":
+                        audio_bytes = await generate_sts(
+                            text=fn_args.get("text"),
+                            audio_base64_path=fn_args.get("synthesis_audio_path"),
+                            requestID=fn_args.get("requestID"),
+                            system=fn_args.get("system"),
+                            clone_path=fn_args.get("clone_path"),
+                            clone_text=fn_args.get("clone_text"),
+                            voice=fn_args.get("voice", "alloy")
+                        )
+                        
+                        # Save audio file
+                        output_dir = "genAudio"
+                        os.makedirs(output_dir, exist_ok=True)
+                        output_path = os.path.join(output_dir, f"{reqID}.wav")
+                        
+                        with open(output_path, "wb") as f:
+                            f.write(audio_bytes)
+                        
+                        return {
+                            "type": "audio",
+                            "data": output_path,
+                            "reqID": reqID
+                        }
+
+                    elif fn_name == "generate_stt":
+                        text_result = await generate_stt(
+                            text=fn_args.get("text"),
+                            audio_base64_path=fn_args.get("synthesis_audio_path"),
+                            requestID=fn_args.get("requestID"),
+                            system=fn_args.get("system")
+                        )
+                        
+                        # Save text file
+                        output_dir = "genAudio"
+                        os.makedirs(output_dir, exist_ok=True)
+                        text_path = os.path.join(output_dir, f"{reqID}.txt")
+                        
+                        with open(text_path, "w", encoding="utf-8") as f:
+                            f.write(text_result)
+                        
+                        return {
+                            "type": "text",
+                            "data": text_path,
+                            "reqID": reqID
+                        }
+
+                    else:
+                        tool_result = f"Unknown pipeline: {fn_name}"
+
+                except Exception as e:
+                    logger.error(f"Error executing pipeline {fn_name}: {e}", exc_info=True)
+                    return {
+                        "type": "error",
+                        "message": f"Pipeline {fn_name} failed: {str(e)}",
+                        "reqID": reqID
+                    }
+
+                tool_outputs.append({
+                    "role": "tool",
+                    "tool_call_id": tool_call["id"],
+                    "name": fn_name,
+                    "content": "Pipeline executed successfully"
+                })
+
+            messages.extend(tool_outputs)
+
+        return {
+            "type": "error",
+            "message": f"Pipeline execution failed after {max_iterations} iterations",
+            "reqID": reqID
+        }
 
     except Exception as e:
-        logger.error(f"POST TTS error: {traceback.format_exc()}")
-        return jsonify({"error": {"message": str(e), "type": "internal_error", "code": 500}}), 500
+        logger.error(f"Pipeline error: {e}", exc_info=True)
+        return {
+            "type": "error",
+            "message": f"Pipeline error: {str(e)}",
+            "reqID": reqID
+        }
+    finally:
+        logger.info(f"Audio Pipeline Completed for reqID={reqID}")
 
-@app.errorhandler(400)
-def bad_request(e):
-    return jsonify({"error": {"message": str(e), "type": "invalid_request_error", "code": 400}}), 400
-
-@app.errorhandler(500)
-def internal_error(e):
-    logger.error(f"Unhandled exception: {traceback.format_exc()}")
-    return jsonify({"error": {"message": "Internal server error", "type": "internal_error", "code": 500}}), 500
 
 if __name__ == "__main__":
-    host = "127.0.0.1"
-    port = 8000
-    postJSON = """
-        "messages": [
-            {
-                "role" : "system",
-                "content" : [
-                    {"type" : "text", "text" : "System instructions here"}
-                ]
-            },
-            {
-                "role": "user",
-                "content": [
-                    { "type": "text", "text": "Your prompt text here" },
-                    {
-                    "type": "input_audio",
-                    "audio": { "data": "<base64_audio_string>", "format": "wav" }
-                    },
-                    {
-                    "type": "audio_text",
-                    "audio_text": "Transcription or description of the reference audio"
-                    }
-                ]
-                }
-        ]
-    """
-    logger.info(f"Starting Higgs V2 API Server")
-    logger.info(f"Host: {host}:{port}")
-    logger.info(f"Device: {device}")
-    logger.info(f"Max audio size: {MAX_FILE_SIZE_MB}MB")
-    logger.info(f"GET endpoint: http://{host}:{port}/ssget?text=your_text_here&audio=base64_or_url&system=optional_system_prompt&seed=optional_seed")
-    logger.info(f"POST endpoint: http://{host}:{port}/sspost  expects json payload like {postJSON}")
+    async def main():
+        text = "Speak it out as it is -- 'This is an awesome solar event happening this year school students will be taken for a field trip!!'"
+        requestID = reqID()
+        voice = "alloy"
 
-    app.run(host=host, port=port, debug=True)
+        result = await run_audio_pipeline(reqID=requestID, text=text, synthesis_audio_path=None, clone_audio_path=None, clone_audio_transcript=None, voice=voice)
+
+        if not result:
+            print("[ERROR] Pipeline returned None")
+            return
+
+        if result["type"] == "text":
+            print(f"[Pipeline Result | Text] Saved at: {result['data']}")
+
+        elif result["type"] == "audio":
+            print(f"[Pipeline Result | Audio] Saved at: {result['data']}")
+
+        elif result["type"] == "error":
+            print(f"[Pipeline Error] {result['message']}")
+            
+        cleanup_temp_file(f"{TEMP_SAVE_DIR}{requestID}")
+
+    asyncio.run(main())
