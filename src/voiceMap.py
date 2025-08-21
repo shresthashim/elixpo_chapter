@@ -1,19 +1,19 @@
 import os
 import sys
 VOICE_BASE64_MAP = {
-    "alloy":   "voices_b64/base64Data/alloy_b64.txt",
-    "amuch":   "voices_b64/base64Data/amuch_b64.txt",
-    "ash":     "voices_b64/base64Data/ash_b64.txt",
-    "ballad":  "voices_b64/base64Data/ballad_b64.txt",
-    "coral":   "voices_b64/base64Data/coral_b64.txt",
-    "dan":     "voices_b64/base64Data/dan_b64.txt",
-    "echo":    "voices_b64/base64Data/echo_b64.txt",
-    "fable":   "voices_b64/base64Data/fable_b64.txt",
-    "nova":    "voices_b64/base64Data/nova_b64.txt",
-    "onyx":    "voices_b64/base64Data/onyx_b64.txt",
-    "sage":    "voices_b64/base64Data/sage_b64.txt",
-    "shimmer": "voices_b64/base64Data/shimmer_b64.txt",
-    "verse":   "voices_b64/base64Data/verse_b64.txt",
+    "alloy":   "voices_b64/raw_wav/alloy.wav",
+    "amuch":   "voices_b64/raw_wav/amuch.wav",
+    "ash":     "voices_b64/raw_wav/ash.wav",
+    "ballad":  "voices_b64/raw_wav/ballad.wav",
+    "coral":   "voices_b64/raw_wav/coral.wav",
+    "dan":     "voices_b64/raw_wav/dan.wav",
+    "echo":    "voices_b64/raw_wav/echo.wav",
+    "fable":   "voices_b64/raw_wav/fable.wav",
+    "nova":    "voices_b64/raw_wav/nova.wav",
+    "onyx":    "voices_b64/raw_wav/onyx.wav",
+    "sage":    "voices_b64/raw_wav/sage.wav",
+    "shimmer": "voices_b64/raw_wav/shimmer.wav",
+    "verse":   "voices_b64/raw_wav/verse.wav",
 }
 
 if __name__ == "__main__":

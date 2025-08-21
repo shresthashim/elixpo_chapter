@@ -150,7 +150,6 @@ def set_random_seed(seed: Optional[int] = None):
 def encode_audio_base64(audio_path: str) -> str:
     def is_base64(s: str) -> bool:
         try:
-            # Check for typical base64 header
             if s.startswith("data:audio"):
                 s = s.split(",")[1]
             base64.b64decode(s, validate=True)

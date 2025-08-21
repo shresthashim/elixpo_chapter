@@ -3,10 +3,12 @@ from dotenv import load_dotenv
 from typing import Optional
 import os 
 from loguru import logger
+import asyncio 
+
 
 load_dotenv()
 
-def generate_reply(prompt: str, max_tokens: Optional[int] = 60) -> str:
+async def generate_reply(prompt: str, max_tokens: Optional[int] = 60) -> str:
     logger.info(f"Generating reply for prompt: {prompt} with max tokens: {max_tokens}")
     payload = {
         "model": "mistral",
@@ -41,7 +43,13 @@ def generate_reply(prompt: str, max_tokens: Optional[int] = 60) -> str:
 
         data = response.json()
         try:
-            reply = data["choices"][0]["message"]["content"]
+            reply: str = data["choices"][0]["message"]["content"]
+            if "---" in reply and "**Sponsor**" in reply:
+                sponsor_start = reply.find("---")
+                if sponsor_start != -1:
+                    sponsor_section = reply[sponsor_start:]
+                    if "**Sponsor**" in sponsor_section:
+                        reply = reply[:sponsor_start].strip()
         except Exception as e:
             raise RuntimeError(f"Unexpected response format: {data}") from e
 
@@ -52,9 +60,10 @@ def generate_reply(prompt: str, max_tokens: Optional[int] = 60) -> str:
 
 
 if __name__ == "__main__":
-    # Example usage
-    user_prompt = "Hey, what's going on guys!! Do you wanna play a game of tug?"
-    reply = generate_reply(user_prompt)
+    async def main():
+        user_prompt = "Hey, what's going on guys!! Do you wanna play a game of tug?"
+        reply = await generate_reply(user_prompt)
 
-    print("\n--- Generated Reply ---\n")
-    print(reply)
+        print("\n--- Generated Reply ---\n")
+        print(reply)
+    asyncio.run(main())

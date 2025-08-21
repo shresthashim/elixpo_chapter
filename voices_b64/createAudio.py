@@ -5,7 +5,7 @@ import os
 load_dotenv()
 
 text = """
-Speak this sentence out to me -- 'Happiness often lives in small, quiet moments — a sip of tea, rain on the window, or sitting in silence with someone we love.'
+Speak this sentence out to me -- 'Welcome to Elixpo'
 """
 
 
