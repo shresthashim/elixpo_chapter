@@ -1,20 +1,21 @@
-from scriptGenerator import generate_reply
 from systemInstruction import generate_higgs_system_instruction
-from transcribe import transcribe_audio_from_base64
 from utility import encode_audio_base64, save_temp_audio
 from templates import create_speaker_chat
 from synthesis import synthesize_speech
 from stt import generate_stt
 from loguru import logger
+from voiceMap import VOICE_BASE64_MAP
 from typing import Optional
 import asyncio
-import requests
-import os
-from dotenv import load_dotenv
 from load_models import higgs_engine
 
 
-async def generate_sts(text: str, audio_base64_path: str, requestID: str, system: Optional[str] = None, clone_path: Optional[str] = None, clone_text: Optional[str] = None) -> str:
+async def generate_sts(text: str, audio_base64_path: str, requestID: str, system: Optional[str] = None, clone_path: Optional[str] = None, clone_text: Optional[str] = None, voice: Optional[str] = "alloy") -> str:
+    if clone_path is None:
+        if(voice):
+            load_audio_path = VOICE_BASE64_MAP.get(voice)
+            base64 = encode_audio_base64(load_audio_path)    
+            clone_path = base64
     if system is None:
         system = await generate_higgs_system_instruction(text)
     else:
@@ -48,8 +49,9 @@ if __name__ == "__main__":
         system = None
         clone_path = None
         clone_text = None
+        voice = "ash"
 
-        audio_bytes = await generate_sts(text, saved_audio_path, requestID, system, clone_path, clone_text)
+        audio_bytes = await generate_sts(text, saved_audio_path, requestID, system, clone_path, clone_text, voice)
         with open("output_sts.wav", "wb") as f:
             f.write(audio_bytes)
         print("Audio saved as output_sts.wav")

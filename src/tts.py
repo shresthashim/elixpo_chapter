@@ -4,13 +4,17 @@ from scriptGenerator import generate_reply
 from systemInstruction import generate_higgs_system_instruction
 from utility import encode_audio_base64
 from typing import Optional
-from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
 from voiceMap import VOICE_BASE64_MAP
 import asyncio
 from load_models import higgs_engine
 
-async def generate_tts(text: str,  requestID: str, system: Optional[str] = None, clone_path: Optional[str] = None, clone_text: Optional[str] = None, type: str = "direct") -> bytes:
-    
+async def generate_tts(text: str,  requestID: str, system: Optional[str] = None, clone_path: Optional[str] = None, clone_text: Optional[str] = None, type: str = "direct", voice: Optional[str] = "alloy") -> bytes:
+    if clone_path is None:
+        if(voice):
+            load_audio_path = VOICE_BASE64_MAP.get(voice)
+            base64 = encode_audio_base64(load_audio_path)    
+            clone_path = base64
+
     if type == "direct":
         if system is None:
             system = await generate_higgs_system_instruction(text)
@@ -70,11 +74,7 @@ if __name__ == "__main__":
         clone_text = None  
         type = "reply"
         
-        if(voice):
-            load_audio_path = VOICE_BASE64_MAP.get(voice)
-            base64 = encode_audio_base64(load_audio_path)    
-            clone_path = base64
-        audio_bytes = await generate_tts(text, requestID, system, clone_path, clone_text, type)
+        audio_bytes = await generate_tts(text, requestID, system, clone_path, clone_text, type, voice)
         with open("output_reply.wav", "wb") as f:
             f.write(audio_bytes)
         print("Audio saved as output_reply.wav")
