@@ -188,6 +188,11 @@ def audio_endpoint():
         finally:
             cleanup_temp_file(request_id)
 
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "alive"}), 200
 @app.errorhandler(400)
 def bad_request(e):
     return jsonify({"error": {"message": str(e), "code": 400}}), 400
