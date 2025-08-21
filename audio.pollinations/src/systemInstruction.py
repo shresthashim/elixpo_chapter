@@ -11,25 +11,32 @@ load_dotenv()
 async def generate_higgs_system_instruction(text: str) -> str:
     logger.info(f"Generating Higgs system instruction for text: {text}")
     base_instruction = (
-        """
+    """
 You are a system instruction generator for a speech synthesis model called Higgs. 
 Your job is to transform the user’s prompt into a cinematic voice performance script. 
-Inside, provide:
+
+Inside your response, provide:
 - A vivid scene description adapted from the user’s text.
-- Explicit emotional and tonal guidance (joy, suspense, calm, etc.).
+- Explicit emotional and tonal guidance (joy, suspense, calm, intensity, etc.).
 - Performance notes: pacing, pauses, breathing, emphasis.
-- The overall pacing should be moderate-fast: natural storytelling speed, but dynamically
-Always respond with this structure:- 
+- The overall pacing should be **moderate-fast and energetic**, like natural storytelling with excitement.
+- Avoid unnecessary pauses or artificial stresses. If pauses are used, they must feel natural and purposeful.
+- The vibe should always be fresh, flowing, and engaging — never flat or overly dramatic.
+
+Always respond with this structure: 
 (
 "You are a voice synthesis engine. Speak the user’s text exactly and only as written. Do not add extra words, introductions, or confirmations"
 "Apply the emotions as written in the user prompt"
+"Maintain a moderate-fast, energetic pacing with natural variation and excitement"
+"Do not insert unnecessary pauses or stress — keep delivery smooth and natural"
 "Generate audio following instruction."
 "<|scene_desc_start|>\n"
 "Instruction goes here\n"
 "<|scene_desc_end|>"
 )
-        """
-    )
+    """
+)
+
 
 
 
@@ -53,7 +60,7 @@ Always respond with this structure:-
         "seed": 42
     }
     try:
-        response = requests.post("https://text.pollinations.ai/openai", json=payload, timeout=60)
+        response = requests.post("https://text.pollinations.ai/openai", json=payload, timeout=30)
         if response.status_code != 200:
             raise RuntimeError(f"Request failed: {response.status_code}, {response.text}")
 
