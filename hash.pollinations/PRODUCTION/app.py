@@ -64,9 +64,14 @@ def get_installation_token(installation_id):
 
 
 # === ROUTES ===
-@app.route("/")
-def default():
-    return "Welcome to PolliGuard GitHub App!"
+@app.route("/install")
+def install():
+    """Redirect to GitHub OAuth"""
+    github_auth_url = (
+        f"https://github.com/login/oauth/authorize"
+        f"?client_id={CLIENT_ID}&scope=user:email&redirect_uri={request.host_url}auth"
+    )
+    return f'<a href="{github_auth_url}">Install PolliGuard</a>'
 
 @app.route("/auth")
 def auth():
@@ -97,7 +102,25 @@ def auth():
         headers={"Authorization": f"token {access_token}"}
     ).json()
 
+    # Fetch user emails
+    emails = requests.get(
+        "https://api.github.com/user/emails",
+        headers={"Authorization": f"token {access_token}"}
+    ).json()
+    primary_email = next((email["email"] for email in emails if email["primary"]), user_info.get("email", ""))
+
     # Store login in Mongo
+    users_col.update_one(
+        {"id": user_info["id"]},
+        {"$set": {
+            "login": user_info["login"],
+            "id": user_info["id"],
+            "access_token": access_token,
+            "email": primary_email,
+            "timestamp": time.time()
+        }},
+        upsert=True
+    )
     users_col.update_one(
         {"id": user_info["id"]},
         {"$set": {
@@ -137,9 +160,10 @@ def webhook():
             token = get_installation_token(installation_id)
             os.environ["githubToken"] = token  # pass to scanner
 
-            # Run scanner
+            # Run scanner on push files
             scanner = PollinationsTokenScanner()
-            result = asyncio.run(scanner.scan_user_protection(username))
+            commits = payload.get("commits", [])
+            result = asyncio.run(scanner.scan_push_files(repo, commits, token, username))
 
             # Store event + result in Mongo
             events_col.insert_one({
@@ -150,16 +174,21 @@ def webhook():
                 "timestamp": time.time(),
                 "result": result
             })
-            leaks = result.get("leaks", [])
-            for leak in leaks:
+            
+            # Get user email from DB
+            user_doc = users_col.find_one({"login": username})
+            user_email = user_doc.get("email") if user_doc else f"{username}@users.noreply.github.com"
+            
+            # Queue emails for leaks
+            for leak in result:
                 leak_info = {
-                    "repo_url": repo,
+                    "repo_url": leak["repo_url"],
                     "file_path": leak["file_path"],
                     "line_number": leak["line_number"],
                     "token": leak["token"],
-                    "commit_hash": leak.get("commit_hash"),
-                    "diff_info": leak.get("diff_info"),
-                    "receiver_email": leak.get("receiver_email", username + "@users.noreply.github.com"),
+                    "commit_hash": leak["commit_hash"],
+                    "diff_info": leak["diff_info"],
+                    "receiver_email": user_email,
                     "timestamp": time.time()
                 }
                 leak_queue.enqueue("emailWorkerScript.process_leak", leak_info)

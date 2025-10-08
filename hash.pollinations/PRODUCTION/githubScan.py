@@ -158,47 +158,42 @@ class PollinationsTokenScanner:
             print(f"   Commit/diff fetch error: {e}")
         return "", ""
 
-    async def scan_user_protection(self, username):
-        print(f"🛡️  POLLINATIONS TOKEN PROTECTION SCAN")
-        print(f"👤 Scanning for user: {username}")
-        print("=" * 60)
-
-            
-        findings = await self.search_github_repos(username)
-        for finding in findings:
-            repo_url = finding['repo_url']
-            file_path = finding['file_path']
-            line_number = finding['line_number']
-            token = finding['token']
-            repo_full_name = "/".join(urllib.parse.urlparse(repo_url).path.strip("/").split("/")[:2])
-            commit_hash, diff_info = self._get_latest_commit_and_diff(repo_full_name, file_path)
-            receiver_email = "ayushbhatt633@gmail.com"
-            if receiver_email:
-                await send_email(
-                    receiver_email=receiver_email,
-                    repo_url=repo_url,
-                    file_path=file_path,
-                    line_number=line_number,
-                    token=token,
-                    commit_hash=commit_hash,
-                    diff_info=diff_info
-                )
-        if not findings:
-            print("✅ No exposed Pollinations tokens found!")
-        else:
-            print(f"🚨 ALERT: Found {len(findings)} exposed tokens!")
-            print("\n📋 EXPOSURE REPORT:")
-            print("=" * 60)
-            
-            for finding in findings:
-                print(f"🗂️  Repository: {finding['repo_url']}")
-                print(f"📄 File: {finding['file_path']} (line {finding['line_number']})")
-                print(f"🔑 Token: {finding['token']}")
-                print(f"👤 User: {finding['username']} ({finding['github_id']})")
-                print(f"🔗 Direct link: {finding['file_url']}")
-                print(f"📝 Content: {finding['line_content']}")
-                print("-" * 40)
-            
+    async def scan_push_files(self, repo_full_name, commits, token, username):
+        """Scan files from push commits for tokens"""
+        self.github_token = token
+        findings = []
+        
+        for commit in commits:
+            commit_sha = commit["id"]
+            # Get commit details
+            headers = {
+                "Authorization": f"Bearer {self.github_token}",
+                "Accept": "application/vnd.github+json"
+            }
+            commit_url = f"https://api.github.com/repos/{repo_full_name}/commits/{commit_sha}"
+            resp = requests.get(commit_url, headers=headers)
+            if resp.status_code != 200:
+                continue
+                
+            commit_data = resp.json()
+            for file in commit_data.get("files", []):
+                if file["status"] in ["added", "modified"]:
+                    # Get file content using raw URL
+                    try:
+                        content_resp = requests.get(file["raw_url"])
+                        if content_resp.status_code == 200:
+                            content = content_resp.text
+                            file_findings = self.scan_text_for_tokens(content, username, file["filename"])
+                            for finding in file_findings:
+                                finding.update({
+                                    "repo_url": f"https://github.com/{repo_full_name}",
+                                    "commit_hash": commit_sha,
+                                    "diff_info": file.get("patch", "")
+                                })
+                                findings.append(finding)
+                    except Exception as e:
+                        print(f"Error fetching content for {file['filename']}: {e}")
+        
         return findings
     
 if __name__ == "__main__":

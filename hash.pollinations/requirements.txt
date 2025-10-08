@@ -1,3 +1,7 @@
 requests
 pymongo
 dotenv
+flask
+rq
+redis
+pyjwt
